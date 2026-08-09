@@ -16,10 +16,7 @@
   <section id="pantalla-setup" class="panel">
     <span class="eyebrow">R2 Quiz · Host</span>
     <h1>Preparar la partida</h1>
-    <p class="subtitulo">Pegá tu API key de Ably (la creaste en el dashboard de tu app "r2-quiz") y arrancamos.</p>
-
-    <label class="field-label" for="apiKey">Ably API Key</label>
-    <input id="apiKey" class="field" type="text" placeholder="xxxxxxxxx.yyyyyyyyy:zzzzzzzzzzzzzzzzzzzz" autocomplete="off">
+    <p class="subtitulo">Se conectará con la API key de Ably configurada en Vercel para crear la sala.</p>
 
     <label class="field-label" for="archivoPreguntas">Archivo de preguntas (JSON)</label>
     <input id="archivoPreguntas" class="field" type="text" value="preguntas.json">
@@ -83,6 +80,7 @@
   <section id="pantalla-final" class="panel hidden">
     <span class="eyebrow">Fin de la partida</span>
     <h1 class="centrado">Resultados finales</h1>
+    <div class="podio" id="podioFinal"></div>
     <ol class="ranking" id="rankingFinal"></ol>
     <p class="subtitulo centrado" style="margin-top:14px;">Cerrá esta pestaña o creá una sala nueva para otra ronda.</p>
   </section>
@@ -111,11 +109,30 @@ function generarCodigoSala(){
   return Math.floor(1000 + Math.random()*9000).toString();
 }
 
+async function obtenerApiKey(){
+  try {
+    const resp = await fetch('/api/ably-key');
+    if (!resp.ok) {
+      throw new Error('No se pudo obtener la API key del entorno seguro.');
+    }
+    const data = await resp.json();
+    if (!data.ok || !data.key) {
+      throw new Error('La API key de Ably no está disponible.');
+    }
+    return data.key;
+  } catch (err) {
+    $('setupEstado').textContent = 'Error cargando Ably: ' + err.message;
+    $('setupEstado').className = 'estado error';
+    return null;
+  }
+}
+
 /* ---------- 1. Crear sala ---------- */
 $('btnCrearSala').addEventListener('click', async () => {
-  const key = $('apiKey').value.trim();
+  const key = await obtenerApiKey();
+  if(!key){ return; }
+
   const ruta = $('archivoPreguntas').value.trim() || 'preguntas.json';
-  if(!key){ $('setupEstado').textContent = 'Pegá tu API key de Ably primero.'; $('setupEstado').className='estado error'; return; }
 
   try {
     const resp = await fetch(ruta);
@@ -153,11 +170,16 @@ function escucharPresencia(){
       jugadores.clear();
       miembros.forEach(m => {
         if(!m.clientId.startsWith('host-')){
-          jugadores.set(m.clientId, { nombre: m.data?.nombre || m.clientId, puntaje: jugadores.get(m.clientId)?.puntaje || 0 });
+          jugadores.set(m.clientId, {
+            nombre: m.data?.nombre || m.clientId,
+            avatar: m.data?.avatar || '(▰)',
+            genero: m.data?.genero || 'otro',
+            puntaje: jugadores.get(m.clientId)?.puntaje || 0
+          });
         }
       });
       $('contadorJugadores').textContent = jugadores.size;
-      $('listaJugadores').innerHTML = [...jugadores.values()].map(j => `<li>${j.nombre}</li>`).join('');
+      $('listaJugadores').innerHTML = [...jugadores.values()].map(j => `<li><span class="jugador-avatar">${j.avatar}</span> ${j.nombre}</li>`).join('');
       $('btnIniciarJuego').disabled = jugadores.size === 0;
     });
   });
@@ -263,17 +285,49 @@ function revelarRespuesta(){
   $('respuestaCorrectaTexto').textContent = `Correcta: ${p.opciones[p.correcta]}`;
   const ranking = [...jugadores.values()].sort((a,b) => b.puntaje - a.puntaje);
   $('rankingParcial').innerHTML = ranking.map((j,i) =>
-    `<li><span><span class="puesto">${i+1}</span>${j.nombre}</span><span class="mono">${j.puntaje}</span></li>`).join('');
+    `<li class="leaderboard-row">
+      <span class="leaderboard-main">
+        <span class="leaderboard-rank">${i+1}</span>
+        <span class="leaderboard-avatar">${j.avatar || '(▰)'}</span>
+        <span class="leaderboard-name">${j.nombre}</span>
+      </span>
+      <span class="mono leaderboard-score">${j.puntaje}</span>
+    </li>`).join('');
 
   mostrarPantalla('pantalla-revelacion');
 }
 
 $('btnSiguiente').addEventListener('click', siguientePregunta);
 
+function renderPodio(ranking){
+  const top = ranking.slice(0, 3);
+  const posiciones = [2, 1, 3];
+  const podio = posiciones.map((pos, idx) => {
+    const jugador = top.find(j => Number(j.puntaje) >= 0) || ranking[0];
+    const candidate = ranking[pos - 1] || top[idx] || { nombre: '—', avatar: '(▰)', puntaje: 0 };
+    return `<article class="podio-slot podio-${pos}">
+      <span class="podio-label">Puesto ${pos}</span>
+      <span class="podio-avatar">${candidate.avatar || '(▰)'}</span>
+      <span class="podio-name">${candidate.nombre || 'Sin jugador'}</span>
+      <span class="mono podio-score">${candidate.puntaje || 0}</span>
+    </article>`;
+  }).join('');
+
+  $('podioFinal').innerHTML = podio;
+}
+
 function mostrarResultadosFinales(){
   const ranking = [...jugadores.values()].sort((a,b) => b.puntaje - a.puntaje);
+  renderPodio(ranking);
   $('rankingFinal').innerHTML = ranking.map((j,i) =>
-    `<li><span><span class="puesto">${i+1}</span>${j.nombre}</span><span class="mono">${j.puntaje}</span></li>`).join('');
+    `<li class="leaderboard-row">
+      <span class="leaderboard-main">
+        <span class="leaderboard-rank">${i+1}</span>
+        <span class="leaderboard-avatar">${j.avatar || '(▰)'}</span>
+        <span class="leaderboard-name">${j.nombre}</span>
+      </span>
+      <span class="mono leaderboard-score">${j.puntaje}</span>
+    </li>`).join('');
   channel.publish('fin', { puntajes: ranking });
   mostrarPantalla('pantalla-final');
 }

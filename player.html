@@ -17,14 +17,23 @@
     <span class="eyebrow">R2 Quiz</span>
     <h1>Unirme a la sala</h1>
 
-    <label class="field-label" for="apiKey">Ably API Key</label>
-    <input id="apiKey" class="field" type="text" placeholder="xxxxxxxxx.yyyyyyyyy:zzzzzzzzzzzzzzzzzzzz" autocomplete="off">
+    <p class="subtitulo">La API key se obtiene del entorno seguro de Vercel.</p>
 
     <label class="field-label" for="codigoSala">Código de sala</label>
     <input id="codigoSala" class="field mono" type="text" inputmode="numeric" maxlength="4" placeholder="0000">
 
     <label class="field-label" for="nombreJugador">Tu nombre</label>
     <input id="nombreJugador" class="field" type="text" maxlength="20" placeholder="Ej. Arturo">
+
+    <label class="field-label" for="generoJugador">Perfil</label>
+    <select id="generoJugador" class="field">
+      <option value="">Elegí un perfil</option>
+      <option value="mujer">Mujer</option>
+      <option value="hombre">Hombre</option>
+      <option value="otro">Otro</option>
+    </select>
+
+    <div class="avatar-preview" id="avatarPreview">(▰)</div>
 
     <div class="estado" id="unirseEstado"></div>
 
@@ -79,29 +88,68 @@ let ably, channel, clientId, miNombre;
 
 const $ = (id) => document.getElementById(id);
 
+const avatarPools = {
+  mujer: ['╰( ᵔ ͡◕ ᵔ )╯', '(◕‿◕)', '(•̀ᴗ•́)و', '╰☆╮'],
+  hombre: ['(▀̿Ĺ̯▀̿ ̿)', '╰(▔∀▔)╯', '(╯°□°)╯', '└[∵┌]┘'],
+  otro: ['( ͡° ͜ʖ ͡°)', '[o_o]', '◌_◌', '≋']
+};
+
+function elegirAvatarAscii(genero){
+  const pool = avatarPools[genero] || avatarPools.otro;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 function mostrarPantalla(id){
   ['pantalla-unirse','pantalla-esperando','pantalla-pregunta','pantalla-revelacion','pantalla-final']
     .forEach(p => $(p).classList.toggle('hidden', p !== id));
 }
 
-$('btnUnirse').addEventListener('click', () => {
-  const key = $('apiKey').value.trim();
+$('generoJugador').addEventListener('change', () => {
+  const genero = $('generoJugador').value;
+  const avatar = elegirAvatarAscii(genero);
+  $('avatarPreview').textContent = avatar;
+});
+
+async function obtenerApiKey(){
+  try {
+    const resp = await fetch('/api/ably-key');
+    if (!resp.ok) {
+      throw new Error('No se pudo obtener la API key del entorno seguro.');
+    }
+    const data = await resp.json();
+    if (!data.ok || !data.key) {
+      throw new Error('La API key de Ably no está disponible.');
+    }
+    return data.key;
+  } catch (err) {
+    $('unirseEstado').textContent = 'Error cargando Ably: ' + err.message;
+    $('unirseEstado').className = 'estado error';
+    return null;
+  }
+}
+
+$('btnUnirse').addEventListener('click', async () => {
   const codigo = $('codigoSala').value.trim();
   const nombre = $('nombreJugador').value.trim();
+  const genero = $('generoJugador').value;
 
-  if(!key || !codigo || !nombre){
-    $('unirseEstado').textContent = 'Completá API key, código de sala y tu nombre.';
+  if(!codigo || !nombre || !genero){
+    $('unirseEstado').textContent = 'Completá perfil, código de sala y tu nombre.';
     $('unirseEstado').className = 'estado error';
     return;
   }
 
+  const key = await obtenerApiKey();
+  if(!key){ return; }
+
+  const avatar = elegirAvatarAscii(genero);
   miNombre = nombre;
   clientId = 'jugador-' + nombre.replace(/\s+/g,'_') + '-' + Math.floor(Math.random()*1000);
   ably = new Ably.Realtime({ key, clientId });
   channel = ably.channels.get('r2quiz-' + codigo);
 
   ably.connection.on('connected', () => {
-    channel.presence.enter({ nombre });
+    channel.presence.enter({ nombre, avatar, genero });
     $('saludoNombre').textContent = nombre;
     mostrarPantalla('pantalla-esperando');
     escucharEventosJuego();

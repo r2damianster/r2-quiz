@@ -1,0 +1,16 @@
+# Dependencias locales
+node_modules/
+
+# Variables y secretos locales
+.env
+.env.*
+!.env.example
+
+# Sistema / editor
+.DS_Store
+.vite/
+dist/
+coverage/
+
+# Logs
+*.log

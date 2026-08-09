@@ -1,60 +1,70 @@
 # R2 Quiz
 
-Juego de trivia en vivo (tipo Kahoot), 100% estático, sin backend propio ni base de datos.
+R2 Quiz es una versión light y personal de Kahoot orientada a aulas, reuniones y actividades con logística simple.
+La interfaz busca ser elegante, legible y rápida, con foco en una experiencia de trivia en vivo que no dependa de un backend grande.
+
+## Propósito
+
+- Facilitar partidas de trivia en vivo con un host y varios jugadores.
+- Reducir la complejidad tecnológica y el costo de mantenimiento.
+- Mantener la interfaz clara para uso doméstico, educativo y pequeño grupo.
 
 ## Archivos
 
-- `preguntas.json` — banco de preguntas. Editalo para tus propias trivias.
-- `host.html` — pantalla del anfitrión (la proyectás o la mirás vos).
-- `player.html` — pantalla de cada jugador (la abren desde su celular).
-- `estilos.css` — estilos compartidos.
+- `preguntas.json` — banco de preguntas.
+- `host.html` — pantalla del anfitrión.
+- `player.html` — pantalla del jugador.
+- `estilos.css` — identidad visual, responsive y refinamiento del UI.
+- `api/ably-key.js` — endpoint de lectura de entorno para acceder a la API key de Ably.
 
-## Cómo funciona
+## Modelo de operación
 
-- No hay servidor propio: `host.html` y `player.html` se conectan directo a **Ably**
-  (servicio de pub/sub en tiempo real) desde el navegador.
-- El "código de sala" es simplemente el nombre de un canal de Ably (`r2quiz-1234`).
-  No hace falta registrar nada en ningún lado.
-- Todo el estado del juego (puntajes, pregunta actual) vive en memoria de la
-  pestaña del host mientras dura la partida. Si cerrás esa pestaña, la partida
-  se pierde — no hay persistencia a propósito, para no depender de una base de datos.
+- Los clientes se conectan a Ably a través de canales privados del juego.
+- La sala se identifica por un código de 4 dígitos.
+- El host mantiene el estado y entrega el ranking parcial y final.
+- El estado no se persiste entre sesiones.
+
+## Privacidad y seguridad
+
+- La clave de Ably no debe dejarse en el código fuente ni en archivos públicos.
+- En Vercel se debe configurar la variable `ABLY_API_KEY`.
+- El cliente solo puede obtener esa clave a través de un endpoint seguro y limitado.
+- No se usan imágenes ni avatares externos. Los identificadores visuales se materializan como avatar ASCII generado por código del navegador.
+- La selección de perfil se entiende como una clasificación no sensible para soporte visual: mujer, hombre y otro, si se desea.
+
+## Flujo pensado para nightlife económica
+
+1. El host crea la sala desde la pantalla inicial.
+2. El proyecto recupera la key de Ably desde un entorno seguro.
+3. Los jugadores abren la app, ingresan código, nombre y perfil.
+4. El perfil desencadena una asignación aleatoria de avatar ASCII.
+5. El host observa el lobby con un leaderboard inicial, antes de iniciar.
+6. La pregunta se lanza en vivo, con respuesta compacta por pregunta y cálculo de ranking.
+7. El leaderboard se refleja en la pantalla del host y el podio final se presenta al terminar.
+
+## Diseño visual
+
+La referencia visual del usuario sugiere un leaderboard con una estructura de ranking y un cierre con podio al final.
+La idea es usar una composición clara, con barras de clasificación, badges de posición, avatar ASCII y una estética digital premium.
 
 ## Desplegar
 
-1. Subí esta carpeta a un repo de GitHub.
-2. Importalo en Vercel (plan gratuito) como sitio estático — no necesita build step.
-3. Listo: `tu-proyecto.vercel.app/host.html` y `tu-proyecto.vercel.app/player.html`.
+1. Publicar el repo en GitHub.
+2. Conectar el proyecto con Vercel.
+3. Añadir la variable de entorno `ABLY_API_KEY` en Vercel.
+4. Usar `/host.html` y `/player.html` como rutas de acceso.
 
-## Usar
+## Mantenimiento
 
-1. Abrí `host.html`, pegá tu **Ably API Key** y creá la sala.
-2. Compartí el código de 4 dígitos que aparece en pantalla.
-3. Cada jugador abre `player.html` en su celular, pega la misma API key,
-   pone el código de sala y su nombre.
-4. Cuando ya se unieron todos, tocás "Iniciar partida" en el host.
-
-## Sobre la API key en el navegador
-
-Ably usa una key visible en el código del cliente — es normal para este tipo
-de apps, pero conviene saber:
-
-- Cualquiera que abra el código fuente de tu sitio puede ver la key.
-- Para uso personal/con grupos pequeños esto es aceptable.
-- Si querés más control, en el dashboard de Ably podés crear una key separada
-  con permisos limitados (solo `publish`/`subscribe`/`presence`, sin acceso
-  de administración) y usar esa en vez de la key raíz.
-
-## Personalizar
-
-- **Puntaje**: la fórmula de puntos (base + bono por velocidad) está en
-  `revelarRespuesta()` dentro de `host.html`.
-- **Tiempo por pregunta**: campo `tiempo` (en segundos) en `preguntas.json`.
-- **Colores/tipografía**: todo el sistema de diseño está en `estilos.css`
-  (variables `:root` al inicio del archivo).
+- Si se quiere bajar el número de mensajes en Ably se recomienda:
+  - quitar presencia de movimiento de puntero o animaciones visuales de coste bajo
+  - consolidar respuesta al cierre de pregunta
+  - enviar resumen de ranking en vez de notificaciones de cada jugador en cada cambio
+  - usar presencia mínima para saber quién está dentro
 
 ## Próximos pasos posibles
 
-- Guardar el historial de partidas exportando el ranking final a un JSON
-  descargable (no incluido aún, para mantener esta primera versión simple).
-- Restringir la key de los jugadores a solo `subscribe`+`publish` (sin
-  `presence:admin`) desde el dashboard de Ably.
+- Generar un leaderboard visual con barras, podio y animaciones suaves.
+- Exportar resultados finales como JSON descargable.
+- Mantener el estado del juego y la sección de historial.
+- Añadir seguridad a nivel de reglas de acceso de Ably para limitar permisos.
