@@ -163,37 +163,26 @@ $('btnCrearSala').addEventListener('click', async () => {
 });
 
 /* ---------- 2. Lobby: presencia de jugadores ---------- */
-async function refrescarJugadores(){
-  let miembros;
-  try {
-    miembros = await channel.presence.get();
-  } catch (err) {
-    $('lobbyEstado').textContent = 'No se pudo leer la presencia: ' + err.message;
-    $('lobbyEstado').className = 'estado error';
-    return;
-  }
-
-  const puntajesPrevios = new Map([...jugadores].map(([clientId, j]) => [clientId, j.puntaje]));
-  jugadores.clear();
-  miembros.forEach(m => {
-    if(!m.clientId.startsWith('host-')){
-      jugadores.set(m.clientId, {
-        nombre: m.data?.nombre || m.clientId,
-        avatar: m.data?.avatar || '(▰)',
-        genero: m.data?.genero || 'otro',
-        puntaje: puntajesPrevios.get(m.clientId) || 0
-      });
-    }
-  });
-
-  $('contadorJugadores').textContent = jugadores.size;
-  $('listaJugadores').innerHTML = [...jugadores.values()].map(j => `<li><span class="jugador-avatar">${j.avatar}</span> ${j.nombre}</li>`).join('');
-  $('btnIniciarJuego').disabled = jugadores.size === 0;
-}
-
 function escucharPresencia(){
-  channel.presence.subscribe(['enter','update','leave'], refrescarJugadores);
-  refrescarJugadores(); // jugadores que ya estaban en la sala antes de suscribirnos
+  channel.presence.subscribe(['enter','leave'], () => {
+    channel.presence.get((err, miembros) => {
+      if(err) return;
+      jugadores.clear();
+      miembros.forEach(m => {
+        if(!m.clientId.startsWith('host-')){
+          jugadores.set(m.clientId, {
+            nombre: m.data?.nombre || m.clientId,
+            avatar: m.data?.avatar || '(▰)',
+            genero: m.data?.genero || 'otro',
+            puntaje: jugadores.get(m.clientId)?.puntaje || 0
+          });
+        }
+      });
+      $('contadorJugadores').textContent = jugadores.size;
+      $('listaJugadores').innerHTML = [...jugadores.values()].map(j => `<li><span class="jugador-avatar">${j.avatar}</span> ${j.nombre}</li>`).join('');
+      $('btnIniciarJuego').disabled = jugadores.size === 0;
+    });
+  });
 }
 
 $('btnIniciarJuego').addEventListener('click', () => {
@@ -229,7 +218,7 @@ function siguientePregunta(){
 
   mostrarPantalla('pantalla-pregunta');
   iniciarCuentaAtras(segundosTotales);
-}
+});
 
 function iniciarCuentaAtras(segundos){
   clearInterval(temporizador);

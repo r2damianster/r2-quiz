@@ -1,93 +1,4 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>R2 Quiz — Host</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="estilos.css">
-<script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
-</head>
-<body>
-<div class="wrap">
 
-  <!-- PANTALLA 1: configuración -->
-  <section id="pantalla-setup" class="panel">
-    <span class="eyebrow">R2 Quiz · Host</span>
-    <h1>Preparar la partida</h1>
-    <p class="subtitulo">Se conectará con la API key de Ably configurada en Vercel para crear la sala.</p>
-
-    <label class="field-label" for="archivoPreguntas">Archivo de preguntas (JSON)</label>
-    <input id="archivoPreguntas" class="field" type="text" value="preguntas.json">
-
-    <div class="estado" id="setupEstado"></div>
-
-    <div style="margin-top:20px; display:flex; gap:10px;">
-      <button class="btn" id="btnCrearSala">Crear sala</button>
-    </div>
-  </section>
-
-  <!-- PANTALLA 2: lobby -->
-  <section id="pantalla-lobby" class="panel hidden">
-    <span class="eyebrow" id="lobbyTitulo">Sala lista</span>
-    <h1 class="centrado">Código de sala</h1>
-    <div class="scoreboard" id="codigoSala"></div>
-    <p class="subtitulo centrado">Los jugadores entran en <strong>player.html</strong> con este código.</p>
-
-    <h3 style="margin-top:24px;">Jugadores conectados (<span id="contadorJugadores">0</span>)</h3>
-    <ul class="lista-jugadores" id="listaJugadores"></ul>
-
-    <div style="margin-top:24px; display:flex; gap:10px;">
-      <button class="btn" id="btnIniciarJuego" disabled>Iniciar partida</button>
-    </div>
-    <div class="estado" id="lobbyEstado"></div>
-  </section>
-
-  <!-- PANTALLA 3: pregunta en vivo -->
-  <section id="pantalla-pregunta" class="panel hidden">
-    <span class="eyebrow" id="preguntaContador">Pregunta 1 de N</span>
-    <div class="timer-ring">
-      <svg viewBox="0 0 84 84">
-        <circle class="track" cx="42" cy="42" r="36"></circle>
-        <circle class="progress" id="anilloTiempo" cx="42" cy="42" r="36"
-          stroke-dasharray="226" stroke-dashoffset="0"></circle>
-      </svg>
-      <span class="value mono" id="segundosRestantes">--</span>
-    </div>
-    <h2 id="textoPregunta" class="centrado"></h2>
-    <div class="opciones" id="opcionesHost"></div>
-    <p class="subtitulo centrado" style="margin-top:18px;">
-      Respondieron <span id="conteoRespuestas" class="mono">0</span> / <span id="totalJugadores" class="mono">0</span>
-    </p>
-    <div style="margin-top:16px; display:flex; gap:10px; justify-content:center;">
-      <button class="btn" id="btnRevelar">Revelar respuesta</button>
-    </div>
-  </section>
-
-  <!-- PANTALLA 4: revelación + ranking parcial -->
-  <section id="pantalla-revelacion" class="panel hidden">
-    <span class="eyebrow">Respuesta correcta</span>
-    <h2 id="respuestaCorrectaTexto" class="centrado"></h2>
-    <h3 style="margin-top:22px;">Marcador</h3>
-    <ol class="ranking" id="rankingParcial"></ol>
-    <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
-      <button class="btn" id="btnSiguiente">Siguiente pregunta</button>
-    </div>
-  </section>
-
-  <!-- PANTALLA 5: resultados finales -->
-  <section id="pantalla-final" class="panel hidden">
-    <span class="eyebrow">Fin de la partida</span>
-    <h1 class="centrado">Resultados finales</h1>
-    <div class="podio" id="podioFinal"></div>
-    <ol class="ranking" id="rankingFinal"></ol>
-    <p class="subtitulo centrado" style="margin-top:14px;">Cerrá esta pestaña o creá una sala nueva para otra ronda.</p>
-  </section>
-
-</div>
-
-<script>
 /* ---------- Estado global ---------- */
 let ably, channel;
 let preguntas = [];
@@ -163,37 +74,26 @@ $('btnCrearSala').addEventListener('click', async () => {
 });
 
 /* ---------- 2. Lobby: presencia de jugadores ---------- */
-async function refrescarJugadores(){
-  let miembros;
-  try {
-    miembros = await channel.presence.get();
-  } catch (err) {
-    $('lobbyEstado').textContent = 'No se pudo leer la presencia: ' + err.message;
-    $('lobbyEstado').className = 'estado error';
-    return;
-  }
-
-  const puntajesPrevios = new Map([...jugadores].map(([clientId, j]) => [clientId, j.puntaje]));
-  jugadores.clear();
-  miembros.forEach(m => {
-    if(!m.clientId.startsWith('host-')){
-      jugadores.set(m.clientId, {
-        nombre: m.data?.nombre || m.clientId,
-        avatar: m.data?.avatar || '(▰)',
-        genero: m.data?.genero || 'otro',
-        puntaje: puntajesPrevios.get(m.clientId) || 0
-      });
-    }
-  });
-
-  $('contadorJugadores').textContent = jugadores.size;
-  $('listaJugadores').innerHTML = [...jugadores.values()].map(j => `<li><span class="jugador-avatar">${j.avatar}</span> ${j.nombre}</li>`).join('');
-  $('btnIniciarJuego').disabled = jugadores.size === 0;
-}
-
 function escucharPresencia(){
-  channel.presence.subscribe(['enter','update','leave'], refrescarJugadores);
-  refrescarJugadores(); // jugadores que ya estaban en la sala antes de suscribirnos
+  channel.presence.subscribe(['enter','leave'], () => {
+    channel.presence.get((err, miembros) => {
+      if(err) return;
+      jugadores.clear();
+      miembros.forEach(m => {
+        if(!m.clientId.startsWith('host-')){
+          jugadores.set(m.clientId, {
+            nombre: m.data?.nombre || m.clientId,
+            avatar: m.data?.avatar || '(▰)',
+            genero: m.data?.genero || 'otro',
+            puntaje: jugadores.get(m.clientId)?.puntaje || 0
+          });
+        }
+      });
+      $('contadorJugadores').textContent = jugadores.size;
+      $('listaJugadores').innerHTML = [...jugadores.values()].map(j => `<li><span class="jugador-avatar">${j.avatar}</span> ${j.nombre}</li>`).join('');
+      $('btnIniciarJuego').disabled = jugadores.size === 0;
+    });
+  });
 }
 
 $('btnIniciarJuego').addEventListener('click', () => {
@@ -342,6 +242,3 @@ function mostrarResultadosFinales(){
   channel.publish('fin', { puntajes: ranking });
   mostrarPantalla('pantalla-final');
 }
-</script>
-</body>
-</html>
