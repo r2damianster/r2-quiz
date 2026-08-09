@@ -1,0 +1,56 @@
+{
+  "titulo": "Fundamentos de metodología de investigación",
+  "preguntas": [
+    {
+      "pregunta": "¿Qué tipo de variable es el género declarado por una persona?",
+      "opciones": ["Nominal", "Ordinal", "De intervalo", "De razón"],
+      "correcta": 0,
+      "tiempo": 15
+    },
+    {
+      "pregunta": "La validez de contenido de un instrumento se evalúa principalmente mediante…",
+      "opciones": ["Alfa de Cronbach", "Juicio de expertos", "Análisis factorial confirmatorio", "Prueba t de Student"],
+      "correcta": 1,
+      "tiempo": 20
+    },
+    {
+      "pregunta": "En un muestreo probabilístico, la característica esencial es que…",
+      "opciones": [
+        "La muestra es grande",
+        "Los casos se eligen por conveniencia",
+        "Cada elemento tiene probabilidad conocida de ser elegido",
+        "Se aplica solo a estudios cualitativos"
+      ],
+      "correcta": 2,
+      "tiempo": 20
+    },
+    {
+      "pregunta": "¿Qué coeficiente se usa habitualmente para estimar consistencia interna?",
+      "opciones": ["Kappa de Cohen", "Alfa de Cronbach", "Chi cuadrado", "Coeficiente de Gini"],
+      "correcta": 1,
+      "tiempo": 15
+    },
+    {
+      "pregunta": "Un diseño cuasiexperimental se diferencia del experimental porque…",
+      "opciones": [
+        "No manipula la variable independiente",
+        "No asigna aleatoriamente a los grupos",
+        "No tiene grupo de comparación",
+        "No mide la variable dependiente"
+      ],
+      "correcta": 1,
+      "tiempo": 20
+    },
+    {
+      "pregunta": "La hipótesis nula en un contraste estadístico plantea…",
+      "opciones": [
+        "Que existe efecto o diferencia",
+        "Que no existe efecto o diferencia",
+        "Que la muestra es representativa",
+        "Que el instrumento es válido"
+      ],
+      "correcta": 1,
+      "tiempo": 15
+    }
+  ]
+}

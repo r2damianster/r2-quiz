@@ -1,0 +1,20 @@
+{
+  "concursos": [
+    {
+      "id": "trivia-general",
+      "titulo": "Trivia general de arranque",
+      "categoria": "Rompehielos",
+      "descripcion": "Ronda corta y liviana para abrir la clase, calibrar el ritmo del grupo y que todos prueben el mecanismo de respuesta antes de un concurso evaluado.",
+      "recomendado": "Primer día de clase o antes de una sesión larga.",
+      "archivo": "preguntas.json"
+    },
+    {
+      "id": "metodologia-investigacion",
+      "titulo": "Fundamentos de metodología de investigación",
+      "categoria": "Metodología",
+      "descripcion": "Repaso rápido de diseño de investigación, tipos de variable, validez y muestreo. Sirve como diagnóstico de entrada o cierre de unidad.",
+      "recomendado": "Cierre de la unidad de diseño metodológico.",
+      "archivo": "preguntas-metodologia.json"
+    }
+  ]
+}

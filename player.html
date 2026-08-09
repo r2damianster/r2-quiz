@@ -104,6 +104,15 @@ function mostrarPantalla(id){
     .forEach(p => $(p).classList.toggle('hidden', p !== id));
 }
 
+// El QR del host trae ?sala=1234: se precarga el código y el foco pasa al nombre.
+(function precargarCodigoDesdeQR(){
+  const codigoQR = new URLSearchParams(window.location.search).get('sala');
+  if(codigoQR && /^\d{4}$/.test(codigoQR)){
+    $('codigoSala').value = codigoQR;
+    $('nombreJugador').focus();
+  }
+})();
+
 $('generoJugador').addEventListener('change', () => {
   const genero = $('generoJugador').value;
   const avatar = elegirAvatarAscii(genero);
