@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 Quiz — Jugador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilos.css">
+<script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
+</head>
+<body>
+<div class="wrap" style="max-width: 480px;">
+
+  <!-- PANTALLA 1: unirse -->
+  <section id="pantalla-unirse" class="panel">
+    <span class="eyebrow">R2 Quiz</span>
+    <h1>Unirme a la sala</h1>
+
+    <label class="field-label" for="apiKey">Ably API Key</label>
+    <input id="apiKey" class="field" type="text" placeholder="xxxxxxxxx.yyyyyyyyy:zzzzzzzzzzzzzzzzzzzz" autocomplete="off">
+
+    <label class="field-label" for="codigoSala">Código de sala</label>
+    <input id="codigoSala" class="field mono" type="text" inputmode="numeric" maxlength="4" placeholder="0000">
+
+    <label class="field-label" for="nombreJugador">Tu nombre</label>
+    <input id="nombreJugador" class="field" type="text" maxlength="20" placeholder="Ej. Arturo">
+
+    <div class="estado" id="unirseEstado"></div>
+
+    <div style="margin-top:18px;">
+      <button class="btn" id="btnUnirse">Entrar</button>
+    </div>
+  </section>
+
+  <!-- PANTALLA 2: esperando -->
+  <section id="pantalla-esperando" class="panel hidden centrado">
+    <span class="eyebrow">Conectado</span>
+    <h2>Estás dentro, <span id="saludoNombre"></span> 👋</h2>
+    <p class="subtitulo">Esperando a que el host inicie la partida...</p>
+  </section>
+
+  <!-- PANTALLA 3: pregunta activa -->
+  <section id="pantalla-pregunta" class="panel hidden">
+    <span class="eyebrow" id="preguntaContador">Pregunta</span>
+    <div class="timer-ring">
+      <svg viewBox="0 0 84 84">
+        <circle class="track" cx="42" cy="42" r="36"></circle>
+        <circle class="progress" id="anilloTiempo" cx="42" cy="42" r="36"
+          stroke-dasharray="226" stroke-dashoffset="0"></circle>
+      </svg>
+      <span class="value mono" id="segundosRestantes">--</span>
+    </div>
+    <h2 id="textoPregunta" class="centrado"></h2>
+    <div class="opciones" id="opcionesJugador"></div>
+    <p class="estado centrado" id="estadoRespuesta"></p>
+  </section>
+
+  <!-- PANTALLA 4: revelación -->
+  <section id="pantalla-revelacion" class="panel hidden centrado">
+    <span class="eyebrow">Resultado</span>
+    <h1 id="resultadoTitulo"></h1>
+    <p class="subtitulo" id="resultadoDetalle"></p>
+    <h3 style="margin-top:22px;">Tu puntaje</h3>
+    <div class="scoreboard"><span class="digit mono" id="miPuntaje">0</span></div>
+  </section>
+
+  <!-- PANTALLA 5: final -->
+  <section id="pantalla-final" class="panel hidden">
+    <span class="eyebrow">Fin de la partida</span>
+    <h1 class="centrado">Resultados finales</h1>
+    <ol class="ranking" id="rankingFinal"></ol>
+  </section>
+
+</div>
+
+<script>
+let ably, channel, clientId, miNombre;
+
+const $ = (id) => document.getElementById(id);
+
+function mostrarPantalla(id){
+  ['pantalla-unirse','pantalla-esperando','pantalla-pregunta','pantalla-revelacion','pantalla-final']
+    .forEach(p => $(p).classList.toggle('hidden', p !== id));
+}
+
+$('btnUnirse').addEventListener('click', () => {
+  const key = $('apiKey').value.trim();
+  const codigo = $('codigoSala').value.trim();
+  const nombre = $('nombreJugador').value.trim();
+
+  if(!key || !codigo || !nombre){
+    $('unirseEstado').textContent = 'Completá API key, código de sala y tu nombre.';
+    $('unirseEstado').className = 'estado error';
+    return;
+  }
+
+  miNombre = nombre;
+  clientId = 'jugador-' + nombre.replace(/\s+/g,'_') + '-' + Math.floor(Math.random()*1000);
+  ably = new Ably.Realtime({ key, clientId });
+  channel = ably.channels.get('r2quiz-' + codigo);
+
+  ably.connection.on('connected', () => {
+    channel.presence.enter({ nombre });
+    $('saludoNombre').textContent = nombre;
+    mostrarPantalla('pantalla-esperando');
+    escucharEventosJuego();
+  });
+  ably.connection.on('failed', () => {
+    $('unirseEstado').textContent = 'No se pudo conectar. Revisá la API key.';
+    $('unirseEstado').className = 'estado error';
+  });
+});
+
+let tiempoInicioPregunta = 0;
+let temporizador = null;
+let yaRespondi = false;
+let miPuntajeAcumulado = 0;
+
+function escucharEventosJuego(){
+  channel.subscribe('pregunta', (msg) => {
+    const { pregunta, opciones, tiempo, index } = msg.data;
+    yaRespondi = false;
+    $('preguntaContador').textContent = `Pregunta ${index+1}`;
+    $('textoPregunta').textContent = pregunta;
+    $('estadoRespuesta').textContent = '';
+    $('opcionesJugador').innerHTML = opciones.map((op,i) =>
+      `<button class="opcion-btn" data-i="${i}">${op}</button>`).join('');
+
+    document.querySelectorAll('#opcionesJugador .opcion-btn').forEach(btn => {
+      btn.addEventListener('click', () => responder(Number(btn.dataset.i)));
+    });
+
+    tiempoInicioPregunta = Date.now();
+    iniciarCuentaAtras(tiempo);
+    mostrarPantalla('pantalla-pregunta');
+  });
+
+  channel.subscribe('reveal', (msg) => {
+    clearInterval(temporizador);
+    const { correcta, puntajes } = msg.data;
+    const yo = puntajes.find(p => p.clientId === clientId);
+    const acerte = yo && yo.puntaje > miPuntajeAcumulado;
+    miPuntajeAcumulado = yo ? yo.puntaje : miPuntajeAcumulado;
+
+    $('resultadoTitulo').textContent = acerte ? '¡Correcto! ✅' : 'Incorrecto ❌';
+    $('resultadoDetalle').textContent = 'Respuesta correcta: ' + (msg.data.opcionesTexto || '');
+    $('miPuntaje').textContent = miPuntajeAcumulado;
+    mostrarPantalla('pantalla-revelacion');
+  });
+
+  channel.subscribe('fin', (msg) => {
+    const ranking = msg.data.puntajes;
+    $('rankingFinal').innerHTML = ranking.map((j,i) =>
+      `<li><span><span class="puesto">${i+1}</span>${j.nombre}</span><span class="mono">${j.puntaje}</span></li>`).join('');
+    mostrarPantalla('pantalla-final');
+  });
+}
+
+function responder(opcion){
+  if(yaRespondi) return;
+  yaRespondi = true;
+  channel.publish('respuesta', { clientId, opcion });
+  $('estadoRespuesta').textContent = 'Respuesta enviada, esperando a los demás...';
+  $('estadoRespuesta').className = 'estado ok centrado';
+  document.querySelectorAll('#opcionesJugador .opcion-btn').forEach(btn => {
+    btn.disabled = true;
+    if(Number(btn.dataset.i) === opcion) btn.classList.add('elegida');
+  });
+}
+
+function iniciarCuentaAtras(segundos){
+  clearInterval(temporizador);
+  const circunf = 226;
+  let restante = segundos;
+  $('segundosRestantes').textContent = restante;
+  $('anilloTiempo').style.strokeDashoffset = 0;
+
+  temporizador = setInterval(() => {
+    restante--;
+    $('segundosRestantes').textContent = Math.max(restante,0);
+    const pct = Math.max(restante,0) / segundos;
+    $('anilloTiempo').style.strokeDashoffset = circunf * (1 - pct);
+    if(restante <= 0){
+      clearInterval(temporizador);
+      if(!yaRespondi){
+        $('estadoRespuesta').textContent = 'Se acabó el tiempo.';
+        $('estadoRespuesta').className = 'estado error centrado';
+        document.querySelectorAll('#opcionesJugador .opcion-btn').forEach(btn => btn.disabled = true);
+      }
+    }
+  }, 1000);
+}
+</script>
+</body>
+</html>

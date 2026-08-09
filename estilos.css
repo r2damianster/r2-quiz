@@ -1,0 +1,214 @@
+/* ---------------------------------------------------------
+   R2 Quiz — identidad visual
+   Paleta: fondo índigo casi negro + oro eléctrico + teal
+   Tipografía: Space Grotesk (display) / Inter (cuerpo) / IBM Plex Mono (números)
+   Firma: el código de sala como "marcador de estadio", con anillo de tiempo
+--------------------------------------------------------- */
+
+:root{
+  --bg: #12122a;
+  --bg-panel: #1b1b3f;
+  --bg-panel-2: #232357;
+  --line: #33335f;
+  --text: #f1f1f6;
+  --text-dim: #9a9ac4;
+  --gold: #ffc857;
+  --teal: #2ec4b6;
+  --coral: #ff6b5d;
+  --green: #2a9d8f;
+  --radius: 14px;
+  --shadow: 0 12px 30px rgba(0,0,0,0.35);
+}
+
+*{ box-sizing: border-box; }
+
+html,body{
+  margin:0; padding:0; min-height:100vh;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(46,196,182,0.10), transparent 45%),
+    radial-gradient(circle at 85% 90%, rgba(255,200,87,0.08), transparent 45%),
+    var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+h1,h2,h3, .display{
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.mono{ font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; }
+
+.wrap{
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.panel{
+  background: var(--bg-panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+
+.eyebrow{
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  display:block;
+}
+
+.btn{
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  border-radius: 10px;
+  padding: 13px 22px;
+  cursor: pointer;
+  transition: transform .12s ease, filter .12s ease;
+  color: #12122a;
+  background: var(--gold);
+}
+.btn:hover{ filter: brightness(1.08); transform: translateY(-1px); }
+.btn:active{ transform: translateY(0); }
+.btn:disabled{ opacity:.4; cursor: not-allowed; transform:none; }
+
+.btn.secondary{
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+.field{
+  width:100%;
+  padding: 13px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg-panel-2);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 15px;
+}
+.field:focus{ outline: 2px solid var(--teal); outline-offset: 1px; }
+
+label.field-label{
+  display:block;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin: 14px 0 6px;
+}
+label.field-label:first-child{ margin-top: 0; }
+
+/* --- Marcador de sala (elemento de firma) --- */
+.scoreboard{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap: 6px;
+  margin: 18px 0;
+}
+.scoreboard .digit{
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 44px;
+  font-weight: 700;
+  background: var(--bg-panel-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 6px 14px;
+  min-width: 44px;
+  text-align:center;
+  color: var(--gold);
+  letter-spacing: 0;
+}
+
+/* --- Anillo de tiempo --- */
+.timer-ring{
+  position: relative;
+  width: 84px; height: 84px;
+  display:flex; align-items:center; justify-content:center;
+  margin: 0 auto 16px;
+}
+.timer-ring svg{ transform: rotate(-90deg); width:84px; height:84px; }
+.timer-ring circle{
+  fill:none; stroke-width: 6;
+}
+.timer-ring .track{ stroke: var(--line); }
+.timer-ring .progress{
+  stroke: var(--teal);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke .2s;
+}
+.timer-ring .value{
+  position:absolute; font-family:'IBM Plex Mono', monospace;
+  font-size: 22px; font-weight:600;
+}
+
+.opciones{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+@media (max-width: 520px){ .opciones{ grid-template-columns: 1fr; } }
+
+.opcion-btn{
+  text-align:left;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg-panel-2);
+  color: var(--text);
+  font-size: 16px;
+  font-family: inherit;
+  cursor:pointer;
+  transition: transform .1s ease, border-color .15s ease, background .15s ease;
+}
+.opcion-btn:hover{ border-color: var(--teal); transform: translateY(-1px); }
+.opcion-btn:disabled{ cursor:not-allowed; opacity:.55; transform:none; }
+.opcion-btn.correcta{ background: rgba(42,157,143,0.25); border-color: var(--green); }
+.opcion-btn.incorrecta{ background: rgba(255,107,93,0.20); border-color: var(--coral); }
+.opcion-btn.elegida{ border-color: var(--gold); }
+
+.lista-jugadores{
+  list-style:none; margin: 14px 0 0; padding:0;
+  display:flex; flex-wrap:wrap; gap:8px;
+}
+.lista-jugadores li{
+  background: var(--bg-panel-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 14px;
+}
+
+.ranking{ list-style:none; margin:16px 0 0; padding:0; }
+.ranking li{
+  display:flex; justify-content:space-between; align-items:center;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--bg-panel-2);
+  border: 1px solid var(--line);
+  margin-bottom: 8px;
+  font-size:15px;
+}
+.ranking li .puesto{ color: var(--gold); font-family:'IBM Plex Mono', monospace; width: 28px; display:inline-block; }
+
+.estado{
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 10px;
+}
+.estado.ok{ color: var(--teal); }
+.estado.error{ color: var(--coral); }
+
+.hidden{ display:none !important; }
+
+.centrado{ text-align:center; }
+
+.subtitulo{ color: var(--text-dim); margin-top: 6px; }

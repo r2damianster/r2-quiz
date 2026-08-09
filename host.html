@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 Quiz — Host</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilos.css">
+<script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- PANTALLA 1: configuración -->
+  <section id="pantalla-setup" class="panel">
+    <span class="eyebrow">R2 Quiz · Host</span>
+    <h1>Preparar la partida</h1>
+    <p class="subtitulo">Pegá tu API key de Ably (la creaste en el dashboard de tu app "r2-quiz") y arrancamos.</p>
+
+    <label class="field-label" for="apiKey">Ably API Key</label>
+    <input id="apiKey" class="field" type="text" placeholder="xxxxxxxxx.yyyyyyyyy:zzzzzzzzzzzzzzzzzzzz" autocomplete="off">
+
+    <label class="field-label" for="archivoPreguntas">Archivo de preguntas (JSON)</label>
+    <input id="archivoPreguntas" class="field" type="text" value="preguntas.json">
+
+    <div class="estado" id="setupEstado"></div>
+
+    <div style="margin-top:20px; display:flex; gap:10px;">
+      <button class="btn" id="btnCrearSala">Crear sala</button>
+    </div>
+  </section>
+
+  <!-- PANTALLA 2: lobby -->
+  <section id="pantalla-lobby" class="panel hidden">
+    <span class="eyebrow" id="lobbyTitulo">Sala lista</span>
+    <h1 class="centrado">Código de sala</h1>
+    <div class="scoreboard" id="codigoSala"></div>
+    <p class="subtitulo centrado">Los jugadores entran en <strong>player.html</strong> con este código.</p>
+
+    <h3 style="margin-top:24px;">Jugadores conectados (<span id="contadorJugadores">0</span>)</h3>
+    <ul class="lista-jugadores" id="listaJugadores"></ul>
+
+    <div style="margin-top:24px; display:flex; gap:10px;">
+      <button class="btn" id="btnIniciarJuego" disabled>Iniciar partida</button>
+    </div>
+    <div class="estado" id="lobbyEstado"></div>
+  </section>
+
+  <!-- PANTALLA 3: pregunta en vivo -->
+  <section id="pantalla-pregunta" class="panel hidden">
+    <span class="eyebrow" id="preguntaContador">Pregunta 1 de N</span>
+    <div class="timer-ring">
+      <svg viewBox="0 0 84 84">
+        <circle class="track" cx="42" cy="42" r="36"></circle>
+        <circle class="progress" id="anilloTiempo" cx="42" cy="42" r="36"
+          stroke-dasharray="226" stroke-dashoffset="0"></circle>
+      </svg>
+      <span class="value mono" id="segundosRestantes">--</span>
+    </div>
+    <h2 id="textoPregunta" class="centrado"></h2>
+    <div class="opciones" id="opcionesHost"></div>
+    <p class="subtitulo centrado" style="margin-top:18px;">
+      Respondieron <span id="conteoRespuestas" class="mono">0</span> / <span id="totalJugadores" class="mono">0</span>
+    </p>
+    <div style="margin-top:16px; display:flex; gap:10px; justify-content:center;">
+      <button class="btn" id="btnRevelar">Revelar respuesta</button>
+    </div>
+  </section>
+
+  <!-- PANTALLA 4: revelación + ranking parcial -->
+  <section id="pantalla-revelacion" class="panel hidden">
+    <span class="eyebrow">Respuesta correcta</span>
+    <h2 id="respuestaCorrectaTexto" class="centrado"></h2>
+    <h3 style="margin-top:22px;">Marcador</h3>
+    <ol class="ranking" id="rankingParcial"></ol>
+    <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+      <button class="btn" id="btnSiguiente">Siguiente pregunta</button>
+    </div>
+  </section>
+
+  <!-- PANTALLA 5: resultados finales -->
+  <section id="pantalla-final" class="panel hidden">
+    <span class="eyebrow">Fin de la partida</span>
+    <h1 class="centrado">Resultados finales</h1>
+    <ol class="ranking" id="rankingFinal"></ol>
+    <p class="subtitulo centrado" style="margin-top:14px;">Cerrá esta pestaña o creá una sala nueva para otra ronda.</p>
+  </section>
+
+</div>
+
+<script>
+/* ---------- Estado global ---------- */
+let ably, channel;
+let preguntas = [];
+let indicePregunta = -1;
+let jugadores = new Map();      // clientId -> { nombre, puntaje }
+let respuestasPregunta = new Map(); // clientId -> { opcion, ms }
+let tiempoInicioPregunta = 0;
+let temporizador = null;
+let segundosTotales = 0;
+
+const $ = (id) => document.getElementById(id);
+
+function mostrarPantalla(id){
+  ['pantalla-setup','pantalla-lobby','pantalla-pregunta','pantalla-revelacion','pantalla-final']
+    .forEach(p => $(p).classList.toggle('hidden', p !== id));
+}
+
+function generarCodigoSala(){
+  return Math.floor(1000 + Math.random()*9000).toString();
+}
+
+/* ---------- 1. Crear sala ---------- */
+$('btnCrearSala').addEventListener('click', async () => {
+  const key = $('apiKey').value.trim();
+  const ruta = $('archivoPreguntas').value.trim() || 'preguntas.json';
+  if(!key){ $('setupEstado').textContent = 'Pegá tu API key de Ably primero.'; $('setupEstado').className='estado error'; return; }
+
+  try {
+    const resp = await fetch(ruta);
+    if(!resp.ok) throw new Error('No se pudo leer ' + ruta);
+    const data = await resp.json();
+    preguntas = data.preguntas || [];
+    if(preguntas.length === 0) throw new Error('El JSON no tiene preguntas.');
+  } catch(err){
+    $('setupEstado').textContent = 'Error cargando preguntas: ' + err.message;
+    $('setupEstado').className = 'estado error';
+    return;
+  }
+
+  const codigo = generarCodigoSala();
+  ably = new Ably.Realtime({ key, clientId: 'host-' + codigo });
+  channel = ably.channels.get('r2quiz-' + codigo);
+
+  ably.connection.on('connected', () => {
+    $('codigoSala').innerHTML = codigo.split('').map(d => `<span class="digit">${d}</span>`).join('');
+    mostrarPantalla('pantalla-lobby');
+    escucharPresencia();
+    escucharRespuestas();
+  });
+  ably.connection.on('failed', (e) => {
+    $('setupEstado').textContent = 'No se pudo conectar a Ably: revisá la API key.';
+    $('setupEstado').className = 'estado error';
+  });
+});
+
+/* ---------- 2. Lobby: presencia de jugadores ---------- */
+function escucharPresencia(){
+  channel.presence.subscribe(['enter','leave'], () => {
+    channel.presence.get((err, miembros) => {
+      if(err) return;
+      jugadores.clear();
+      miembros.forEach(m => {
+        if(!m.clientId.startsWith('host-')){
+          jugadores.set(m.clientId, { nombre: m.data?.nombre || m.clientId, puntaje: jugadores.get(m.clientId)?.puntaje || 0 });
+        }
+      });
+      $('contadorJugadores').textContent = jugadores.size;
+      $('listaJugadores').innerHTML = [...jugadores.values()].map(j => `<li>${j.nombre}</li>`).join('');
+      $('btnIniciarJuego').disabled = jugadores.size === 0;
+    });
+  });
+}
+
+$('btnIniciarJuego').addEventListener('click', () => {
+  indicePregunta = -1;
+  siguientePregunta();
+});
+
+/* ---------- 3. Ciclo de preguntas ---------- */
+function siguientePregunta(){
+  indicePregunta++;
+  if(indicePregunta >= preguntas.length){
+    mostrarResultadosFinales();
+    return;
+  }
+  const p = preguntas[indicePregunta];
+  respuestasPregunta.clear();
+  segundosTotales = p.tiempo || 15;
+
+  $('preguntaContador').textContent = `Pregunta ${indicePregunta+1} de ${preguntas.length}`;
+  $('textoPregunta').textContent = p.pregunta;
+  $('opcionesHost').innerHTML = p.opciones.map((op,i) =>
+    `<div class="opcion-btn" data-i="${i}">${op}</div>`).join('');
+  $('conteoRespuestas').textContent = '0';
+  $('totalJugadores').textContent = jugadores.size;
+
+  tiempoInicioPregunta = Date.now();
+  channel.publish('pregunta', {
+    index: indicePregunta,
+    pregunta: p.pregunta,
+    opciones: p.opciones,
+    tiempo: segundosTotales
+  });
+
+  mostrarPantalla('pantalla-pregunta');
+  iniciarCuentaAtras(segundosTotales);
+});
+
+function iniciarCuentaAtras(segundos){
+  clearInterval(temporizador);
+  const circunf = 226;
+  let restante = segundos;
+  $('segundosRestantes').textContent = restante;
+  $('anilloTiempo').style.strokeDashoffset = 0;
+
+  temporizador = setInterval(() => {
+    restante--;
+    $('segundosRestantes').textContent = Math.max(restante,0);
+    const pct = Math.max(restante,0) / segundos;
+    $('anilloTiempo').style.strokeDashoffset = circunf * (1 - pct);
+    if(restante <= 0){
+      clearInterval(temporizador);
+      revelarRespuesta();
+    }
+  }, 1000);
+}
+
+function escucharRespuestas(){
+  channel.subscribe('respuesta', (msg) => {
+    const { clientId, opcion } = msg.data;
+    if(respuestasPregunta.has(clientId)) return; // solo la primera respuesta cuenta
+    respuestasPregunta.set(clientId, { opcion, ms: Date.now() - tiempoInicioPregunta });
+    $('conteoRespuestas').textContent = respuestasPregunta.size;
+    if(respuestasPregunta.size >= jugadores.size && jugadores.size > 0){
+      clearInterval(temporizador);
+      revelarRespuesta();
+    }
+  });
+}
+
+$('btnRevelar').addEventListener('click', () => {
+  clearInterval(temporizador);
+  revelarRespuesta();
+});
+
+function revelarRespuesta(){
+  const p = preguntas[indicePregunta];
+
+  // calcular puntajes: 1000 base + bono por velocidad, solo si es correcta
+  respuestasPregunta.forEach((r, clientId) => {
+    const jugador = jugadores.get(clientId);
+    if(!jugador) return;
+    if(r.opcion === p.correcta){
+      const bonoVelocidad = Math.max(0, 1 - r.ms / ((p.tiempo||15)*1000));
+      jugador.puntaje += Math.round(500 + 500 * bonoVelocidad);
+    }
+  });
+
+  // marcar visualmente en la pantalla del host
+  document.querySelectorAll('#opcionesHost .opcion-btn').forEach(btn => {
+    const i = Number(btn.dataset.i);
+    btn.classList.toggle('correcta', i === p.correcta);
+  });
+
+  channel.publish('reveal', {
+    correcta: p.correcta,
+    opcionesTexto: p.opciones[p.correcta],
+    puntajes: [...jugadores.entries()].map(([clientId, j]) => ({ clientId, nombre: j.nombre, puntaje: j.puntaje }))
+  });
+
+  $('respuestaCorrectaTexto').textContent = `Correcta: ${p.opciones[p.correcta]}`;
+  const ranking = [...jugadores.values()].sort((a,b) => b.puntaje - a.puntaje);
+  $('rankingParcial').innerHTML = ranking.map((j,i) =>
+    `<li><span><span class="puesto">${i+1}</span>${j.nombre}</span><span class="mono">${j.puntaje}</span></li>`).join('');
+
+  mostrarPantalla('pantalla-revelacion');
+}
+
+$('btnSiguiente').addEventListener('click', siguientePregunta);
+
+function mostrarResultadosFinales(){
+  const ranking = [...jugadores.values()].sort((a,b) => b.puntaje - a.puntaje);
+  $('rankingFinal').innerHTML = ranking.map((j,i) =>
+    `<li><span><span class="puesto">${i+1}</span>${j.nombre}</span><span class="mono">${j.puntaje}</span></li>`).join('');
+  channel.publish('fin', { puntajes: ranking });
+  mostrarPantalla('pantalla-final');
+}
+</script>
+</body>
+</html>
