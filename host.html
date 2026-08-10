@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R2 Quiz — Host</title>
+<meta name="author" content="Arturo Damián Rodríguez Zambrano">
+<link rel="icon" href="avatarProfeArturito.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="estilos.css">
@@ -17,7 +19,11 @@
   <section id="pantalla-login" class="panel" style="max-width:420px; margin:0 auto;">
     <span class="eyebrow">R2 Quiz · Consola del host</span>
     <h1>Acceso reservado</h1>
-    <p class="subtitulo">Solo el docente anfitrión entra aquí. Los estudiantes usan <strong>player.html</strong>.</p>
+    <span class="retrato autor-foto" role="img"
+          style="margin:14px auto 0; display:block; width:64px; height:64px;"
+          aria-label="Arturo Damián Rodríguez Zambrano"></span>
+    <p class="subtitulo">Solo el docente anfitrión entra aquí. Los estudiantes entran en
+      <a class="autor-contacto" href="https://r2-quiz.vercel.app/player.html">https://r2-quiz.vercel.app/player.html</a>.</p>
 
     <label class="field-label" for="usuarioHost">Usuario</label>
     <input id="usuarioHost" class="field" type="text" autocomplete="username" placeholder="usuario">
@@ -78,7 +84,7 @@
       <div class="lobby-codigo">
         <p class="subtitulo centrado" style="margin-bottom:0;">Código de sala</p>
         <div class="scoreboard" id="codigoSala"></div>
-        <p class="subtitulo centrado">Se escribe en <strong>player.html</strong> para entrar.</p>
+        <p class="subtitulo centrado">Se escribe en <strong>r2-quiz.vercel.app/player.html</strong> para entrar.</p>
       </div>
 
       <figure class="qr-box">
@@ -142,6 +148,11 @@
       <button class="btn secondary" id="btnNuevaRonda">Volver al catálogo</button>
     </div>
   </section>
+
+  <footer class="creditos">
+    <span class="retrato" role="img" aria-label="Arturo Damián Rodríguez Zambrano"></span>
+    <span>R2 Quiz — Arturo Damián Rodríguez Zambrano · Docente ULEAM</span>
+  </footer>
 
 </div>
 
