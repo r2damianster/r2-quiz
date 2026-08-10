@@ -48,7 +48,10 @@
   <section id="pantalla-esperando" class="panel hidden centrado">
     <span class="eyebrow">Conectado</span>
     <h2>Estás dentro, <span id="saludoNombre"></span> 👋</h2>
-    <p class="subtitulo">Esperando a que el host inicie la partida...</p>
+    <p class="linea-cargando subtitulo">
+      <img class="loader" src="iconos/ring-resize.svg" alt="" aria-hidden="true">
+      Esperando a que el host inicie la partida…
+    </p>
   </section>
 
   <!-- PANTALLA 2.5: cuenta regresiva previa -->
@@ -163,8 +166,13 @@ $('btnUnirse').addEventListener('click', async () => {
     return;
   }
 
+  $('btnUnirse').disabled = true;
+  $('unirseEstado').className = 'estado linea-cargando';
+  $('unirseEstado').innerHTML =
+    '<img class="loader" src="iconos/wifi-fade.svg" alt="" aria-hidden="true"> Conectando a la sala…';
+
   const key = await obtenerApiKey();
-  if(!key){ return; }
+  if(!key){ $('btnUnirse').disabled = false; return; }
 
   const avatar = elegirAvatarAscii(genero);
   miNombre = nombre;
@@ -174,6 +182,9 @@ $('btnUnirse').addEventListener('click', async () => {
 
   ably.connection.on('connected', () => {
     channel.presence.enter({ nombre, avatar, genero });
+    $('unirseEstado').textContent = '';
+    $('unirseEstado').className = 'estado';
+    $('btnUnirse').disabled = false;
     $('saludoNombre').textContent = nombre;
     mostrarPantalla('pantalla-esperando');
     escucharEventosJuego();
@@ -181,6 +192,7 @@ $('btnUnirse').addEventListener('click', async () => {
   ably.connection.on('failed', () => {
     $('unirseEstado').textContent = 'No se pudo conectar. Revisá la API key.';
     $('unirseEstado').className = 'estado error';
+    $('btnUnirse').disabled = false;
   });
 });
 
@@ -294,8 +306,10 @@ function responder(opcion){
   yaRespondi = true;
   miOpcion = opcion;
   channel.publish('respuesta', { clientId, opcion });
-  $('estadoRespuesta').textContent = 'Respuesta enviada, esperando a los demás...';
-  $('estadoRespuesta').className = 'estado ok centrado';
+  $('estadoRespuesta').innerHTML =
+    '<img class="loader loader-sm" src="iconos/3-dots-fade.svg" alt="" aria-hidden="true">' +
+    ' Respuesta enviada, esperando a los demás…';
+  $('estadoRespuesta').className = 'estado ok centrado linea-cargando';
   document.querySelectorAll('#opcionesJugador .opcion-btn').forEach(btn => {
     btn.disabled = true;
     if(Number(btn.dataset.i) === opcion) btn.classList.add('elegida');

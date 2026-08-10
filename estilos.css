@@ -519,6 +519,27 @@ label.field-label:first-child{ margin-top: 0; }
 .estado.ok{ color: var(--teal); }
 .estado.error{ color: var(--coral); }
 
+/* --- Loaders SVG (carpeta iconos/, licencia MIT) ---
+   Se cargan como <img> para que la animación SMIL corra sola;
+   cada archivo ya trae el color de la paleta que le corresponde. */
+.loader{
+  width: 26px;
+  height: 26px;
+  display: inline-block;
+  vertical-align: middle;
+  flex: none;
+}
+.loader-sm{ width: 20px; height: 20px; }
+.loader-lg{ width: 42px; height: 42px; }
+.loader-barras{ width: 22px; height: 32px; }
+
+.linea-cargando{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
 /* --- Cuenta regresiva previa a la pregunta --- */
 .alistate{
   padding: 54px 28px;

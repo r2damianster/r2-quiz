@@ -98,6 +98,10 @@
     </div>
 
     <h3 style="margin-top:24px;">Jugadores conectados (<span id="contadorJugadores">0</span>)</h3>
+    <p class="subtitulo linea-cargando" id="esperandoJugadores" style="justify-content:flex-start;">
+      <img class="loader" src="iconos/ring-resize.svg" alt="" aria-hidden="true">
+      Esperando a que entren…
+    </p>
     <ul class="lista-jugadores" id="listaJugadores"></ul>
 
     <div style="margin-top:24px; display:flex; gap:10px; flex-wrap:wrap;">
@@ -128,7 +132,8 @@
     </div>
     <h2 id="textoPregunta" class="centrado"></h2>
     <div class="opciones" id="opcionesHost"></div>
-    <p class="subtitulo centrado" style="margin-top:18px;">
+    <p class="subtitulo centrado linea-cargando" style="margin-top:18px;">
+      <img class="loader loader-barras" src="iconos/audio.svg" alt="" aria-hidden="true">
       Respondieron <span id="conteoRespuestas" class="mono">0</span> / <span id="totalJugadores" class="mono">0</span>
     </p>
     <div style="margin-top:16px; display:flex; gap:10px; justify-content:center;">
@@ -371,8 +376,9 @@ $('btnPresentar').addEventListener('click', async () => {
   if(!concursoActivo || preguntas.length === 0) return;
 
   $('btnPresentar').disabled = true;
-  $('detalleEstado').textContent = 'Abriendo la sala…';
-  $('detalleEstado').className = 'estado';
+  $('detalleEstado').innerHTML =
+    '<img class="loader" src="iconos/wifi-fade.svg" alt="" aria-hidden="true"> Abriendo la sala…';
+  $('detalleEstado').className = 'estado linea-cargando';
 
   const key = await obtenerApiKey('detalleEstado');
   if(!key){ $('btnPresentar').disabled = false; return; }
@@ -384,6 +390,7 @@ $('btnPresentar').addEventListener('click', async () => {
   ably.connection.on('connected', () => {
     jugadores.clear();
     $('detalleEstado').textContent = '';
+    $('detalleEstado').className = 'estado';
     $('btnPresentar').disabled = false;
     $('lobbyConcurso').textContent = concursoActivo.titulo;
     $('codigoSala').innerHTML = codigo.split('').map(d => `<span class="digit">${d}</span>`).join('');
@@ -454,6 +461,7 @@ async function refrescarJugadores(){
   $('contadorJugadores').textContent = jugadores.size;
   $('listaJugadores').innerHTML = [...jugadores.values()].map(j =>
     `<li><span class="jugador-avatar">${escapar(j.avatar)}</span> ${escapar(j.nombre)}</li>`).join('');
+  $('esperandoJugadores').classList.toggle('hidden', jugadores.size > 0);
   $('btnIniciarJuego').disabled = jugadores.size === 0;
 }
 
