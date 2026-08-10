@@ -588,7 +588,7 @@ $('btnRevelar').addEventListener('click', () => {
 function filaRanking(jugador, posicion, puntajePrevio){
   const previo = puntajePrevio ?? jugador.puntaje;
   const ganados = jugador.puntaje - previo;
-  return `<li class="leaderboard-row${ganados > 0 ? ' sumando' : ''}">
+  return `<li class="leaderboard-row${ganados > 0 ? ' sumando' : ''}" data-jugador="${escapar(jugador.clientId || '')}">
       <span class="leaderboard-main">
         <span class="leaderboard-rank">${posicion}</span>
         <span class="leaderboard-avatar">${escapar(jugador.avatar || '(▰)')}</span>
@@ -605,6 +605,51 @@ function animarPuntajes(contenedorId){
     const hasta = Number(marcador.dataset.hasta);
     if(Number.isNaN(desde) || Number.isNaN(hasta)) return;
     animarNumero(marcador, desde, hasta);
+  });
+}
+
+/* Marcador con suspenso: primero el orden anterior, los números suben, y recién
+   entonces las filas se reacomodan para que se vean los adelantamientos. */
+function animarMarcador(ranking, puntajesPrevios){
+  const lista = $('rankingParcial');
+  const ordenPrevio = [...ranking].sort((a,b) =>
+    (puntajesPrevios.get(b.clientId) || 0) - (puntajesPrevios.get(a.clientId) || 0));
+
+  lista.innerHTML = ordenPrevio
+    .map((j,i) => filaRanking(j, i+1, puntajesPrevios.get(j.clientId)))
+    .join('');
+
+  animarPuntajes('rankingParcial');
+
+  // los números tardan ~1.1 s: al terminar, reordenamos con animación FLIP
+  setTimeout(() => reordenarFilas(lista, ranking), 1200);
+}
+
+function reordenarFilas(lista, rankingNuevo){
+  const filas = new Map([...lista.children].map(fila => [fila.dataset.jugador, fila]));
+  const posicionInicial = new Map([...filas].map(([id, fila]) => [id, fila.getBoundingClientRect().top]));
+
+  rankingNuevo.forEach((jugador, indice) => {
+    const fila = filas.get(jugador.clientId);
+    if(!fila) return;
+    fila.querySelector('.leaderboard-rank').textContent = indice + 1;
+    lista.appendChild(fila); // reubica en el orden nuevo
+  });
+
+  // FLIP: se dibuja en el sitio viejo y se desliza al nuevo
+  filas.forEach((fila, id) => {
+    const desplazamiento = posicionInicial.get(id) - fila.getBoundingClientRect().top;
+    if(!desplazamiento) return;
+    fila.style.transform = `translateY(${desplazamiento}px)`;
+    fila.classList.add('moviendose');
+    requestAnimationFrame(() => {
+      fila.style.transition = 'transform .65s cubic-bezier(.22,.9,.24,1)';
+      fila.style.transform = 'translateY(0)';
+    });
+    fila.addEventListener('transitionend', () => {
+      fila.style.transition = '';
+      fila.classList.remove('moviendose');
+    }, { once: true });
   });
 }
 
@@ -651,13 +696,10 @@ function revelarRespuesta(){
     const ranking = [...jugadores.entries()]
       .map(([clientId, j]) => ({ ...j, clientId }))
       .sort((a,b) => b.puntaje - a.puntaje);
-    $('rankingParcial').innerHTML = ranking
-      .map((j,i) => filaRanking(j, i+1, puntajesPrevios.get(j.clientId)))
-      .join('');
     $('btnSiguiente').textContent =
       indicePregunta + 1 >= preguntas.length ? 'Ver resultados finales' : 'Siguiente pregunta';
     mostrarPantalla('pantalla-marcador');
-    animarPuntajes('rankingParcial');
+    animarMarcador(ranking, puntajesPrevios);
   }, MS_PAUSA_REVELACION);
 }
 
