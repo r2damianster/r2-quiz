@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="estilos.css">
 <script src="https://cdn.ably.com/lib/ably.min-2.js"></script>
+<script src="tetris.js" defer></script>
 </head>
 <body>
 <div class="wrap" style="max-width: 480px;">
@@ -52,6 +53,11 @@
       <img class="loader" src="iconos/ring-resize.svg" alt="" aria-hidden="true">
       Esperando a que el host inicie la partida…
     </p>
+
+    <div class="tetris-caja">
+      <button class="btn secondary" id="btnJugarTetris" type="button">Jugar Tetris mientras tanto 🎮</button>
+      <div id="tetrisContenedor"></div>
+    </div>
   </section>
 
   <!-- PANTALLA 2.5: cuenta regresiva previa -->
@@ -116,7 +122,26 @@ function elegirAvatarAscii(genero){
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
+/* El Tetris solo vive en la sala de espera: al arrancar la partida se desmonta
+   para que las flechas y el temporizador no compitan con la pregunta. */
+$('btnJugarTetris').addEventListener('click', () => {
+  if(TetrisEspera.estaMontado()){
+    TetrisEspera.destruir();
+    $('btnJugarTetris').textContent = 'Jugar Tetris mientras tanto 🎮';
+    return;
+  }
+  TetrisEspera.montar($('tetrisContenedor'));
+  $('btnJugarTetris').textContent = 'Cerrar el Tetris';
+});
+
+function cerrarTetris(){
+  if(!TetrisEspera.estaMontado()) return;
+  TetrisEspera.destruir();
+  $('btnJugarTetris').textContent = 'Jugar Tetris mientras tanto 🎮';
+}
+
 function mostrarPantalla(id){
+  if(id !== 'pantalla-esperando') cerrarTetris();
   ['pantalla-unirse','pantalla-esperando','pantalla-alistate','pantalla-pregunta',
    'pantalla-revelacion','pantalla-final']
     .forEach(p => $(p).classList.toggle('hidden', p !== id));

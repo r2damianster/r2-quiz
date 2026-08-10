@@ -641,6 +641,153 @@ label.field-label:first-child{ margin-top: 0; }
   .cuenta-regresiva.pulso, .veredicto{ animation: none; }
 }
 
+/* --- Tetris de sala de espera --- */
+.tetris-caja{ margin-top: 22px; }
+
+.tetris{
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.tetris-tablero{
+  display: grid;
+  grid-template-columns: repeat(10, 20px);
+  grid-auto-rows: 20px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 3px;
+  box-shadow: inset 0 0 24px rgba(0,0,0,0.55);
+}
+
+.tetris-celda{
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.025);
+}
+
+.tetris-celda.pieza{
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.28), inset 0 2px 0 rgba(255,255,255,0.22);
+}
+.tetris-celda.viva{ filter: brightness(1.12); }
+
+/* Tetriminós con la paleta de R2 Quiz */
+.tetris-celda.tipo0{ background: #ffc857; } /* T  — oro */
+.tetris-celda.tipo1{ background: #2ec4b6; } /* I  — teal */
+.tetris-celda.tipo2{ background: #9b8cff; } /* J  — violeta */
+.tetris-celda.tipo3{ background: #ff9f45; } /* L  — ámbar */
+.tetris-celda.tipo4{ background: #2a9d8f; } /* S  — verde */
+.tetris-celda.tipo5{ background: #ff6b5d; } /* Z  — coral */
+.tetris-celda.tipo6{ background: #4ca8ff; } /* O  — azul */
+
+.tetris-panel{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 104px;
+}
+
+.tetris-dato{
+  background: var(--bg-panel-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.tetris-etiqueta{
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.tetris-valor{
+  display: block;
+  margin-top: 2px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.tetris-proxima{
+  display: grid;
+  grid-template-columns: repeat(4, 16px);
+  grid-auto-rows: 16px;
+  gap: 1px;
+  justify-content: center;
+  margin-top: 6px;
+}
+.tetris-proxima .tetris-celda{ width: 16px; height: 16px; border-radius: 3px; }
+
+.tetris-pausa{
+  padding: 9px 10px;
+  font-size: 13px;
+  margin-top: auto;
+}
+
+.tetris-controles{
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.tetris-tecla{
+  padding: 14px 0;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--bg-panel-2);
+  color: var(--text);
+  font-size: 20px;
+  font-family: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform .1s ease, border-color .15s ease;
+}
+.tetris-tecla:hover{ border-color: var(--teal); }
+.tetris-tecla:active{ transform: scale(.94); border-color: var(--gold); }
+.tetris-tecla.ancha{
+  grid-column: 1 / -1;
+  font-size: 15px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.tetris-ayuda{
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.tetris-fin{
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--coral);
+  background: rgba(255,107,93,0.12);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--coral);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+}
+
+@media (max-width: 400px){
+  .tetris{ gap: 10px; }
+  .tetris-panel{ min-width: 92px; }
+  .tetris-valor{ font-size: 17px; }
+}
+
 /* --- Autor / firma del docente --- */
 .autor-card{
   margin-top: 26px;
