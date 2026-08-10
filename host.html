@@ -107,6 +107,14 @@
     <div class="estado" id="lobbyEstado"></div>
   </section>
 
+  <!-- PANTALLA 3.5: cuenta regresiva previa -->
+  <section id="pantalla-alistate" class="panel hidden centrado alistate">
+    <span class="eyebrow" id="alistateContador">Pregunta 1 de N</span>
+    <h1 class="alistate-titulo">Alístate…</h1>
+    <p class="alistate-pista">La pregunta aparece en pantalla en</p>
+    <div class="cuenta-regresiva mono" id="cuentaRegresiva">3</div>
+  </section>
+
   <!-- PANTALLA 4: pregunta en vivo -->
   <section id="pantalla-pregunta" class="panel hidden">
     <span class="eyebrow" id="preguntaContador">Pregunta 1 de N</span>
@@ -128,11 +136,17 @@
     </div>
   </section>
 
-  <!-- PANTALLA 5: revelación + ranking parcial -->
-  <section id="pantalla-revelacion" class="panel hidden">
-    <span class="eyebrow">Respuesta correcta</span>
-    <h2 id="respuestaCorrectaTexto" class="centrado"></h2>
-    <h3 style="margin-top:22px;">Marcador</h3>
+  <!-- PANTALLA 5: revelación de la respuesta (sin puntajes) -->
+  <section id="pantalla-revelacion" class="panel hidden centrado">
+    <span class="eyebrow">La respuesta correcta era</span>
+    <div class="veredicto acierto" id="respuestaCorrectaTexto"></div>
+    <p class="subtitulo" id="resumenAciertos" style="margin-top:14px;"></p>
+  </section>
+
+  <!-- PANTALLA 5B: marcador con puntajes sumando -->
+  <section id="pantalla-marcador" class="panel hidden">
+    <span class="eyebrow">Marcador</span>
+    <h1 class="centrado">Así va la partida</h1>
     <ol class="ranking" id="rankingParcial"></ol>
     <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
       <button class="btn" id="btnSiguiente">Siguiente pregunta</button>
@@ -176,9 +190,17 @@ let tiempoInicioPregunta = 0;
 let temporizador = null;
 let segundosTotales = 0;
 
+let yaRevele = false;               // evita revelar dos veces la misma pregunta
+let temporizadorAlistate = null;    // cuenta regresiva "Alístate… 3, 2, 1"
+let pausaRevelacion = null;         // pausa entre la revelación y el marcador
+
+const SEGUNDOS_ALISTATE = 3;
+const MS_PAUSA_REVELACION = 2600;
+
 const PANTALLAS = [
   'pantalla-login','pantalla-catalogo','pantalla-detalle','pantalla-lobby',
-  'pantalla-pregunta','pantalla-revelacion','pantalla-final'
+  'pantalla-alistate','pantalla-pregunta','pantalla-revelacion','pantalla-marcador',
+  'pantalla-final'
 ];
 
 const $ = (id) => document.getElementById(id);
@@ -379,6 +401,8 @@ $('btnPresentar').addEventListener('click', async () => {
 
 function cerrarConexion(){
   clearInterval(temporizador);
+  clearInterval(temporizadorAlistate);
+  clearTimeout(pausaRevelacion);
   if(ably){
     try { ably.close(); } catch(e){ /* conexión ya cerrada */ }
   }
@@ -444,14 +468,64 @@ $('btnIniciarJuego').addEventListener('click', () => {
 });
 
 /* ---------- 5. Ciclo de preguntas ---------- */
+
+/* Animación de conteo: el número sube desde el puntaje anterior hasta el nuevo. */
+function animarNumero(elemento, desde, hasta, duracion = 1100){
+  if(desde === hasta){ elemento.textContent = hasta; return; }
+  const inicio = performance.now();
+  function paso(ahora){
+    const avance = Math.min(1, (ahora - inicio) / duracion);
+    const suavizado = 1 - Math.pow(1 - avance, 3);
+    elemento.textContent = Math.round(desde + (hasta - desde) * suavizado);
+    if(avance < 1) requestAnimationFrame(paso);
+  }
+  requestAnimationFrame(paso);
+}
+
+/* "Alístate… 3, 2, 1" antes de mostrar la pregunta. */
+function cuentaRegresivaPrevia(alTerminar){
+  clearInterval(temporizadorAlistate);
+  let restante = SEGUNDOS_ALISTATE;
+  const marcador = $('cuentaRegresiva');
+
+  function pintar(texto, esYa){
+    marcador.textContent = texto;
+    marcador.classList.toggle('ya', esYa);
+    marcador.classList.remove('pulso');
+    void marcador.offsetWidth; // reinicia la animación
+    marcador.classList.add('pulso');
+  }
+
+  pintar(restante, false);
+  temporizadorAlistate = setInterval(() => {
+    restante--;
+    if(restante > 0){
+      pintar(restante, false);
+      return;
+    }
+    clearInterval(temporizadorAlistate);
+    pintar('¡Ya!', true);
+    setTimeout(alTerminar, 650);
+  }, 1000);
+}
+
 function siguientePregunta(){
   indicePregunta++;
   if(indicePregunta >= preguntas.length){
     mostrarResultadosFinales();
     return;
   }
+
+  $('alistateContador').textContent = `Pregunta ${indicePregunta+1} de ${preguntas.length}`;
+  channel.publish('alistate', { index: indicePregunta, segundos: SEGUNDOS_ALISTATE });
+  mostrarPantalla('pantalla-alistate');
+  cuentaRegresivaPrevia(lanzarPregunta);
+}
+
+function lanzarPregunta(){
   const p = preguntas[indicePregunta];
   respuestasPregunta.clear();
+  yaRevele = false;
   segundosTotales = p.tiempo || 15;
 
   $('preguntaContador').textContent = `Pregunta ${indicePregunta+1} de ${preguntas.length}`;
@@ -510,25 +584,45 @@ $('btnRevelar').addEventListener('click', () => {
   revelarRespuesta();
 });
 
-function filaRanking(jugador, posicion){
-  return `<li class="leaderboard-row">
+/* El puntaje se pinta con el valor anterior: sube animado al mostrar el marcador. */
+function filaRanking(jugador, posicion, puntajePrevio){
+  const previo = puntajePrevio ?? jugador.puntaje;
+  const ganados = jugador.puntaje - previo;
+  return `<li class="leaderboard-row${ganados > 0 ? ' sumando' : ''}">
       <span class="leaderboard-main">
         <span class="leaderboard-rank">${posicion}</span>
         <span class="leaderboard-avatar">${escapar(jugador.avatar || '(▰)')}</span>
         <span class="leaderboard-name">${escapar(jugador.nombre)}</span>
+        ${ganados > 0 ? `<span class="leaderboard-delta">+${ganados}</span>` : ''}
       </span>
-      <span class="mono leaderboard-score">${jugador.puntaje}</span>
+      <span class="mono leaderboard-score" data-desde="${previo}" data-hasta="${jugador.puntaje}">${previo}</span>
     </li>`;
 }
 
+function animarPuntajes(contenedorId){
+  $(contenedorId).querySelectorAll('.leaderboard-score, .podio-score').forEach(marcador => {
+    const desde = Number(marcador.dataset.desde);
+    const hasta = Number(marcador.dataset.hasta);
+    if(Number.isNaN(desde) || Number.isNaN(hasta)) return;
+    animarNumero(marcador, desde, hasta);
+  });
+}
+
 function revelarRespuesta(){
+  if(yaRevele) return; // el temporizador, el botón y el "todos respondieron" pueden coincidir
+  yaRevele = true;
   const p = preguntas[indicePregunta];
 
+  // puntajes antes de sumar: sirven para animar el marcador después
+  const puntajesPrevios = new Map([...jugadores].map(([clientId, j]) => [clientId, j.puntaje]));
+
   // calcular puntajes: 500 base + bono por velocidad, solo si es correcta
+  let aciertos = 0;
   respuestasPregunta.forEach((r, clientId) => {
     const jugador = jugadores.get(clientId);
     if(!jugador) return;
     if(r.opcion === p.correcta){
+      aciertos++;
       const bonoVelocidad = Math.max(0, 1 - r.ms / ((p.tiempo||15)*1000));
       jugador.puntaje += Math.round(500 + 500 * bonoVelocidad);
     }
@@ -540,17 +634,31 @@ function revelarRespuesta(){
     btn.classList.toggle('correcta', i === p.correcta);
   });
 
+  // el jugador solo recibe cuál era la correcta: el puntaje se revela en el marcador
   channel.publish('reveal', {
     correcta: p.correcta,
-    opcionesTexto: p.opciones[p.correcta],
-    puntajes: [...jugadores.entries()].map(([clientId, j]) => ({ clientId, nombre: j.nombre, puntaje: j.puntaje }))
+    opcionesTexto: p.opciones[p.correcta]
   });
 
-  $('respuestaCorrectaTexto').textContent = `Correcta: ${p.opciones[p.correcta]}`;
-  const ranking = [...jugadores.values()].sort((a,b) => b.puntaje - a.puntaje);
-  $('rankingParcial').innerHTML = ranking.map((j,i) => filaRanking(j, i+1)).join('');
-
+  $('respuestaCorrectaTexto').textContent = p.opciones[p.correcta];
+  $('resumenAciertos').textContent =
+    `${aciertos} de ${jugadores.size} acertaron · ${respuestasPregunta.size} respondieron`;
   mostrarPantalla('pantalla-revelacion');
+
+  // pausa: primero la respuesta, después el marcador con los puntajes subiendo
+  clearTimeout(pausaRevelacion);
+  pausaRevelacion = setTimeout(() => {
+    const ranking = [...jugadores.entries()]
+      .map(([clientId, j]) => ({ ...j, clientId }))
+      .sort((a,b) => b.puntaje - a.puntaje);
+    $('rankingParcial').innerHTML = ranking
+      .map((j,i) => filaRanking(j, i+1, puntajesPrevios.get(j.clientId)))
+      .join('');
+    $('btnSiguiente').textContent =
+      indicePregunta + 1 >= preguntas.length ? 'Ver resultados finales' : 'Siguiente pregunta';
+    mostrarPantalla('pantalla-marcador');
+    animarPuntajes('rankingParcial');
+  }, MS_PAUSA_REVELACION);
 }
 
 $('btnSiguiente').addEventListener('click', siguientePregunta);
@@ -569,17 +677,19 @@ function renderPodio(ranking){
       <span class="podio-label">Puesto ${puesto}</span>
       <span class="podio-avatar">${escapar(jugador.avatar || '(▰)')}</span>
       <span class="podio-name">${escapar(jugador.nombre)}</span>
-      <span class="mono podio-score">${jugador.puntaje}</span>
+      <span class="mono podio-score" data-desde="0" data-hasta="${jugador.puntaje}">0</span>
     </article>`;
   }).join('');
 }
 
 function mostrarResultadosFinales(){
+  clearTimeout(pausaRevelacion);
   const ranking = [...jugadores.values()].sort((a,b) => b.puntaje - a.puntaje);
   renderPodio(ranking);
-  $('rankingFinal').innerHTML = ranking.map((j,i) => filaRanking(j, i+1)).join('');
+  $('rankingFinal').innerHTML = ranking.map((j,i) => filaRanking(j, i+1, j.puntaje)).join('');
   channel.publish('fin', { puntajes: ranking });
   mostrarPantalla('pantalla-final');
+  animarPuntajes('podioFinal'); // el podio cuenta desde cero
 }
 </script>
 </body>

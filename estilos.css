@@ -519,6 +519,92 @@ label.field-label:first-child{ margin-top: 0; }
 .estado.ok{ color: var(--teal); }
 .estado.error{ color: var(--coral); }
 
+/* --- Cuenta regresiva previa a la pregunta --- */
+.alistate{
+  padding: 54px 28px;
+}
+
+.alistate-titulo{
+  font-size: clamp(28px, 6vw, 44px);
+  letter-spacing: -0.02em;
+}
+
+.alistate-pista{
+  margin-top: 10px;
+  color: var(--text-dim);
+}
+
+.cuenta-regresiva{
+  margin: 26px auto 0;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 3px solid var(--gold);
+  background: radial-gradient(circle, rgba(255,200,87,0.18), transparent 70%);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 72px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.cuenta-regresiva.pulso{ animation: latido .58s ease-out; }
+
+@keyframes latido{
+  0%   { transform: scale(.55); opacity: 0; }
+  45%  { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.cuenta-regresiva.ya{
+  font-size: 40px;
+  color: var(--teal);
+  border-color: var(--teal);
+  background: radial-gradient(circle, rgba(46,196,182,0.20), transparent 70%);
+}
+
+/* --- Veredicto de la respuesta (sin puntaje) --- */
+.veredicto{
+  margin: 22px auto 0;
+  padding: 30px 24px;
+  border-radius: 20px;
+  border: 2px solid var(--line);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: clamp(26px, 7vw, 40px);
+  font-weight: 700;
+  animation: latido .5s ease-out;
+}
+.veredicto.acierto{
+  color: var(--green);
+  border-color: var(--green);
+  background: rgba(42,157,143,0.16);
+}
+.veredicto.fallo{
+  color: var(--coral);
+  border-color: var(--coral);
+  background: rgba(255,107,93,0.14);
+}
+.veredicto.sin-respuesta{
+  color: var(--text-dim);
+  background: rgba(255,255,255,0.04);
+}
+
+/* Fila del marcador que acaba de sumar puntos */
+.leaderboard-row.sumando{
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px rgba(255,200,87,0.45);
+}
+
+.leaderboard-delta{
+  margin-left: 8px;
+  font-size: 13px;
+  color: var(--gold);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
 /* --- Autor / firma del docente --- */
 .autor-card{
   margin-top: 26px;

@@ -51,6 +51,14 @@
     <p class="subtitulo">Esperando a que el host inicie la partida...</p>
   </section>
 
+  <!-- PANTALLA 2.5: cuenta regresiva previa -->
+  <section id="pantalla-alistate" class="panel hidden centrado alistate">
+    <span class="eyebrow" id="alistateContador">Pregunta</span>
+    <h1 class="alistate-titulo">Alístate…</h1>
+    <p class="alistate-pista">Dedo listo sobre la pantalla</p>
+    <div class="cuenta-regresiva mono" id="cuentaRegresiva">3</div>
+  </section>
+
   <!-- PANTALLA 3: pregunta activa -->
   <section id="pantalla-pregunta" class="panel hidden">
     <span class="eyebrow" id="preguntaContador">Pregunta</span>
@@ -67,13 +75,12 @@
     <p class="estado centrado" id="estadoRespuesta"></p>
   </section>
 
-  <!-- PANTALLA 4: revelación -->
+  <!-- PANTALLA 4: revelación (sin puntaje: se revela en el podio) -->
   <section id="pantalla-revelacion" class="panel hidden centrado">
     <span class="eyebrow">Resultado</span>
-    <h1 id="resultadoTitulo"></h1>
+    <div class="veredicto" id="veredicto"></div>
     <p class="subtitulo" id="resultadoDetalle"></p>
-    <h3 style="margin-top:22px;">Tu puntaje</h3>
-    <div class="scoreboard"><span class="digit mono" id="miPuntaje">0</span></div>
+    <p class="estado" id="resultadoPie">El puntaje se revela al final.</p>
   </section>
 
   <!-- PANTALLA 5: final -->
@@ -107,7 +114,8 @@ function elegirAvatarAscii(genero){
 }
 
 function mostrarPantalla(id){
-  ['pantalla-unirse','pantalla-esperando','pantalla-pregunta','pantalla-revelacion','pantalla-final']
+  ['pantalla-unirse','pantalla-esperando','pantalla-alistate','pantalla-pregunta',
+   'pantalla-revelacion','pantalla-final']
     .forEach(p => $(p).classList.toggle('hidden', p !== id));
 }
 
@@ -178,13 +186,59 @@ $('btnUnirse').addEventListener('click', async () => {
 
 let tiempoInicioPregunta = 0;
 let temporizador = null;
+let temporizadorAlistate = null;
 let yaRespondi = false;
-let miPuntajeAcumulado = 0;
+let miOpcion = null;
+
+/* Conteo animado: el número sube hasta el puntaje final. */
+function animarNumero(elemento, desde, hasta, duracion = 1100){
+  if(desde === hasta){ elemento.textContent = hasta; return; }
+  const inicio = performance.now();
+  function paso(ahora){
+    const avance = Math.min(1, (ahora - inicio) / duracion);
+    const suavizado = 1 - Math.pow(1 - avance, 3);
+    elemento.textContent = Math.round(desde + (hasta - desde) * suavizado);
+    if(avance < 1) requestAnimationFrame(paso);
+  }
+  requestAnimationFrame(paso);
+}
+
+/* "Alístate… 3, 2, 1" en el teléfono, en paralelo con la pantalla del host. */
+function cuentaRegresivaPrevia(segundos){
+  clearInterval(temporizadorAlistate);
+  let restante = segundos;
+  const marcador = $('cuentaRegresiva');
+
+  function pintar(texto, esYa){
+    marcador.textContent = texto;
+    marcador.classList.toggle('ya', esYa);
+    marcador.classList.remove('pulso');
+    void marcador.offsetWidth; // reinicia la animación
+    marcador.classList.add('pulso');
+  }
+
+  pintar(restante, false);
+  temporizadorAlistate = setInterval(() => {
+    restante--;
+    if(restante > 0){ pintar(restante, false); return; }
+    clearInterval(temporizadorAlistate);
+    pintar('¡Ya!', true);
+  }, 1000);
+}
 
 function escucharEventosJuego(){
+  channel.subscribe('alistate', (msg) => {
+    clearInterval(temporizador);
+    $('alistateContador').textContent = `Pregunta ${msg.data.index + 1}`;
+    mostrarPantalla('pantalla-alistate');
+    cuentaRegresivaPrevia(msg.data.segundos || 3);
+  });
+
   channel.subscribe('pregunta', (msg) => {
+    clearInterval(temporizadorAlistate);
     const { pregunta, opciones, tiempo, index } = msg.data;
     yaRespondi = false;
+    miOpcion = null;
     $('preguntaContador').textContent = `Pregunta ${index+1}`;
     $('textoPregunta').textContent = pregunta;
     $('estadoRespuesta').textContent = '';
@@ -202,28 +256,43 @@ function escucharEventosJuego(){
 
   channel.subscribe('reveal', (msg) => {
     clearInterval(temporizador);
-    const { correcta, puntajes } = msg.data;
-    const yo = puntajes.find(p => p.clientId === clientId);
-    const acerte = yo && yo.puntaje > miPuntajeAcumulado;
-    miPuntajeAcumulado = yo ? yo.puntaje : miPuntajeAcumulado;
+    clearInterval(temporizadorAlistate);
+    const { correcta, opcionesTexto } = msg.data;
+    const veredicto = $('veredicto');
 
-    $('resultadoTitulo').textContent = acerte ? '¡Correcto! ✅' : 'Incorrecto ❌';
-    $('resultadoDetalle').textContent = 'Respuesta correcta: ' + (msg.data.opcionesTexto || '');
-    $('miPuntaje').textContent = miPuntajeAcumulado;
+    if(!yaRespondi){
+      veredicto.textContent = 'Sin respuesta ⏱';
+      veredicto.className = 'veredicto sin-respuesta';
+    } else if(miOpcion === correcta){
+      veredicto.textContent = '¡RESPUESTA CORRECTA! ✅';
+      veredicto.className = 'veredicto acierto';
+    } else {
+      veredicto.textContent = 'RESPUESTA INCORRECTA ❌';
+      veredicto.className = 'veredicto fallo';
+    }
+
+    $('resultadoDetalle').textContent = 'La correcta era: ' + (opcionesTexto || '');
     mostrarPantalla('pantalla-revelacion');
   });
 
   channel.subscribe('fin', (msg) => {
+    clearInterval(temporizador);
+    clearInterval(temporizadorAlistate);
     const ranking = msg.data.puntajes;
     $('rankingFinal').innerHTML = ranking.map((j,i) =>
-      `<li><span><span class="puesto">${i+1}</span>${j.nombre}</span><span class="mono">${j.puntaje}</span></li>`).join('');
+      `<li><span><span class="puesto">${i+1}</span>${j.nombre}</span>` +
+      `<span class="mono puntaje-final" data-hasta="${j.puntaje}">0</span></li>`).join('');
     mostrarPantalla('pantalla-final');
+    // el puntaje se guardó en secreto toda la partida: acá sube desde cero
+    $('rankingFinal').querySelectorAll('.puntaje-final').forEach(marcador =>
+      animarNumero(marcador, 0, Number(marcador.dataset.hasta)));
   });
 }
 
 function responder(opcion){
   if(yaRespondi) return;
   yaRespondi = true;
+  miOpcion = opcion;
   channel.publish('respuesta', { clientId, opcion });
   $('estadoRespuesta').textContent = 'Respuesta enviada, esperando a los demás...';
   $('estadoRespuesta').className = 'estado ok centrado';
