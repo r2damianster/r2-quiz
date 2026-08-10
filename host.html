@@ -84,14 +84,15 @@
       <div class="lobby-codigo">
         <p class="subtitulo centrado" style="margin-bottom:0;">Código de sala</p>
         <div class="scoreboard" id="codigoSala"></div>
-        <p class="subtitulo centrado">Se escribe en <strong>r2-quiz.vercel.app/player.html</strong> para entrar.</p>
+        <p class="subtitulo centrado">Se entra en
+          <a class="enlace-sala" id="enlaceSala" href="https://r2-quiz.vercel.app/player.html" target="_blank" rel="noopener noreferrer">r2-quiz.vercel.app/player.html</a>.</p>
       </div>
 
       <figure class="qr-box">
         <div id="qrSala" class="qr-lienzo"></div>
         <figcaption>
           Escaneá para abrir la sala
-          <span class="qr-url mono" id="qrTexto"></span>
+          <a class="qr-url mono" id="qrTexto" href="#" target="_blank" rel="noopener noreferrer"></a>
         </figcaption>
       </figure>
     </div>
@@ -151,7 +152,7 @@
 
   <footer class="creditos">
     <span class="retrato" role="img" aria-label="Arturo Damián Rodríguez Zambrano"></span>
-    <span>R2 Quiz — Arturo Damián Rodríguez Zambrano · Docente ULEAM</span>
+    <span>R2 Quiz — Arturo Damián Rodríguez Zambrano · Docente, investigador y vibe coder</span>
   </footer>
 
 </div>
@@ -339,6 +340,9 @@ function renderQR(url){
   qr.make();
   $('qrSala').innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
   $('qrTexto').textContent = url;
+  $('qrTexto').href = url;
+  $('enlaceSala').textContent = url.replace(/^https?:\/\//, '');
+  $('enlaceSala').href = url;
 }
 
 $('btnPresentar').addEventListener('click', async () => {

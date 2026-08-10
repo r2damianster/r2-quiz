@@ -495,9 +495,19 @@ label.field-label:first-child{ margin-top: 0; }
   margin-top: 4px;
   font-size: 11px;
   color: var(--teal);
+  text-decoration: none;
   word-break: break-all;
   max-width: 220px;
 }
+.qr-url:hover{ text-decoration: underline; }
+
+.enlace-sala{
+  color: var(--gold);
+  font-weight: 600;
+  text-decoration: none;
+  word-break: break-all;
+}
+.enlace-sala:hover{ text-decoration: underline; }
 
 .podio-slot.podio-vacio{ opacity: .45; }
 
