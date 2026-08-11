@@ -40,6 +40,7 @@ const TetrisEspera = (function(){
   let reloj = null;
   let enPausa = false;
   let terminado = false;
+  let jugando = false;      // en reposo el tablero se ve, pero no corre ni toma el teclado
   let manejarTecla = null;
 
   const indice = (cx, cy) => cx + cy * COLUMNAS;
@@ -49,7 +50,14 @@ const TetrisEspera = (function(){
   function construir(){
     contenedor.innerHTML = `
       <div class="tetris">
-        <div class="tetris-tablero" id="tetrisTablero"></div>
+        <div class="tetris-pista">
+          <div class="tetris-tablero" id="tetrisTablero"></div>
+          <button class="tetris-velo" id="tetrisVelo" type="button">
+            <span class="tetris-velo-icono">▶</span>
+            <span class="tetris-velo-titulo" id="tetrisVeloTitulo">Tocá para jugar</span>
+            <span class="tetris-velo-pista" id="tetrisVeloPista">Tetris para matar la espera</span>
+          </button>
+        </div>
         <div class="tetris-panel">
           <div class="tetris-dato">
             <span class="tetris-etiqueta">Puntaje</span>
@@ -77,11 +85,7 @@ const TetrisEspera = (function(){
         <button class="tetris-tecla" data-accion="bajar" type="button" aria-label="Bajar">↓</button>
         <button class="tetris-tecla ancha" data-accion="soltar" type="button" aria-label="Soltar">Soltar</button>
       </div>
-      <p class="tetris-ayuda">Flechas para mover y rotar · Espacio para soltar · Esc para pausar</p>
-      <div class="tetris-fin hidden" id="tetrisFin">
-        <strong>Fin del juego</strong>
-        <button class="btn" id="tetrisReiniciar" type="button">Jugar otra vez</button>
-      </div>`;
+      <p class="tetris-ayuda">Flechas para mover y rotar · Espacio para soltar · Esc para pausar</p>`;
 
     const grilla = contenedor.querySelector('#tetrisTablero');
     grilla.style.width = (COLUMNAS * LADO) + 'px';
@@ -105,8 +109,8 @@ const TetrisEspera = (function(){
 
     contenedor.querySelector('#tetrisPausa')
       .addEventListener('click', alternarPausa);
-    contenedor.querySelector('#tetrisReiniciar')
-      .addEventListener('click', reiniciar);
+    contenedor.querySelector('#tetrisVelo')
+      .addEventListener('click', iniciar);
     contenedor.querySelectorAll('.tetris-tecla').forEach(boton => {
       boton.addEventListener('click', () => ejecutar(boton.dataset.accion));
     });
@@ -260,7 +264,7 @@ const TetrisEspera = (function(){
   }
 
   function alternarPausa(){
-    if(terminado) return;
+    if(terminado || !jugando) return;
     enPausa = !enPausa;
     contenedor.querySelector('#tetrisPausa').textContent = enPausa ? 'Seguir' : 'Pausa';
     reprogramar();
@@ -268,11 +272,21 @@ const TetrisEspera = (function(){
 
   function finDelJuego(){
     terminado = true;
+    jugando = false;
     clearInterval(reloj);
-    contenedor.querySelector('#tetrisFin').classList.remove('hidden');
+    mostrarVelo('▲', 'Fin del juego', `Hiciste ${puntaje} puntos · Tocá para otra`);
+  }
+
+  function mostrarVelo(icono, titulo, pista){
+    const velo = contenedor.querySelector('#tetrisVelo');
+    velo.querySelector('.tetris-velo-icono').textContent = icono;
+    contenedor.querySelector('#tetrisVeloTitulo').textContent = titulo;
+    contenedor.querySelector('#tetrisVeloPista').textContent = pista;
+    velo.classList.remove('hidden');
   }
 
   function ejecutar(accion){
+    if(!jugando) return;
     switch(accion){
       case 'izquierda': mover(-1, 0); break;
       case 'derecha':   mover(1, 0);  break;
@@ -283,16 +297,26 @@ const TetrisEspera = (function(){
     }
   }
 
-  function reiniciar(){
+  /* Reposo: el tablero queda a la vista, vacío y quieto, con el velo encima. */
+  function reposar(){
     tablero = new Array(COLUMNAS * FILAS).fill(null);
     puntaje = 0; lineas = 0; nivel = 1;
     velocidad = VELOCIDAD_INICIAL;
-    terminado = false; enPausa = false;
+    terminado = false; enPausa = false; jugando = false;
     bolsa = [];
-    tipoProximo = sacarDeBolsa();
-    contenedor.querySelector('#tetrisFin').classList.add('hidden');
+    piezaActual = null;
+    clearInterval(reloj);
+    celdasProximas.forEach(celda => { celda.className = 'tetris-celda'; });
     contenedor.querySelector('#tetrisPausa').textContent = 'Pausa';
     actualizarMarcador();
+    pintar();
+  }
+
+  function iniciar(){
+    reposar();
+    jugando = true;
+    contenedor.querySelector('#tetrisVelo').classList.add('hidden');
+    tipoProximo = sacarDeBolsa();
     nuevaPieza();
     pintar();
     reprogramar();
@@ -311,13 +335,13 @@ const TetrisEspera = (function(){
         ' ': 'soltar', Escape: 'pausa'
       };
       const accion = acciones[evento.key];
-      if(!accion) return;
-      evento.preventDefault(); // que las flechas no scrolleen la página
+      if(!accion || !jugando) return; // en reposo las flechas siguen scrolleando la página
+      evento.preventDefault();
       ejecutar(accion);
     };
     document.addEventListener('keydown', manejarTecla);
 
-    reiniciar();
+    reposar();
   }
 
   function destruir(){
@@ -331,9 +355,10 @@ const TetrisEspera = (function(){
     contenedor = null;
     piezaActual = null;
     terminado = true;
+    jugando = false;
   }
 
   function estaMontado(){ return contenedor !== null; }
 
-  return { montar, destruir, estaMontado, alternarPausa };
+  return { montar, destruir, estaMontado, iniciar, alternarPausa };
 })();

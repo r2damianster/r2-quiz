@@ -55,7 +55,7 @@
     </p>
 
     <div class="tetris-caja">
-      <button class="btn secondary" id="btnJugarTetris" type="button">Jugar Tetris mientras tanto 🎮</button>
+      <span class="eyebrow">Mientras tanto</span>
       <div id="tetrisContenedor"></div>
     </div>
   </section>
@@ -122,26 +122,15 @@ function elegirAvatarAscii(genero){
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-/* El Tetris solo vive en la sala de espera: al arrancar la partida se desmonta
-   para que las flechas y el temporizador no compitan con la pregunta. */
-$('btnJugarTetris').addEventListener('click', () => {
-  if(TetrisEspera.estaMontado()){
-    TetrisEspera.destruir();
-    $('btnJugarTetris').textContent = 'Jugar Tetris mientras tanto 🎮';
-    return;
-  }
-  TetrisEspera.montar($('tetrisContenedor'));
-  $('btnJugarTetris').textContent = 'Cerrar el Tetris';
-});
-
-function cerrarTetris(){
-  if(!TetrisEspera.estaMontado()) return;
-  TetrisEspera.destruir();
-  $('btnJugarTetris').textContent = 'Jugar Tetris mientras tanto 🎮';
-}
-
+/* El Tetris acompaña la espera: queda armado y quieto debajo del mensaje, y
+   arranca recién cuando el jugador toca el tablero. Al empezar la partida se
+   desmonta para que las flechas no compitan con la pregunta. */
 function mostrarPantalla(id){
-  if(id !== 'pantalla-esperando') cerrarTetris();
+  if(id === 'pantalla-esperando'){
+    if(!TetrisEspera.estaMontado()) TetrisEspera.montar($('tetrisContenedor'));
+  } else if(TetrisEspera.estaMontado()){
+    TetrisEspera.destruir();
+  }
   ['pantalla-unirse','pantalla-esperando','pantalla-alistate','pantalla-pregunta',
    'pantalla-revelacion','pantalla-final']
     .forEach(p => $(p).classList.toggle('hidden', p !== id));
