@@ -1,21 +1,21 @@
 {
   "categorias": [
     {
-      "id": "medicina-pensamiento",
-      "nombre": "Medicina — Desarrollo del Pensamiento",
-      "descripcion": "Cuestionarios de la asignatura Desarrollo del Pensamiento para la carrera de Medicina."
+      "id": "practica-pre-examen",
+      "nombre": "Práctica pre-examen",
+      "descripcion": "Simulacros con el formato y el nivel del examen real. Se usan en la sesión previa a la evaluación."
     },
     {
-      "id": "experimentales",
-      "nombre": "Experimentales",
-      "descripcion": "Bancos de prueba y ensayos de formato usados para calibrar la mecánica del juego."
+      "id": "pruebas",
+      "nombre": "Pruebas",
+      "descripcion": "Bancos de ensayo para calibrar la mecánica del juego, el ritmo del grupo y el formato de las preguntas."
     }
   ],
   "concursos": [
     {
       "id": "medicina-parcial3-practica",
       "titulo": "Práctica examen tercer parcial",
-      "categoriaId": "medicina-pensamiento",
+      "categoriaId": "practica-pre-examen",
       "descripcion": "Simulacro de 11 preguntas sobre método científico, variables, grupo de control, experimentación blanda y normas APA 7.ª y Vancouver.",
       "recomendado": "Sesión previa al examen del tercer parcial.",
       "archivo": "preguntas-medicina-parcial3.json"
@@ -23,7 +23,7 @@
     {
       "id": "trivia-general",
       "titulo": "Trivia general de arranque",
-      "categoriaId": "experimentales",
+      "categoriaId": "pruebas",
       "descripcion": "Ronda corta y liviana para abrir la clase, calibrar el ritmo del grupo y que todos prueben el mecanismo de respuesta antes de un concurso evaluado.",
       "recomendado": "Primer día de clase o antes de una sesión larga.",
       "archivo": "preguntas.json"
@@ -31,7 +31,7 @@
     {
       "id": "metodologia-investigacion",
       "titulo": "Fundamentos de metodología de investigación",
-      "categoriaId": "experimentales",
+      "categoriaId": "pruebas",
       "descripcion": "Repaso rápido de diseño de investigación, tipos de variable, validez y muestreo. Sirve como diagnóstico de entrada o cierre de unidad.",
       "recomendado": "Cierre de la unidad de diseño metodológico.",
       "archivo": "preguntas-metodologia.json"

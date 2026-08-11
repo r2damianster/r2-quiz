@@ -287,7 +287,8 @@ const CATEGORIA_SIN_ASIGNAR = { id: 'sin-categoria', nombre: 'Sin categoría', d
 async function cargarCatalogo(){
   if(catalogo.length > 0){ return; }
   try {
-    const resp = await fetch('concursos.json');
+    // cache: 'no-store' evita que el navegador sirva un catálogo viejo tras editar el JSON.
+    const resp = await fetch('concursos.json', { cache: 'no-store' });
     if(!resp.ok) throw new Error('No se pudo leer concursos.json');
     const data = await resp.json();
     catalogo = data.concursos || [];
@@ -391,7 +392,7 @@ async function abrirDetalle(id){
   mostrarPantalla('pantalla-detalle');
 
   try {
-    const resp = await fetch(concurso.archivo);
+    const resp = await fetch(concurso.archivo, { cache: 'no-store' });
     if(!resp.ok) throw new Error('No se pudo leer ' + concurso.archivo);
     const data = await resp.json();
     preguntas = data.preguntas || [];
