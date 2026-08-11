@@ -137,8 +137,9 @@
       <img class="loader loader-barras" src="iconos/audio.svg" alt="" aria-hidden="true">
       Respondieron <span id="conteoRespuestas" class="mono">0</span> / <span id="totalJugadores" class="mono">0</span>
     </p>
-    <div style="margin-top:16px; display:flex; gap:10px; justify-content:center;">
+    <div style="margin-top:16px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
       <button class="btn" id="btnRevelar">Revelar respuesta</button>
+      <button class="btn peligro" data-detener type="button">Detener partida</button>
     </div>
   </section>
 
@@ -154,14 +155,15 @@
     <span class="eyebrow">Marcador</span>
     <h1 class="centrado">Así va la partida</h1>
     <ol class="ranking" id="rankingParcial"></ol>
-    <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+    <div style="margin-top:20px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
       <button class="btn" id="btnSiguiente">Siguiente pregunta</button>
+      <button class="btn peligro" data-detener type="button">Detener partida</button>
     </div>
   </section>
 
   <!-- PANTALLA 6: resultados finales -->
   <section id="pantalla-final" class="panel hidden">
-    <span class="eyebrow">Fin de la partida</span>
+    <span class="eyebrow" id="finEyebrow">Fin de la partida</span>
     <h1 class="centrado">Resultados finales</h1>
     <div class="podio" id="podioFinal"></div>
     <ol class="ranking" id="rankingFinal"></ol>
@@ -174,6 +176,23 @@
     <span class="retrato" role="img" aria-label="Arturo Damián Rodríguez Zambrano"></span>
     <span>R2 Quiz — Arturo Damián Rodríguez Zambrano · Docente, investigador y vibe coder</span>
   </footer>
+
+  <!-- Confirmación antes de cortar una partida en curso -->
+  <div class="modal hidden" id="modalDetener" role="dialog" aria-modal="true"
+       aria-labelledby="modalDetenerTitulo">
+    <div class="modal-caja panel">
+      <span class="eyebrow">Atención</span>
+      <h2 id="modalDetenerTitulo">¿Detener la partida?</h2>
+      <p class="subtitulo" id="modalDetenerDetalle">
+        La partida se corta para todos los jugadores conectados y no se puede retomar.
+        Los puntajes obtenidos hasta ahora se conservan y se muestra el podio.
+      </p>
+      <div class="modal-acciones">
+        <button class="btn secondary" id="btnSeguirJugando" type="button">Seguir jugando</button>
+        <button class="btn peligro" id="btnConfirmarDetener" type="button">Sí, detener y ver el podio</button>
+      </div>
+    </div>
+  </div>
 
 </div>
 
@@ -197,6 +216,7 @@ let temporizador = null;
 let segundosTotales = 0;
 
 let yaRevele = false;               // evita revelar dos veces la misma pregunta
+let partidaDetenida = false;        // true si el host cortó la partida antes de tiempo
 let temporizadorAlistate = null;    // cuenta regresiva "Alístate… 3, 2, 1"
 let pausaRevelacion = null;         // pausa entre la revelación y el marcador
 
@@ -477,6 +497,7 @@ function escucharPresencia(){
 
 $('btnIniciarJuego').addEventListener('click', () => {
   indicePregunta = -1;
+  partidaDetenida = false;
   siguientePregunta();
 });
 
@@ -757,12 +778,62 @@ function renderPodio(ranking){
   }).join('');
 }
 
+/* ---------- 7. Detener la partida en curso ---------- */
+function abrirModalDetener(){
+  const enJuego = jugadores.size > 0 ? `${jugadores.size} jugador${jugadores.size === 1 ? '' : 'es'} conectado${jugadores.size === 1 ? '' : 's'}` : 'Sin jugadores conectados';
+  const restantes = Math.max(0, preguntas.length - (indicePregunta + 1));
+  $('modalDetenerDetalle').textContent =
+    `${enJuego} · Quedan ${restantes} pregunta${restantes === 1 ? '' : 's'} sin jugar. ` +
+    'La partida se corta para todos y no se puede retomar. Los puntajes obtenidos se conservan y se muestra el podio.';
+  $('modalDetener').classList.remove('hidden');
+  $('btnSeguirJugando').focus();
+}
+
+function cerrarModalDetener(){
+  $('modalDetener').classList.add('hidden');
+}
+
+function detenerPartida(){
+  cerrarModalDetener();
+  clearInterval(temporizador);
+  clearInterval(temporizadorAlistate);
+  clearTimeout(pausaLectura);
+  clearTimeout(pausaRevelacion);
+  yaRevele = true;              // que no se cuele una revelación pendiente
+  partidaDetenida = true;
+  mostrarResultadosFinales();
+}
+
+document.querySelectorAll('[data-detener]').forEach(boton => {
+  boton.addEventListener('click', abrirModalDetener);
+});
+$('btnSeguirJugando').addEventListener('click', cerrarModalDetener);
+$('btnConfirmarDetener').addEventListener('click', detenerPartida);
+$('modalDetener').addEventListener('click', (evento) => {
+  if(evento.target === $('modalDetener')) cerrarModalDetener();
+});
+document.addEventListener('keydown', (evento) => {
+  if(evento.key === 'Escape' && !$('modalDetener').classList.contains('hidden')){
+    cerrarModalDetener();
+  }
+});
+
+/* Cerrar la pestaña con la sala abierta también deja a todos colgados. */
+window.addEventListener('beforeunload', (evento) => {
+  if(!channel) return;
+  evento.preventDefault();
+  evento.returnValue = '';
+});
+
 function mostrarResultadosFinales(){
   clearTimeout(pausaRevelacion);
   const ranking = [...jugadores.values()].sort((a,b) => b.puntaje - a.puntaje);
   renderPodio(ranking);
   $('rankingFinal').innerHTML = ranking.map((j,i) => filaRanking(j, i+1, j.puntaje)).join('');
-  channel.publish('fin', { puntajes: ranking });
+  $('finEyebrow').textContent = partidaDetenida
+    ? 'Partida detenida por el host'
+    : 'Fin de la partida';
+  channel.publish('fin', { puntajes: ranking, detenida: partidaDetenida });
   mostrarPantalla('pantalla-final');
   animarPuntajes('podioFinal'); // el podio cuenta desde cero
 }

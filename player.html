@@ -95,7 +95,7 @@
 
   <!-- PANTALLA 5: final -->
   <section id="pantalla-final" class="panel hidden">
-    <span class="eyebrow">Fin de la partida</span>
+    <span class="eyebrow" id="finEyebrow">Fin de la partida</span>
     <h1 class="centrado">Resultados finales</h1>
     <ol class="ranking" id="rankingFinal"></ol>
   </section>
@@ -324,6 +324,9 @@ function escucharEventosJuego(){
     clearInterval(temporizador);
     clearInterval(temporizadorAlistate);
     const ranking = msg.data.puntajes;
+    $('finEyebrow').textContent = msg.data.detenida
+      ? 'El host detuvo la partida'
+      : 'Fin de la partida';
     $('rankingFinal').innerHTML = ranking.map((j,i) =>
       `<li><span><span class="puesto">${i+1}</span>${j.nombre}</span>` +
       `<span class="mono puntaje-final" data-hasta="${j.puntaje}">0</span></li>`).join('');

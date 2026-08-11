@@ -85,6 +85,51 @@ h1,h2,h3, .display{
   border: 1px solid var(--line);
 }
 
+.btn.peligro{
+  background: transparent;
+  color: var(--coral);
+  border: 1px solid rgba(255,107,93,0.55);
+}
+.btn.peligro:hover{ background: rgba(255,107,93,0.14); }
+
+/* --- Diálogo de confirmación --- */
+.modal{
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(9,9,24,0.78);
+  backdrop-filter: blur(3px);
+  animation: aparecerModal .18s ease-out;
+}
+
+@keyframes aparecerModal{
+  from{ opacity: 0; }
+  to{ opacity: 1; }
+}
+
+.modal-caja{
+  max-width: 460px;
+  width: 100%;
+  border-color: rgba(255,107,93,0.45);
+  animation: latido .28s ease-out;
+}
+
+.modal-acciones{
+  margin-top: 22px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+@media (max-width: 460px){
+  .modal-acciones{ flex-direction: column-reverse; }
+  .modal-acciones .btn{ width: 100%; }
+}
+
 .avatar-preview{
   margin-top: 12px;
   display: inline-flex;
