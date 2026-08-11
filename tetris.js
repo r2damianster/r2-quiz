@@ -8,12 +8,15 @@
    - sin almacenamiento del navegador, como el resto de la app
 --------------------------------------------------------- */
 const TetrisEspera = (function(){
+  /* Pista corta y caída rápida: es un juego de espera en el teléfono, no una
+     partida larga. Con 20 filas a 700 ms la pieza tardaba demasiado en bajar. */
   const COLUMNAS = 10;
-  const FILAS = 20;
+  const FILAS = 16;
   const LADO = 20;                 // px por celda
-  const VELOCIDAD_INICIAL = 700;   // ms por caída
-  const VELOCIDAD_MINIMA = 140;
-  const LINEAS_POR_NIVEL = 5;
+  const VELOCIDAD_INICIAL = 460;   // ms por caída
+  const VELOCIDAD_MINIMA = 110;
+  const SALTO_POR_NIVEL = 45;      // ms que se recortan en cada nivel
+  const LINEAS_POR_NIVEL = 4;
 
   /* Cada pieza es una lista de celdas [x, y] alrededor del origen. */
   const PIEZAS = [
@@ -213,7 +216,7 @@ const TetrisEspera = (function(){
     const nivelNuevo = Math.floor(lineas / LINEAS_POR_NIVEL) + 1;
     if(nivelNuevo !== nivel){
       nivel = nivelNuevo;
-      velocidad = Math.max(VELOCIDAD_MINIMA, VELOCIDAD_INICIAL - (nivel - 1) * 60);
+      velocidad = Math.max(VELOCIDAD_MINIMA, VELOCIDAD_INICIAL - (nivel - 1) * SALTO_POR_NIVEL);
       reprogramar();
     }
     actualizarMarcador();

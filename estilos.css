@@ -685,6 +685,7 @@ label.field-label:first-child{ margin-top: 0; }
 
 .tetris{
   display: flex;
+  align-items: flex-start; /* el velo debe medir lo mismo que el tablero */
   justify-content: center;
   gap: 14px;
   margin-top: 16px;
@@ -775,17 +776,18 @@ label.field-label:first-child{ margin-top: 0; }
 .tetris-celda.tipo6{ background: #4ca8ff; } /* O  — azul */
 
 .tetris-panel{
+  align-self: stretch;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  min-width: 104px;
+  gap: 8px;
+  min-width: 98px;
 }
 
 .tetris-dato{
   background: var(--bg-panel-2);
   border: 1px solid var(--line);
   border-radius: 10px;
-  padding: 8px 10px;
+  padding: 6px 8px;
   text-align: center;
 }
 
@@ -799,21 +801,21 @@ label.field-label:first-child{ margin-top: 0; }
 
 .tetris-valor{
   display: block;
-  margin-top: 2px;
-  font-size: 20px;
+  margin-top: 1px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--gold);
 }
 
 .tetris-proxima{
   display: grid;
-  grid-template-columns: repeat(4, 16px);
-  grid-auto-rows: 16px;
+  grid-template-columns: repeat(4, 14px);
+  grid-auto-rows: 14px;
   gap: 1px;
   justify-content: center;
-  margin-top: 6px;
+  margin-top: 5px;
 }
-.tetris-proxima .tetris-celda{ width: 16px; height: 16px; border-radius: 3px; }
+.tetris-proxima .tetris-celda{ width: 14px; height: 14px; border-radius: 3px; }
 
 .tetris-pausa{
   padding: 9px 10px;
