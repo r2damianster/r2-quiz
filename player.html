@@ -90,7 +90,20 @@
     <span class="eyebrow">Resultado</span>
     <div class="veredicto" id="veredicto"></div>
     <p class="subtitulo" id="resultadoDetalle"></p>
+
+    <div class="explicacion" id="explicacionBloque">
+      <span class="explicacion-titulo">💡 Por qué</span>
+      <p class="explicacion-texto" id="explicacionTexto"></p>
+    </div>
+
     <p class="estado" id="resultadoPie">Mirá el marcador en la pantalla grande 👀</p>
+  </section>
+
+  <!-- PANTALLA 4.5: el host descartó la pregunta -->
+  <section id="pantalla-saltada" class="panel hidden centrado">
+    <span class="eyebrow">Pregunta descartada</span>
+    <div class="veredicto sin-respuesta">Pregunta saltada ⏭️</div>
+    <p class="subtitulo">El host descartó esta pregunta: no suma ni resta puntos. Ya viene la siguiente 👀</p>
   </section>
 
   <!-- PANTALLA 5: final -->
@@ -98,6 +111,7 @@
     <span class="eyebrow" id="finEyebrow">Fin de la partida</span>
     <h1 class="centrado">Resultados finales</h1>
     <ol class="ranking" id="rankingFinal"></ol>
+    <p class="ranking-nota" id="notaRankingFinal"></p>
   </section>
 
   <footer class="creditos">
@@ -133,7 +147,7 @@ function mostrarPantalla(id){
     TetrisEspera.destruir();
   }
   ['pantalla-unirse','pantalla-esperando','pantalla-alistate','pantalla-pregunta',
-   'pantalla-revelacion','pantalla-final']
+   'pantalla-revelacion','pantalla-saltada','pantalla-final']
     .forEach(p => $(p).classList.toggle('hidden', p !== id));
 }
 
@@ -262,6 +276,26 @@ function cuentaRegresivaPrevia(segundos){
   }, 1000);
 }
 
+function escapar(texto){
+  return String(texto ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  })[c]);
+}
+
+/* Mismo recorte que la pantalla del host: con pocos jugadores entran todos,
+   con muchos solo la mitad de arriba y nunca más de 25 filas. */
+function cupoRanking(total){
+  if(total <= 7) return total;
+  if(total < 14) return 7;
+  return Math.min(25, Math.ceil(total / 2));
+}
+
+function filaFinal(jugador, puesto, esMio){
+  return `<li${esMio ? ' class="fila-propia"' : ''}>` +
+    `<span><span class="puesto">${puesto}</span>${escapar(jugador.nombre)}</span>` +
+    `<span class="mono puntaje-final" data-hasta="${jugador.puntaje}">0</span></li>`;
+}
+
 function escucharEventosJuego(){
   channel.subscribe('alistate', (msg) => {
     clearInterval(temporizador);
@@ -302,7 +336,7 @@ function escucharEventosJuego(){
     clearInterval(temporizador);
     clearInterval(temporizadorAlistate);
     clearTimeout(pausaLectura);
-    const { correcta, opcionesTexto } = msg.data;
+    const { correcta, opcionesTexto, explicacion } = msg.data;
     const veredicto = $('veredicto');
 
     if(!yaRespondi){
@@ -317,7 +351,18 @@ function escucharEventosJuego(){
     }
 
     $('resultadoDetalle').textContent = 'La correcta era: ' + (opcionesTexto || '');
+    $('explicacionTexto').textContent = explicacion || '';
+    $('explicacionBloque').classList.toggle('hidden', !explicacion);
     mostrarPantalla('pantalla-revelacion');
+  });
+
+  // el host descartó la pregunta: nadie gana ni pierde, se avisa y se sigue
+  channel.subscribe('saltada', () => {
+    clearInterval(temporizador);
+    clearInterval(temporizadorAlistate);
+    clearTimeout(pausaLectura);
+    yaRespondi = true;
+    mostrarPantalla('pantalla-saltada');
   });
 
   channel.subscribe('fin', (msg) => {
@@ -327,9 +372,19 @@ function escucharEventosJuego(){
     $('finEyebrow').textContent = msg.data.detenida
       ? 'El host detuvo la partida'
       : 'Fin de la partida';
-    $('rankingFinal').innerHTML = ranking.map((j,i) =>
-      `<li><span><span class="puesto">${i+1}</span>${j.nombre}</span>` +
-      `<span class="mono puntaje-final" data-hasta="${j.puntaje}">0</span></li>`).join('');
+
+    // lista recortada como en la pantalla del host, pero siempre con la fila propia
+    const visibles = ranking.slice(0, cupoRanking(ranking.length));
+    const miPuesto = ranking.findIndex(j => j.clientId === clientId);
+    const filas = visibles.map((j,i) => filaFinal(j, i+1, j.clientId === clientId));
+    if(miPuesto >= visibles.length){
+      filas.push(filaFinal(ranking[miPuesto], miPuesto + 1, true));
+    }
+
+    $('rankingFinal').innerHTML = filas.join('');
+    $('notaRankingFinal').textContent = visibles.length < ranking.length
+      ? `Se muestran los ${visibles.length} primeros de ${ranking.length} jugadores.`
+      : '';
     mostrarPantalla('pantalla-final');
     // el puntaje se guardó en secreto toda la partida: acá sube desde cero
     $('rankingFinal').querySelectorAll('.puntaje-final').forEach(marcador =>

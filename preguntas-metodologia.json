@@ -5,13 +5,15 @@
       "pregunta": "¿Qué tipo de variable es el género declarado por una persona?",
       "opciones": ["Nominal", "Ordinal", "De intervalo", "De razón"],
       "correcta": 0,
-      "tiempo": 15
+      "tiempo": 15,
+      "explicacion": "🏷️ Es nominal: las categorías solo nombran, no ordenan ni miden distancia. 🚫 No existe un género «mayor» que otro, así que no cabe promediar. 📐 Ordinal sería un nivel de acuerdo; de razón, la edad en años."
     },
     {
       "pregunta": "La validez de contenido de un instrumento se evalúa principalmente mediante…",
       "opciones": ["Alfa de Cronbach", "Juicio de expertos", "Análisis factorial confirmatorio", "Prueba t de Student"],
       "correcta": 1,
-      "tiempo": 20
+      "tiempo": 20,
+      "explicacion": "👩‍🏫 El juicio de expertos revisa si los ítems cubren bien el constructo. 📋 Se cuantifica con índices como la V de Aiken o el CVR de Lawshe. ⚠️ El alfa mide consistencia interna y el AFC, la estructura factorial: son otras validaciones."
     },
     {
       "pregunta": "En un muestreo probabilístico, la característica esencial es que…",
@@ -22,13 +24,15 @@
         "Se aplica solo a estudios cualitativos"
       ],
       "correcta": 2,
-      "tiempo": 20
+      "tiempo": 20,
+      "explicacion": "🎲 Lo definitorio es que cada unidad tiene una probabilidad conocida y distinta de cero de entrar. 📈 Eso permite calcular error muestral y generalizar a la población. 🙋 Elegir «a los que estaban a mano» es muestreo por conveniencia: no probabilístico."
     },
     {
       "pregunta": "¿Qué coeficiente se usa habitualmente para estimar consistencia interna?",
       "opciones": ["Kappa de Cohen", "Alfa de Cronbach", "Chi cuadrado", "Coeficiente de Gini"],
       "correcta": 1,
-      "tiempo": 15
+      "tiempo": 15,
+      "explicacion": "🔗 El alfa de Cronbach indica cuánto se parecen entre sí los ítems de una misma escala. 📏 Se suele pedir ≥ 0,70, aunque hoy se prefiere el omega de McDonald. 🤝 Kappa mide acuerdo entre jueces y Gini, desigualdad económica."
     },
     {
       "pregunta": "Un diseño cuasiexperimental se diferencia del experimental porque…",
@@ -39,7 +43,8 @@
         "No mide la variable dependiente"
       ],
       "correcta": 1,
-      "tiempo": 20
+      "tiempo": 20,
+      "explicacion": "🎯 Sí manipula la variable independiente, pero trabaja con grupos ya formados: cursos, servicios, comunidades. 🔀 Al faltar la aleatorización, la equivalencia inicial no está garantizada. ⚖️ Por eso se controla con pretest, covariables o emparejamiento."
     },
     {
       "pregunta": "La hipótesis nula en un contraste estadístico plantea…",
@@ -50,7 +55,8 @@
         "Que el instrumento es válido"
       ],
       "correcta": 1,
-      "tiempo": 15
+      "tiempo": 15,
+      "explicacion": "0️⃣ La H₀ afirma ausencia de efecto: es la posición que se pone a prueba. 🧪 El análisis no la «comprueba», solo decide si hay evidencia suficiente para rechazarla. 🚦 Un p < 0,05 lleva a rechazarla; no rechazarla no equivale a demostrar que es verdadera."
     }
   ]
 }

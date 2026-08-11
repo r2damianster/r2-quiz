@@ -10,7 +10,8 @@
         "Presenta la declaración de autoría firmada, la tabla de ilustraciones y los anexos."
       ],
       "correcta": 0,
-      "tiempo": 30
+      "tiempo": 30,
+      "explicacion": "📄 La portada de estudiante en APA 7 lleva título, autor, afiliación, curso, docente y fecha. 🧾 El resumen y las palabras clave van en página aparte, después de la portada. ✍️ Regla práctica: la portada identifica quién, dónde y para qué se escribe, nada más."
     },
     {
       "pregunta": "¿En qué principio fundamental se sustenta el rigor del método científico dentro del diseño de un experimento médico?",
@@ -21,7 +22,8 @@
         "En la inclusión de un volumen elevado de referencias bibliográficas de alto impacto."
       ],
       "correcta": 1,
-      "tiempo": 30
+      "tiempo": 30,
+      "explicacion": "🔬 El rigor nace del procedimiento: observar de forma sistemática y controlar lo que podría explicar el resultado. 💸 Un equipo caro sin control de variables produce datos bonitos pero no concluyentes. 🔁 Si el método está bien descrito, otro equipo puede replicarlo: esa es la prueba de fuego."
     },
     {
       "pregunta": "Al evaluar el efecto de distintas soluciones de ácido ascórbico sobre un tejido vegetal, ¿cómo se clasifica el tipo de solución aplicada?",
@@ -32,7 +34,8 @@
         "Actúa únicamente como un indicador cualitativo de observación."
       ],
       "correcta": 1,
-      "tiempo": 30
+      "tiempo": 30,
+      "explicacion": "🎛️ Lo que el investigador decide y aplica es la variable independiente: acá, el tipo de solución. 📉 Lo que se mide como consecuencia sería la dependiente. 🧠 Truco: la independiente es la causa que vos manejás; la dependiente es el efecto que anotás."
     },
     {
       "pregunta": "Si dentro de un protocolo experimental se mide la tasa de oxidación de una muestra en centímetros cuadrados a lo largo del tiempo, ¿qué tipo de variable es?",
@@ -43,7 +46,8 @@
         "Funciona como un indicador del sesgo introducido por el observador."
       ],
       "correcta": 0,
-      "tiempo": 30
+      "tiempo": 30,
+      "explicacion": "📏 Es el resultado que se mide, así que es dependiente; y como se expresa en cm², es cuantitativa. 🔢 Al tener unidad y cero real, admite promedios y comparaciones estadísticas. 👉 Regla corta: si la medís al final, es dependiente."
     },
     {
       "pregunta": "¿Cuál es el propósito central de incluir un Grupo de Control (línea de base) en la arquitectura de un experimento?",
@@ -54,7 +58,8 @@
         "Incrementar el tamaño de la muestra para reducir el margen de error estadístico."
       ],
       "correcta": 2,
-      "tiempo": 30
+      "tiempo": 30,
+      "explicacion": "⚖️ El grupo de control muestra qué habría pasado sin la intervención: es el punto de comparación. 🚫 Sin él no se puede saber si el cambio lo produjo el tratamiento o el paso del tiempo. 🧪 Por eso en ensayos clínicos suele recibir placebo o el tratamiento estándar."
     },
     {
       "pregunta": "A diferencia del grupo de control, el Grupo Experimental dentro de un diseño de investigación se caracteriza por:",
@@ -65,7 +70,8 @@
         "Trabajar con sustancias biológicas o químicas de alto riesgo no reguladas."
       ],
       "correcta": 1,
-      "tiempo": 30
+      "tiempo": 30,
+      "explicacion": "💉 El grupo experimental es el que sí recibe la intervención que se quiere probar. 🧬 Todo lo demás debe mantenerse igual que en el control: solo cambia la variable independiente. 🔍 Esa única diferencia es lo que permite atribuirle el efecto observado."
     },
     {
       "pregunta": "El concepto de «experimentación blanda» en el contexto de la formación investigativa médica se define como:",
@@ -76,7 +82,8 @@
         "El diseño de ensayos preliminares que omiten el uso de un grupo de control."
       ],
       "correcta": 1,
-      "tiempo": 30
+      "tiempo": 30,
+      "explicacion": "🍎 Es hacer ciencia real con materiales cotidianos y sin riesgo biológico: manzanas, vitamina C, cronómetro. 📐 «Blanda» va por el riesgo, nunca por el rigor: sigue exigiendo control, medición y grupo de control. 🎓 Sirve para aprender el método completo sin necesitar laboratorio."
     },
     {
       "pregunta": "En el sistema numérico de citación Vancouver, si una fuente citada en el párrafo 2 recibe el número (3), ¿qué número le corresponde si se vuelve a citar en el párrafo 5?",
@@ -87,7 +94,8 @@
         "Debe omitirse el número y colocarse el primer apellido del autor entre paréntesis."
       ],
       "correcta": 2,
-      "tiempo": 30
+      "tiempo": 30,
+      "explicacion": "🔢 En Vancouver el número se asigna una sola vez, en la primera aparición, y se conserva toda la vida del texto. ♻️ Cada fuente tiene un número propio, sin importar cuántas veces se la cite. 🔤 Citar con apellido y año es APA, no Vancouver."
     },
     {
       "pregunta": "¿Cómo deben citarse tres o más fuentes no consecutivas dentro del texto según la normativa del estilo Vancouver?",
@@ -98,7 +106,8 @@
         "Se asigna una nueva letra minúscula a cada cita para mantener un orden alfabético."
       ],
       "correcta": 1,
-      "tiempo": 30
+      "tiempo": 30,
+      "explicacion": "✏️ No consecutivas van con comas y sin espacios: (2,5,9). ➖ El guion se reserva para rangos seguidos: (4-7) equivale a 4, 5, 6 y 7. 📌 Mezclar ambos casos también es válido: (1,3-5,8)."
     },
     {
       "pregunta": "Al redactar la lista final de referencias bibliográficas en el estilo Vancouver, ¿qué criterio rige la ordenación de las fuentes?",
@@ -109,7 +118,8 @@
         "Se ordenan cronológicamente desde la publicación más reciente hasta la más antigua."
       ],
       "correcta": 1,
-      "tiempo": 30
+      "tiempo": 30,
+      "explicacion": "📑 La lista sigue el orden en que las fuentes aparecieron en el texto: 1, 2, 3… 🔗 Así el número de la cita coincide siempre con el de la referencia. 🔤 El orden alfabético corresponde a APA, que cita con autor y año."
     },
     {
       "pregunta": "Durante la fase de discusión científica, ¿cuál es el objetivo de contrastar los hallazgos propios con la literatura indexada?",
@@ -120,7 +130,8 @@
         "Justificar posibles errores en la recolección de datos u omisiones en el informe."
       ],
       "correcta": 2,
-      "tiempo": 30
+      "tiempo": 30,
+      "explicacion": "🗣️ La discusión dialoga con la evidencia previa: dónde coinciden tus datos y dónde se apartan. 🧩 Si divergen, se explica el porqué (muestra, contexto, método), no se esconde. 📊 Ahí es donde el trabajo aporta valor: interpretar, no repetir los resultados."
     }
   ]
 }

@@ -5,31 +5,36 @@
       "pregunta": "¿Cuál es el planeta más grande del sistema solar?",
       "opciones": ["Tierra", "Júpiter", "Saturno", "Marte"],
       "correcta": 1,
-      "tiempo": 15
+      "tiempo": 15,
+      "explicacion": "🪐 Júpiter es el gigante del barrio: cabe unas 1 300 veces la Tierra dentro de él. 🌪️ Su Gran Mancha Roja es una tormenta más ancha que nuestro planeta. 🥈 Saturno va segundo, pero le gana en anillos."
     },
     {
       "pregunta": "¿En qué año llegó el ser humano a la Luna por primera vez?",
       "opciones": ["1965", "1969", "1971", "1975"],
       "correcta": 1,
-      "tiempo": 15
+      "tiempo": 15,
+      "explicacion": "🚀 20 de julio de 1969: Apolo 11, con Armstrong y Aldrin pisando el Mar de la Tranquilidad. 📺 Lo vieron unos 600 millones de personas en vivo. 🌙 Después vinieron cinco alunizajes más, hasta 1972."
     },
     {
       "pregunta": "¿Cuál es la capital de Ecuador?",
       "opciones": ["Guayaquil", "Cuenca", "Quito", "Manta"],
       "correcta": 2,
-      "tiempo": 10
+      "tiempo": 10,
+      "explicacion": "🏔️ Quito es la capital, a 2 850 m sobre el nivel del mar: la segunda capital más alta del mundo. 🏛️ Su centro histórico fue el primer Patrimonio Cultural de la Humanidad de la UNESCO, en 1978. 🚢 Guayaquil es la más poblada, pero no la capital."
     },
     {
       "pregunta": "¿Qué lenguaje se usa comúnmente para análisis estadístico como SEM/CFA?",
       "opciones": ["R", "PHP", "Swift", "COBOL"],
       "correcta": 0,
-      "tiempo": 10
+      "tiempo": 10,
+      "explicacion": "📊 R es el estándar en investigación: paquetes como lavaan y semTools resuelven SEM y AFC en pocas líneas. 🆓 Además es libre y reproducible, ideal para tesis. 💻 PHP es para web, Swift para apps y COBOL para bancos antiguos."
     },
     {
       "pregunta": "¿Cuántos continentes hay?",
       "opciones": ["5", "6", "7", "8"],
       "correcta": 2,
-      "tiempo": 10
+      "tiempo": 10,
+      "explicacion": "🌍 En el modelo de siete: América del Norte, América del Sur, Europa, Asia, África, Oceanía y Antártida. 🗺️ Ojo: hay modelos de cinco y de seis según el país, así que el número depende de la escuela geográfica. 🇪🇨 En Ecuador se enseña habitualmente el de siete."
     }
   ]
 }

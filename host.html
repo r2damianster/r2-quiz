@@ -123,7 +123,10 @@
 
   <!-- PANTALLA 4: pregunta en vivo -->
   <section id="pantalla-pregunta" class="panel hidden">
-    <span class="eyebrow" id="preguntaContador">Pregunta 1 de N</span>
+    <div class="pregunta-head">
+      <span class="eyebrow" id="preguntaContador">Pregunta 1 de N</span>
+      <button class="btn saltar" id="btnSaltar" type="button" title="Descartar esta pregunta y pasar a la siguiente">Saltar pregunta ⏭️</button>
+    </div>
     <div class="timer-ring" id="anilloHost">
       <svg viewBox="0 0 84 84">
         <circle class="track" cx="42" cy="42" r="36"></circle>
@@ -150,17 +153,29 @@
     <span class="eyebrow">La respuesta correcta era</span>
     <div class="veredicto acierto" id="respuestaCorrectaTexto"></div>
     <p class="subtitulo" id="resumenAciertos" style="margin-top:14px;"></p>
+
+    <div class="explicacion" id="explicacionBloque">
+      <span class="explicacion-titulo">💡 Por qué</span>
+      <p class="explicacion-texto" id="explicacionTexto"></p>
+    </div>
+
+    <div class="revelacion-acciones">
+      <button class="btn" id="btnVerMarcador" type="button">Ver marcador ➡️</button>
+      <button class="btn peligro" data-detener type="button">Detener partida</button>
+    </div>
+    <p class="revelacion-pista" id="revelacionPista">El marcador se abre solo en <span class="mono" id="revelacionSegundos">--</span> s</p>
   </section>
 
   <!-- PANTALLA 5B: marcador con puntajes sumando -->
   <section id="pantalla-marcador" class="panel hidden">
     <span class="eyebrow">Marcador</span>
     <h1 class="centrado">Así va la partida</h1>
-    <ol class="ranking" id="rankingParcial"></ol>
-    <div style="margin-top:20px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+    <div class="marcador-acciones">
       <button class="btn" id="btnSiguiente">Siguiente pregunta</button>
       <button class="btn peligro" data-detener type="button">Detener partida</button>
     </div>
+    <ol class="ranking" id="rankingParcial"></ol>
+    <p class="ranking-nota" id="notaRankingParcial"></p>
   </section>
 
   <!-- PANTALLA 6: resultados finales -->
@@ -169,6 +184,7 @@
     <h1 class="centrado">Resultados finales</h1>
     <div class="podio" id="podioFinal"></div>
     <ol class="ranking" id="rankingFinal"></ol>
+    <p class="ranking-nota" id="notaRankingFinal"></p>
     <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
       <button class="btn secondary" id="btnNuevaRonda">Volver al catálogo</button>
     </div>
@@ -223,10 +239,29 @@ let yaRevele = false;               // evita revelar dos veces la misma pregunta
 let partidaDetenida = false;        // true si el host cortó la partida antes de tiempo
 let temporizadorAlistate = null;    // cuenta regresiva "Alístate… 3, 2, 1"
 let pausaRevelacion = null;         // pausa entre la revelación y el marcador
+let cuentaRevelacion = null;        // segundos visibles de esa misma pausa
+let irAlMarcador = null;            // salto manual al marcador desde la revelación
+let pausaSalto = null;              // margen tras descartar una pregunta
 
 const SEGUNDOS_ALISTATE = 3;
-const MS_PAUSA_REVELACION = 2600;
+const SEGUNDOS_REVELACION = 15;     // tiempo para leer la explicación antes del marcador
 const MS_LECTURA = 3200;            // la pregunta sola, sin opciones, antes de abrir el juego
+
+/* Cuántos jugadores se listan en el marcador: con grupos chicos entran todos,
+   con grupos grandes solo la mitad de arriba y nunca más de 25 filas. */
+const RANKING_TOPE_ABSOLUTO = 25;
+const RANKING_MINIMO_VISIBLE = 7;
+
+function cupoRanking(total){
+  if(total <= RANKING_MINIMO_VISIBLE) return total;
+  if(total < 14) return RANKING_MINIMO_VISIBLE;
+  return Math.min(RANKING_TOPE_ABSOLUTO, Math.ceil(total / 2));
+}
+
+function notaRanking(mostrados, total){
+  if(mostrados >= total) return '';
+  return `Se muestran los ${mostrados} primeros de ${total} jugadores.`;
+}
 
 let pausaLectura = null;
 
@@ -495,7 +530,9 @@ function cerrarConexion(){
   clearInterval(temporizador);
   clearInterval(temporizadorAlistate);
   clearTimeout(pausaRevelacion);
+  clearInterval(cuentaRevelacion);
   clearTimeout(pausaLectura);
+  clearTimeout(pausaSalto);
   if(ably){
     try { ably.close(); } catch(e){ /* conexión ya cerrada */ }
   }
@@ -726,7 +763,12 @@ function animarPuntajes(contenedorId){
    entonces las filas se reacomodan para que se vean los adelantamientos. */
 function animarMarcador(ranking, puntajesPrevios){
   const lista = $('rankingParcial');
-  const ordenPrevio = [...ranking].sort((a,b) =>
+
+  // el recorte se decide con el puntaje nuevo: quien sube entra, quien no puntúa sale
+  const visibles = ranking.slice(0, cupoRanking(ranking.length));
+  $('notaRankingParcial').textContent = notaRanking(visibles.length, ranking.length);
+
+  const ordenPrevio = [...visibles].sort((a,b) =>
     (puntajesPrevios.get(b.clientId) || 0) - (puntajesPrevios.get(a.clientId) || 0));
 
   lista.innerHTML = ordenPrevio
@@ -736,7 +778,7 @@ function animarMarcador(ranking, puntajesPrevios){
   animarPuntajes('rankingParcial');
 
   // los números tardan ~1.1 s: al terminar, reordenamos con animación FLIP
-  setTimeout(() => reordenarFilas(lista, ranking), 1200);
+  setTimeout(() => reordenarFilas(lista, visibles), 1200);
 }
 
 function reordenarFilas(lista, rankingNuevo){
@@ -794,31 +836,90 @@ function revelarRespuesta(){
     btn.classList.toggle('correcta', i === p.correcta);
   });
 
-  // el jugador solo recibe cuál era la correcta: el puntaje se revela en el marcador
+  const explicacion = textoExplicacion(p);
+
+  // el jugador recibe la correcta y la explicación: el puntaje se revela en el marcador
   channel.publish('reveal', {
     correcta: p.correcta,
-    opcionesTexto: p.opciones[p.correcta]
+    opcionesTexto: p.opciones[p.correcta],
+    explicacion
   });
 
   $('respuestaCorrectaTexto').textContent = p.opciones[p.correcta];
   $('resumenAciertos').textContent =
     `${aciertos} de ${jugadores.size} acertaron · ${respuestasPregunta.size} respondieron`;
+  $('explicacionTexto').textContent = explicacion;
   mostrarPantalla('pantalla-revelacion');
+  $('btnVerMarcador').focus();
 
-  // pausa: primero la respuesta, después el marcador con los puntajes subiendo
-  clearTimeout(pausaRevelacion);
-  pausaRevelacion = setTimeout(() => {
-    const ranking = [...jugadores.entries()]
-      .map(([clientId, j]) => ({ ...j, clientId }))
-      .sort((a,b) => b.puntaje - a.puntaje);
-    $('btnSiguiente').textContent =
-      indicePregunta + 1 >= preguntas.length ? 'Ver resultados finales' : 'Siguiente pregunta';
-    mostrarPantalla('pantalla-marcador');
-    animarMarcador(ranking, puntajesPrevios);
-  }, MS_PAUSA_REVELACION);
+  // la respuesta queda en pantalla para comentarla; el marcador llega solo o con el botón
+  irAlMarcador = () => abrirMarcador(puntajesPrevios);
+  esperarMarcador(SEGUNDOS_REVELACION);
 }
 
+/* Explicación del banco de preguntas, con un respaldo si el JSON no la trae. */
+function textoExplicacion(pregunta){
+  const propia = (pregunta.explicacion || '').trim();
+  if(propia) return propia;
+  return `✅ La opción correcta es «${pregunta.opciones[pregunta.correcta]}». 🧠 Anotá el porqué en tu cuaderno: es el punto que más se pregunta en el examen.`;
+}
+
+/* Cuenta atrás visible entre la revelación y el marcador; el botón la corta antes. */
+function esperarMarcador(segundos){
+  clearTimeout(pausaRevelacion);
+  clearInterval(cuentaRevelacion);
+
+  let restante = segundos;
+  $('revelacionSegundos').textContent = restante;
+  cuentaRevelacion = setInterval(() => {
+    restante--;
+    $('revelacionSegundos').textContent = Math.max(restante, 0);
+    if(restante <= 0) clearInterval(cuentaRevelacion);
+  }, 1000);
+
+  pausaRevelacion = setTimeout(() => {
+    if(irAlMarcador) irAlMarcador();
+  }, segundos * 1000);
+}
+
+function abrirMarcador(puntajesPrevios){
+  clearTimeout(pausaRevelacion);
+  clearInterval(cuentaRevelacion);
+  irAlMarcador = null;
+
+  const ranking = [...jugadores.entries()]
+    .map(([clientId, j]) => ({ ...j, clientId }))
+    .sort((a,b) => b.puntaje - a.puntaje);
+  $('btnSiguiente').textContent =
+    indicePregunta + 1 >= preguntas.length ? 'Ver resultados finales' : 'Siguiente pregunta';
+  mostrarPantalla('pantalla-marcador');
+  animarMarcador(ranking, puntajesPrevios);
+}
+
+$('btnVerMarcador').addEventListener('click', () => {
+  if(irAlMarcador) irAlMarcador();
+});
+
 $('btnSiguiente').addEventListener('click', siguientePregunta);
+
+/* ---------- 6. Saltar una pregunta que no encaja ---------- */
+function saltarPregunta(){
+  if(indicePregunta < 0 || indicePregunta >= preguntas.length) return;
+  clearInterval(temporizador);
+  clearTimeout(pausaLectura);
+  yaRevele = true;                 // que no se cuele la revelación de la pregunta descartada
+  respuestasPregunta.clear();
+  $('btnSaltar').disabled = true;
+  channel.publish('saltada', { index: indicePregunta });
+  // margen para que el aviso se vea en los teléfonos antes del "Alístate…"
+  clearTimeout(pausaSalto);
+  pausaSalto = setTimeout(() => {
+    $('btnSaltar').disabled = false;
+    siguientePregunta();
+  }, 1400);
+}
+
+$('btnSaltar').addEventListener('click', saltarPregunta);
 
 function renderPodio(ranking){
   const ordenVisual = [2, 1, 3]; // plata, oro, bronce
@@ -860,6 +961,10 @@ function detenerPartida(){
   clearInterval(temporizadorAlistate);
   clearTimeout(pausaLectura);
   clearTimeout(pausaRevelacion);
+  clearInterval(cuentaRevelacion);
+  clearTimeout(pausaSalto);
+  irAlMarcador = null;
+  $('btnSaltar').disabled = false;
   yaRevele = true;              // que no se cuele una revelación pendiente
   partidaDetenida = true;
   mostrarResultadosFinales();
@@ -888,9 +993,15 @@ window.addEventListener('beforeunload', (evento) => {
 
 function mostrarResultadosFinales(){
   clearTimeout(pausaRevelacion);
-  const ranking = [...jugadores.values()].sort((a,b) => b.puntaje - a.puntaje);
+  clearInterval(cuentaRevelacion);
+  irAlMarcador = null;
+  const ranking = [...jugadores.entries()]
+    .map(([clientId, j]) => ({ ...j, clientId }))
+    .sort((a,b) => b.puntaje - a.puntaje);
   renderPodio(ranking);
-  $('rankingFinal').innerHTML = ranking.map((j,i) => filaRanking(j, i+1, j.puntaje)).join('');
+  const visibles = ranking.slice(0, cupoRanking(ranking.length));
+  $('rankingFinal').innerHTML = visibles.map((j,i) => filaRanking(j, i+1, j.puntaje)).join('');
+  $('notaRankingFinal').textContent = notaRanking(visibles.length, ranking.length);
   $('finEyebrow').textContent = partidaDetenida
     ? 'Partida detenida por el host'
     : 'Fin de la partida';

@@ -755,6 +755,95 @@ label.field-label:first-child{ margin-top: 0; }
   background: rgba(255,255,255,0.04);
 }
 
+/* --- Explicación de la respuesta --- */
+.explicacion{
+  margin: 22px auto 0;
+  max-width: 640px;
+  text-align: left;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,200,87,0.38);
+  background: rgba(255,200,87,0.08);
+  animation: aparecerExplicacion .35s ease-out;
+}
+
+.explicacion-titulo{
+  display: block;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.explicacion-texto{
+  margin: 0;
+  font-size: clamp(15px, 2.2vw, 18px);
+  line-height: 1.6;
+  color: var(--text);
+}
+
+@keyframes aparecerExplicacion{
+  from{ opacity: 0; transform: translateY(8px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+.revelacion-acciones{
+  margin-top: 22px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.revelacion-pista{
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* --- Marcador: acciones arriba de la lista --- */
+.marcador-acciones{
+  margin: 18px 0 6px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ranking-nota{
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* Fila propia del jugador cuando queda fuera del recorte visible */
+.ranking li.fila-propia{
+  border-color: var(--gold);
+  background: rgba(255,200,87,0.12);
+}
+
+/* --- Saltar pregunta --- */
+.pregunta-head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn.saltar{
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  padding: 8px 14px;
+}
+.btn.saltar:hover{ color: var(--text); border-color: var(--teal); }
+
 /* Fila del marcador que acaba de sumar puntos */
 .leaderboard-row.sumando{
   border-color: var(--gold);
@@ -780,7 +869,7 @@ label.field-label:first-child{ margin-top: 0; }
 
 @media (prefers-reduced-motion: reduce){
   .leaderboard-row.moviendose{ transition: none !important; }
-  .cuenta-regresiva.pulso, .veredicto{ animation: none; }
+  .cuenta-regresiva.pulso, .veredicto, .explicacion{ animation: none; }
 }
 
 /* --- Tetris de sala de espera --- */
