@@ -49,7 +49,9 @@
       <button class="btn secondary" id="btnCerrarSesion">Cerrar sesión</button>
     </div>
 
-    <div class="catalogo" id="listaConcursos"></div>
+    <div class="filtros-categoria" id="filtrosCategoria" role="group" aria-label="Filtrar por categoría"></div>
+
+    <div id="listaConcursos"></div>
     <div class="estado" id="catalogoEstado"></div>
   </section>
 
@@ -206,6 +208,8 @@ const HOST_CLAVE = 'ElprofedeInves';
 /* ---------- Estado global ---------- */
 let ably, channel;
 let catalogo = [];
+let categorias = [];
+let categoriaFiltro = 'todas';
 let concursoActivo = null;
 let preguntas = [];
 let indicePregunta = -1;
@@ -278,6 +282,8 @@ $('btnCerrarSesion').addEventListener('click', () => {
 });
 
 /* ---------- 1. Catálogo de concursos ---------- */
+const CATEGORIA_SIN_ASIGNAR = { id: 'sin-categoria', nombre: 'Sin categoría', descripcion: '' };
+
 async function cargarCatalogo(){
   if(catalogo.length > 0){ return; }
   try {
@@ -285,6 +291,7 @@ async function cargarCatalogo(){
     if(!resp.ok) throw new Error('No se pudo leer concursos.json');
     const data = await resp.json();
     catalogo = data.concursos || [];
+    categorias = data.categorias || [];
     if(catalogo.length === 0) throw new Error('El catálogo está vacío.');
   } catch(err){
     $('catalogoEstado').textContent = 'Error cargando el catálogo: ' + err.message;
@@ -294,14 +301,67 @@ async function cargarCatalogo(){
   renderCatalogo();
 }
 
+// Categorías declaradas en concursos.json, más una bolsa final para concursos sin categoría.
+function categoriasConConcursos(){
+  const declaradas = categorias.filter(cat =>
+    catalogo.some(concurso => concurso.categoriaId === cat.id));
+  const huerfanos = catalogo.filter(concurso =>
+    !categorias.some(cat => cat.id === concurso.categoriaId));
+  return huerfanos.length > 0 ? [...declaradas, CATEGORIA_SIN_ASIGNAR] : declaradas;
+}
+
+function concursosDeCategoria(categoriaId){
+  if(categoriaId === CATEGORIA_SIN_ASIGNAR.id){
+    return catalogo.filter(concurso =>
+      !categorias.some(cat => cat.id === concurso.categoriaId));
+  }
+  return catalogo.filter(concurso => concurso.categoriaId === categoriaId);
+}
+
+function nombreCategoriaDe(concurso){
+  const categoria = categorias.find(cat => cat.id === concurso.categoriaId);
+  return categoria ? categoria.nombre : (concurso.categoria || 'Concurso');
+}
+
 function renderCatalogo(){
-  $('listaConcursos').innerHTML = catalogo.map(c => `
-    <article class="concurso-card" data-id="${escapar(c.id)}" tabindex="0" role="button">
-      <span class="concurso-categoria">${escapar(c.categoria || 'Concurso')}</span>
-      <h3 class="concurso-titulo">${escapar(c.titulo)}</h3>
-      <p class="concurso-desc">${escapar(c.descripcion)}</p>
-      <span class="concurso-cta">Ver ficha →</span>
-    </article>`).join('');
+  const grupos = categoriasConConcursos();
+
+  $('filtrosCategoria').innerHTML = [
+    { id: 'todas', nombre: 'Todas', total: catalogo.length },
+    ...grupos.map(cat => ({ id: cat.id, nombre: cat.nombre, total: concursosDeCategoria(cat.id).length }))
+  ].map(chip => `
+    <button type="button" class="filtro-chip${chip.id === categoriaFiltro ? ' activo' : ''}"
+            data-categoria="${escapar(chip.id)}" aria-pressed="${chip.id === categoriaFiltro}">
+      ${escapar(chip.nombre)} <span class="filtro-chip-total mono">${chip.total}</span>
+    </button>`).join('');
+
+  const visibles = categoriaFiltro === 'todas'
+    ? grupos
+    : grupos.filter(cat => cat.id === categoriaFiltro);
+
+  $('listaConcursos').innerHTML = visibles.map(cat => `
+    <section class="catalogo-grupo">
+      <div class="catalogo-grupo-head">
+        <h2 class="catalogo-grupo-titulo">${escapar(cat.nombre)}</h2>
+        ${cat.descripcion ? `<p class="catalogo-grupo-desc">${escapar(cat.descripcion)}</p>` : ''}
+      </div>
+      <div class="catalogo">
+        ${concursosDeCategoria(cat.id).map(c => `
+          <article class="concurso-card" data-id="${escapar(c.id)}" tabindex="0" role="button">
+            <span class="concurso-categoria">${escapar(nombreCategoriaDe(c))}</span>
+            <h3 class="concurso-titulo">${escapar(c.titulo)}</h3>
+            <p class="concurso-desc">${escapar(c.descripcion)}</p>
+            <span class="concurso-cta">Ver ficha →</span>
+          </article>`).join('')}
+      </div>
+    </section>`).join('');
+
+  document.querySelectorAll('.filtro-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      categoriaFiltro = chip.dataset.categoria;
+      renderCatalogo();
+    });
+  });
 
   document.querySelectorAll('.concurso-card').forEach(card => {
     const abrir = () => abrirDetalle(card.dataset.id);
@@ -320,7 +380,7 @@ async function abrirDetalle(id){
   concursoActivo = concurso;
   preguntas = [];
 
-  $('detalleCategoria').textContent = concurso.categoria || 'Concurso';
+  $('detalleCategoria').textContent = nombreCategoriaDe(concurso);
   $('detalleTitulo').textContent = concurso.titulo;
   $('detalleDescripcion').textContent = concurso.descripcion;
   $('detalleRecomendado').textContent = concurso.recomendado ? 'Recomendado para: ' + concurso.recomendado : '';

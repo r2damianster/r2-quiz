@@ -1,0 +1,126 @@
+{
+  "titulo": "Práctica examen tercer parcial — Desarrollo del Pensamiento",
+  "preguntas": [
+    {
+      "pregunta": "De acuerdo con las directrices de la norma APA 7.ª edición, ¿cuál de las siguientes opciones describe la estructura fundamental de una portada académica?",
+      "opciones": [
+        "Incluye el título del trabajo, la identificación del estudiante y la afiliación institucional.",
+        "Requiere un resumen ejecutivo detallado, las palabras clave y el índice de contenidos.",
+        "Exige la lista de abreviaturas utilizadas, la dedicatoria formal y el marco teórico.",
+        "Presenta la declaración de autoría firmada, la tabla de ilustraciones y los anexos."
+      ],
+      "correcta": 0,
+      "tiempo": 30
+    },
+    {
+      "pregunta": "¿En qué principio fundamental se sustenta el rigor del método científico dentro del diseño de un experimento médico?",
+      "opciones": [
+        "En el empleo de equipamiento tecnológico avanzado y herramientas digitales complejas.",
+        "En la sistematicidad de la observación y el control estricto de las variables estudiadas.",
+        "En la aplicación de análisis estadísticos multivariados sobre muestras de gran tamaño.",
+        "En la inclusión de un volumen elevado de referencias bibliográficas de alto impacto."
+      ],
+      "correcta": 1,
+      "tiempo": 30
+    },
+    {
+      "pregunta": "Al evaluar el efecto de distintas soluciones de ácido ascórbico sobre un tejido vegetal, ¿cómo se clasifica el tipo de solución aplicada?",
+      "opciones": [
+        "Se define como la variable dependiente de la investigación.",
+        "Representa la variable independiente manipulada en el estudio.",
+        "Constituye un factor de confusión no controlado por el equipo.",
+        "Actúa únicamente como un indicador cualitativo de observación."
+      ],
+      "correcta": 1,
+      "tiempo": 30
+    },
+    {
+      "pregunta": "Si dentro de un protocolo experimental se mide la tasa de oxidación de una muestra en centímetros cuadrados a lo largo del tiempo, ¿qué tipo de variable es?",
+      "opciones": [
+        "Corresponde a una variable dependiente de carácter cuantitativo.",
+        "Representa una variable independiente de tipo cualitativo nominal.",
+        "Constituye una variable interviniente no considerada en la fase inicial.",
+        "Funciona como un indicador del sesgo introducido por el observador."
+      ],
+      "correcta": 0,
+      "tiempo": 30
+    },
+    {
+      "pregunta": "¿Cuál es el propósito central de incluir un Grupo de Control (línea de base) en la arquitectura de un experimento?",
+      "opciones": [
+        "Garantizar que todos los sujetos reciban la modificación de la variable evaluada.",
+        "Demostrar la máxima eficacia teórica del nuevo tratamiento que se está probando.",
+        "Servir como contraste basal para aislar el efecto real de la variable manipulada.",
+        "Incrementar el tamaño de la muestra para reducir el margen de error estadístico."
+      ],
+      "correcta": 2,
+      "tiempo": 30
+    },
+    {
+      "pregunta": "A diferencia del grupo de control, el Grupo Experimental dentro de un diseño de investigación se caracteriza por:",
+      "opciones": [
+        "Permanecer en un entorno no controlado expuesto a múltiples factores externos.",
+        "Recibir la modificación directa y deliberada de la variable independiente.",
+        "Mantener la variable independiente en un nivel estrictamente neutro o nulo.",
+        "Trabajar con sustancias biológicas o químicas de alto riesgo no reguladas."
+      ],
+      "correcta": 1,
+      "tiempo": 30
+    },
+    {
+      "pregunta": "El concepto de «experimentación blanda» en el contexto de la formación investigativa médica se define como:",
+      "opciones": [
+        "La simulación digital de laboratorios sin recolección de datos en entornos reales.",
+        "El uso de modelos caseros seguros con rigor cuantitativo y cero riesgo biológico.",
+        "La revisión sistemática de literatura en bases de datos como PubMed o Scopus.",
+        "El diseño de ensayos preliminares que omiten el uso de un grupo de control."
+      ],
+      "correcta": 1,
+      "tiempo": 30
+    },
+    {
+      "pregunta": "En el sistema numérico de citación Vancouver, si una fuente citada en el párrafo 2 recibe el número (3), ¿qué número le corresponde si se vuelve a citar en el párrafo 5?",
+      "opciones": [
+        "Debe recibir un nuevo número consecutivo según el orden de avance del texto.",
+        "Debe asignársele el número (1) por tratarse de un antecedente bibliográfico.",
+        "Debe mantener el número (3) que se le asignó originalmente en su primera mención.",
+        "Debe omitirse el número y colocarse el primer apellido del autor entre paréntesis."
+      ],
+      "correcta": 2,
+      "tiempo": 30
+    },
+    {
+      "pregunta": "¿Cómo deben citarse tres o más fuentes no consecutivas dentro del texto según la normativa del estilo Vancouver?",
+      "opciones": [
+        "Se agrupan indicando únicamente el primer y el último número separados por un guion.",
+        "Se colocan los números correspondientes separados por comas y sin espacios intermedios.",
+        "Se escribe el apellido del primer autor de cada obra seguido del año entre paréntesis.",
+        "Se asigna una nueva letra minúscula a cada cita para mantener un orden alfabético."
+      ],
+      "correcta": 1,
+      "tiempo": 30
+    },
+    {
+      "pregunta": "Al redactar la lista final de referencias bibliográficas en el estilo Vancouver, ¿qué criterio rige la ordenación de las fuentes?",
+      "opciones": [
+        "Se organizan en estricto orden alfabético según el primer apellido de cada autor.",
+        "Se listan en orden numérico consecutivo según su secuencia de aparición en el texto.",
+        "Se agrupan por tipo de documento, priorizando los artículos de revistas indexadas.",
+        "Se ordenan cronológicamente desde la publicación más reciente hasta la más antigua."
+      ],
+      "correcta": 1,
+      "tiempo": 30
+    },
+    {
+      "pregunta": "Durante la fase de discusión científica, ¿cuál es el objetivo de contrastar los hallazgos propios con la literatura indexada?",
+      "opciones": [
+        "Copiar textualmente los análisis de otros investigadores para fundamentar la entrega.",
+        "Verificar que el formato de citación y la tipografía cumplan las normas estéticas.",
+        "Evaluar la convergencia o divergencia con la evidencia para validar la hipótesis.",
+        "Justificar posibles errores en la recolección de datos u omisiones en el informe."
+      ],
+      "correcta": 2,
+      "tiempo": 30
+    }
+  ]
+}

@@ -1,9 +1,29 @@
 {
+  "categorias": [
+    {
+      "id": "medicina-pensamiento",
+      "nombre": "Medicina — Desarrollo del Pensamiento",
+      "descripcion": "Cuestionarios de la asignatura Desarrollo del Pensamiento para la carrera de Medicina."
+    },
+    {
+      "id": "experimentales",
+      "nombre": "Experimentales",
+      "descripcion": "Bancos de prueba y ensayos de formato usados para calibrar la mecánica del juego."
+    }
+  ],
   "concursos": [
+    {
+      "id": "medicina-parcial3-practica",
+      "titulo": "Práctica examen tercer parcial",
+      "categoriaId": "medicina-pensamiento",
+      "descripcion": "Simulacro de 11 preguntas sobre método científico, variables, grupo de control, experimentación blanda y normas APA 7.ª y Vancouver.",
+      "recomendado": "Sesión previa al examen del tercer parcial.",
+      "archivo": "preguntas-medicina-parcial3.json"
+    },
     {
       "id": "trivia-general",
       "titulo": "Trivia general de arranque",
-      "categoria": "Rompehielos",
+      "categoriaId": "experimentales",
       "descripcion": "Ronda corta y liviana para abrir la clase, calibrar el ritmo del grupo y que todos prueben el mecanismo de respuesta antes de un concurso evaluado.",
       "recomendado": "Primer día de clase o antes de una sesión larga.",
       "archivo": "preguntas.json"
@@ -11,7 +31,7 @@
     {
       "id": "metodologia-investigacion",
       "titulo": "Fundamentos de metodología de investigación",
-      "categoria": "Metodología",
+      "categoriaId": "experimentales",
       "descripcion": "Repaso rápido de diseño de investigación, tipos de variable, validez y muestreo. Sirve como diagnóstico de entrada o cierre de unidad.",
       "recomendado": "Cierre de la unidad de diseño metodológico.",
       "archivo": "preguntas-metodologia.json"
