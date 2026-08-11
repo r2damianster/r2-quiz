@@ -71,7 +71,7 @@
   <!-- PANTALLA 3: pregunta activa -->
   <section id="pantalla-pregunta" class="panel hidden">
     <span class="eyebrow" id="preguntaContador">Pregunta</span>
-    <div class="timer-ring">
+    <div class="timer-ring" id="anilloJugador">
       <svg viewBox="0 0 84 84">
         <circle class="track" cx="42" cy="42" r="36"></circle>
         <circle class="progress" id="anilloTiempo" cx="42" cy="42" r="36"
@@ -79,7 +79,8 @@
       </svg>
       <span class="value mono" id="segundosRestantes">--</span>
     </div>
-    <h2 id="textoPregunta" class="centrado"></h2>
+    <h2 id="textoPregunta" class="centrado pregunta-sola"></h2>
+    <p class="lectura-pista centrado" id="lecturaPista">Leé la pregunta…</p>
     <div class="opciones" id="opcionesJugador"></div>
     <p class="estado centrado" id="estadoRespuesta"></p>
   </section>
@@ -213,8 +214,17 @@ $('btnUnirse').addEventListener('click', async () => {
 let tiempoInicioPregunta = 0;
 let temporizador = null;
 let temporizadorAlistate = null;
+let pausaLectura = null;
 let yaRespondi = false;
 let miOpcion = null;
+
+/* Durante la lectura el teléfono muestra la pregunta sin opciones ni reloj. */
+function mostrarLectura(enLectura){
+  $('opcionesJugador').classList.toggle('hidden', enLectura);
+  $('anilloJugador').classList.toggle('hidden', enLectura);
+  $('lecturaPista').classList.toggle('hidden', !enLectura);
+  $('textoPregunta').classList.toggle('pregunta-sola', enLectura);
+}
 
 /* Conteo animado: el número sube hasta el puntaje final. */
 function animarNumero(elemento, desde, hasta, duracion = 1100){
@@ -255,6 +265,7 @@ function cuentaRegresivaPrevia(segundos){
 function escucharEventosJuego(){
   channel.subscribe('alistate', (msg) => {
     clearInterval(temporizador);
+    clearTimeout(pausaLectura);
     $('alistateContador').textContent = `Pregunta ${msg.data.index + 1}`;
     mostrarPantalla('pantalla-alistate');
     cuentaRegresivaPrevia(msg.data.segundos || 3);
@@ -275,14 +286,22 @@ function escucharEventosJuego(){
       btn.addEventListener('click', () => responder(Number(btn.dataset.i)));
     });
 
-    tiempoInicioPregunta = Date.now();
-    iniciarCuentaAtras(tiempo);
+    // la pregunta se lee sola primero; las opciones y el reloj llegan después
+    mostrarLectura(true);
     mostrarPantalla('pantalla-pregunta');
+
+    clearTimeout(pausaLectura);
+    pausaLectura = setTimeout(() => {
+      mostrarLectura(false);
+      tiempoInicioPregunta = Date.now();
+      iniciarCuentaAtras(tiempo);
+    }, msg.data.lectura || 3200);
   });
 
   channel.subscribe('reveal', (msg) => {
     clearInterval(temporizador);
     clearInterval(temporizadorAlistate);
+    clearTimeout(pausaLectura);
     const { correcta, opcionesTexto } = msg.data;
     const veredicto = $('veredicto');
 

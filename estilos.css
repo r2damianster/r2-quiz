@@ -587,6 +587,45 @@ label.field-label:first-child{ margin-top: 0; }
   background: radial-gradient(circle, rgba(46,196,182,0.20), transparent 70%);
 }
 
+/* --- Lectura: la pregunta sola antes de abrir las opciones --- */
+.pregunta-sola{
+  font-size: clamp(22px, 5vw, 34px);
+  line-height: 1.3;
+  padding: 26px 8px 6px;
+  animation: entrarPregunta .45s ease-out;
+}
+
+@keyframes entrarPregunta{
+  from{ opacity: 0; transform: translateY(14px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+.lectura-pista{
+  margin: 14px 0 0;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  animation: respirar 1.6s ease-in-out infinite;
+}
+
+@keyframes respirar{
+  0%, 100%{ opacity: .45; }
+  50%{ opacity: 1; }
+}
+
+.opciones:not(.hidden){ animation: entrarOpciones .38s ease-out; }
+
+@keyframes entrarOpciones{
+  from{ opacity: 0; transform: translateY(10px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .pregunta-sola, .opciones:not(.hidden){ animation: none; }
+  .lectura-pista{ animation: none; opacity: .7; }
+}
+
 /* --- Veredicto de la respuesta (sin puntaje) --- */
 .veredicto{
   margin: 22px auto 0;

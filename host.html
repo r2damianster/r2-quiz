@@ -122,7 +122,7 @@
   <!-- PANTALLA 4: pregunta en vivo -->
   <section id="pantalla-pregunta" class="panel hidden">
     <span class="eyebrow" id="preguntaContador">Pregunta 1 de N</span>
-    <div class="timer-ring">
+    <div class="timer-ring" id="anilloHost">
       <svg viewBox="0 0 84 84">
         <circle class="track" cx="42" cy="42" r="36"></circle>
         <circle class="progress" id="anilloTiempo" cx="42" cy="42" r="36"
@@ -130,9 +130,10 @@
       </svg>
       <span class="value mono" id="segundosRestantes">--</span>
     </div>
-    <h2 id="textoPregunta" class="centrado"></h2>
+    <h2 id="textoPregunta" class="centrado pregunta-sola"></h2>
+    <p class="lectura-pista centrado" id="lecturaPista">Leé la pregunta…</p>
     <div class="opciones" id="opcionesHost"></div>
-    <p class="subtitulo centrado linea-cargando" style="margin-top:18px;">
+    <p class="subtitulo centrado linea-cargando" id="conteoBloque" style="margin-top:18px;">
       <img class="loader loader-barras" src="iconos/audio.svg" alt="" aria-hidden="true">
       Respondieron <span id="conteoRespuestas" class="mono">0</span> / <span id="totalJugadores" class="mono">0</span>
     </p>
@@ -201,6 +202,9 @@ let pausaRevelacion = null;         // pausa entre la revelación y el marcador
 
 const SEGUNDOS_ALISTATE = 3;
 const MS_PAUSA_REVELACION = 2600;
+const MS_LECTURA = 3200;            // la pregunta sola, sin opciones, antes de abrir el juego
+
+let pausaLectura = null;
 
 const PANTALLAS = [
   'pantalla-login','pantalla-catalogo','pantalla-detalle','pantalla-lobby',
@@ -410,6 +414,7 @@ function cerrarConexion(){
   clearInterval(temporizador);
   clearInterval(temporizadorAlistate);
   clearTimeout(pausaRevelacion);
+  clearTimeout(pausaLectura);
   if(ably){
     try { ably.close(); } catch(e){ /* conexión ya cerrada */ }
   }
@@ -543,16 +548,35 @@ function lanzarPregunta(){
   $('conteoRespuestas').textContent = '0';
   $('totalJugadores').textContent = jugadores.size;
 
-  tiempoInicioPregunta = Date.now();
   channel.publish('pregunta', {
     index: indicePregunta,
     pregunta: p.pregunta,
     opciones: p.opciones,
-    tiempo: segundosTotales
+    tiempo: segundosTotales,
+    lectura: MS_LECTURA
   });
 
+  // primero la pregunta sola: se lee sin la carrera por tocar una opción
+  mostrarLectura(true);
   mostrarPantalla('pantalla-pregunta');
-  iniciarCuentaAtras(segundosTotales);
+  $('btnRevelar').disabled = true;
+
+  clearTimeout(pausaLectura);
+  pausaLectura = setTimeout(() => {
+    mostrarLectura(false);
+    $('btnRevelar').disabled = false;
+    tiempoInicioPregunta = Date.now();
+    iniciarCuentaAtras(segundosTotales);
+  }, MS_LECTURA);
+}
+
+/* Durante la lectura se ocultan opciones, reloj y contador de respuestas. */
+function mostrarLectura(enLectura){
+  $('opcionesHost').classList.toggle('hidden', enLectura);
+  $('anilloHost').classList.toggle('hidden', enLectura);
+  $('conteoBloque').classList.toggle('hidden', enLectura);
+  $('lecturaPista').classList.toggle('hidden', !enLectura);
+  $('textoPregunta').classList.toggle('pregunta-sola', enLectura);
 }
 
 function iniciarCuentaAtras(segundos){
@@ -664,6 +688,7 @@ function reordenarFilas(lista, rankingNuevo){
 function revelarRespuesta(){
   if(yaRevele) return; // el temporizador, el botón y el "todos respondieron" pueden coincidir
   yaRevele = true;
+  clearTimeout(pausaLectura);
   const p = preguntas[indicePregunta];
 
   // puntajes antes de sumar: sirven para animar el marcador después
