@@ -28,15 +28,13 @@
     <label class="field-label" for="nombreJugador">Tu nombre</label>
     <input id="nombreJugador" class="field" type="text" maxlength="20" placeholder="Ej. Arturo">
 
-    <label class="field-label" for="generoJugador">Perfil</label>
-    <select id="generoJugador" class="field">
-      <option value="">Elegí un perfil</option>
-      <option value="mujer">Mujer</option>
-      <option value="hombre">Hombre</option>
-      <option value="otro">Otro</option>
-    </select>
-
-    <div class="avatar-preview" id="avatarPreview">(▰)</div>
+    <label class="field-label" for="emojiGrid">Tu avatar</label>
+    <div class="avatar-elegido">
+      <span class="avatar-preview" id="avatarPreview">🙂</span>
+      <button class="btn-fantasma" id="btnAvatarAzar" type="button">🎲 Sorprendeme</button>
+    </div>
+    <div class="emoji-grid" id="emojiGrid" role="radiogroup" aria-label="Elegí tu avatar"></div>
+    <p class="emoji-nota" id="emojiNota">Tocá un emoji: es como te van a ver en el marcador.</p>
 
     <div class="estado" id="unirseEstado"></div>
 
@@ -45,17 +43,21 @@
     </div>
   </section>
 
-  <!-- PANTALLA 2: esperando -->
+  <!-- PANTALLA 2: esperando (y también sala cerrada: el Tetris no se interrumpe) -->
   <section id="pantalla-esperando" class="panel hidden centrado">
-    <span class="eyebrow">Conectado</span>
-    <h2>Estás dentro, <span id="saludoNombre"></span> 👋</h2>
-    <p class="linea-cargando subtitulo">
+    <span class="eyebrow" id="esperaEyebrow">Conectado</span>
+    <h2 id="esperaTitulo">Estás dentro, <span id="saludoNombre"></span> 👋</h2>
+    <p class="linea-cargando subtitulo" id="esperaLinea">
       <img class="loader" src="iconos/ring-resize.svg" alt="" aria-hidden="true">
       Esperando a que el host inicie la partida…
     </p>
+    <p class="subtitulo hidden" id="esperaCerrada">
+      El host cerró la sala, así que la partida terminó acá. Podés quedarte con el Tetris.
+    </p>
+    <p class="estado" id="esperaAvatarNota"></p>
 
     <div class="tetris-caja">
-      <span class="eyebrow">Mientras tanto</span>
+      <span class="eyebrow" id="tetrisEyebrow">Mientras tanto</span>
       <div id="tetrisContenedor"></div>
     </div>
   </section>
@@ -126,15 +128,50 @@ let ably, channel, clientId, miNombre;
 
 const $ = (id) => document.getElementById(id);
 
-const avatarPools = {
-  mujer: ['╰( ᵔ ͡◕ ᵔ )╯', '(◕‿◕)', '(•̀ᴗ•́)و', '╰☆╮'],
-  hombre: ['(▀̿Ĺ̯▀̿ ̿)', '╰(▔∀▔)╯', '(╯°□°)╯', '└[∵┌]┘'],
-  otro: ['( ͡° ͜ʖ ͡°)', '[o_o]', '◌_◌', '≋']
-};
+/* Catálogo de avatares: emojis en vez de caritas ASCII, que se veían rotas en
+   muchos teléfonos. La lista es larga a propósito: cada jugador debe poder
+   distinguirse del resto de un vistazo en el marcador. */
+const CATALOGO_AVATARES = [
+  '🦊','🐼','🐨','🐯','🦁','🐸','🐵','🐧','🐢','🦉','🦄','🐝',
+  '🦋','🐙','🦕','🦈','🐬','🦖','🐺','🦔','🐳','🦩','🦜','🐊',
+  '🦓','🐘','🦒','🐌','🐞','🦦','🦥','🐇','🐴','🦌','🦚','🐲',
+  '🌵','🍀','🌻','🍄','🌈','🔥','🌙','⭐','🍕','🍩','🍓','🍉',
+  '🥑','🌮','🍫','🧋','🎧','🎸','🎲','🚀','🛸','🎯','🧩','🔮',
+  '⚽','🏀','🛹','🧠','👾','🤖','👑','💎'
+];
 
-function elegirAvatarAscii(genero){
-  const pool = avatarPools[genero] || avatarPools.otro;
-  return pool[Math.floor(Math.random() * pool.length)];
+let avatarElegido = CATALOGO_AVATARES[Math.floor(Math.random() * CATALOGO_AVATARES.length)];
+
+function pintarAvatarElegido(){
+  $('avatarPreview').textContent = avatarElegido;
+  document.querySelectorAll('#emojiGrid .emoji-op').forEach(boton => {
+    const esElegido = boton.dataset.emoji === avatarElegido;
+    boton.classList.toggle('elegido', esElegido);
+    boton.setAttribute('aria-checked', esElegido ? 'true' : 'false');
+  });
+}
+
+function construirGrillaAvatares(){
+  $('emojiGrid').innerHTML = CATALOGO_AVATARES.map(emoji =>
+    `<button type="button" class="emoji-op" role="radio" aria-checked="false" ` +
+    `data-emoji="${emoji}" aria-label="Avatar ${emoji}">${emoji}</button>`).join('');
+  document.querySelectorAll('#emojiGrid .emoji-op').forEach(boton => {
+    boton.addEventListener('click', () => {
+      avatarElegido = boton.dataset.emoji;
+      pintarAvatarElegido();
+    });
+  });
+  pintarAvatarElegido();
+}
+
+/* Si otro jugador ya entró con ese emoji, se corre al primero libre: el
+   marcador pierde gracia si hay tres 🦊 sin forma de distinguirlos. */
+function resolverAvatarLibre(miembros){
+  const ocupados = new Set(miembros.map(m => m.data?.avatar).filter(Boolean));
+  if(!ocupados.has(avatarElegido)) return avatarElegido;
+  const libres = CATALOGO_AVATARES.filter(emoji => !ocupados.has(emoji));
+  if(libres.length === 0) return avatarElegido; // sala enorme: se permite repetir
+  return libres[Math.floor(Math.random() * libres.length)];
 }
 
 /* El Tetris acompaña la espera: queda armado y quieto debajo del mensaje, y
@@ -160,10 +197,12 @@ function mostrarPantalla(id){
   }
 })();
 
-$('generoJugador').addEventListener('change', () => {
-  const genero = $('generoJugador').value;
-  const avatar = elegirAvatarAscii(genero);
-  $('avatarPreview').textContent = avatar;
+construirGrillaAvatares();
+
+$('btnAvatarAzar').addEventListener('click', () => {
+  const otros = CATALOGO_AVATARES.filter(emoji => emoji !== avatarElegido);
+  avatarElegido = otros[Math.floor(Math.random() * otros.length)];
+  pintarAvatarElegido();
 });
 
 async function obtenerApiKey(){
@@ -187,10 +226,9 @@ async function obtenerApiKey(){
 $('btnUnirse').addEventListener('click', async () => {
   const codigo = $('codigoSala').value.trim();
   const nombre = $('nombreJugador').value.trim();
-  const genero = $('generoJugador').value;
 
-  if(!codigo || !nombre || !genero){
-    $('unirseEstado').textContent = 'Completá perfil, código de sala y tu nombre.';
+  if(!codigo || !nombre){
+    $('unirseEstado').textContent = 'Completá código de sala y tu nombre.';
     $('unirseEstado').className = 'estado error';
     return;
   }
@@ -203,20 +241,30 @@ $('btnUnirse').addEventListener('click', async () => {
   const key = await obtenerApiKey();
   if(!key){ $('btnUnirse').disabled = false; return; }
 
-  const avatar = elegirAvatarAscii(genero);
   miNombre = nombre;
   clientId = 'jugador-' + nombre.replace(/\s+/g,'_') + '-' + Math.floor(Math.random()*1000);
   ably = new Ably.Realtime({ key, clientId });
   channel = ably.channels.get('r2quiz-' + codigo);
 
-  ably.connection.on('connected', () => {
-    channel.presence.enter({ nombre, avatar, genero });
+  ably.connection.on('connected', async () => {
+    let avatar = avatarElegido;
+    try {
+      avatar = resolverAvatarLibre(await channel.presence.get());
+    } catch (err) { /* si falla la lectura de presencia se entra con el elegido */ }
+
+    channel.presence.enter({ nombre, avatar });
+    $('esperaAvatarNota').textContent = avatar === avatarElegido
+      ? ''
+      : `Tu emoji ya estaba tomado: entraste como ${avatar}.`;
+    avatarElegido = avatar;
+
     $('unirseEstado').textContent = '';
     $('unirseEstado').className = 'estado';
     $('btnUnirse').disabled = false;
     $('saludoNombre').textContent = nombre;
     mostrarPantalla('pantalla-esperando');
     escucharEventosJuego();
+    vigilarHost();
   });
   ably.connection.on('failed', () => {
     $('unirseEstado').textContent = 'No se pudo conectar. Revisá la API key.';
@@ -296,6 +344,41 @@ function filaFinal(jugador, puesto, esMio){
     `<span class="mono puntaje-final" data-hasta="${jugador.puntaje}">0</span></li>`;
 }
 
+let salaCerrada = false;
+let partidaFinalizada = false;  // el host mostró los resultados: cerrar ya no interrumpe nada
+
+/* Si el host cierra la pestaña o cancela la sala, la partida se acabó para
+   todos. Dos señales lo detectan: el aviso explícito y la salida del host de
+   la presencia (Ably la emite al cerrar la pestaña). */
+function vigilarHost(){
+  channel.subscribe('sala-cerrada', () => cerrarSalaPorHost());
+  channel.presence.subscribe('leave', (miembro) => {
+    if(String(miembro.clientId || '').startsWith('host-')) cerrarSalaPorHost();
+  });
+}
+
+function cerrarSalaPorHost(){
+  if(salaCerrada || partidaFinalizada) return;
+  salaCerrada = true;
+
+  clearInterval(temporizador);
+  clearInterval(temporizadorAlistate);
+  clearTimeout(pausaLectura);
+
+  // se vuelve a la pantalla de espera para no cortar el Tetris que ya esté en curso
+  mostrarPantalla('pantalla-esperando');
+  $('esperaEyebrow').textContent = 'Sala cerrada';
+  $('esperaTitulo').textContent = 'El host cerró la partida 🚪';
+  $('esperaLinea').classList.add('hidden');
+  $('esperaAvatarNota').textContent = '';
+  $('esperaCerrada').classList.remove('hidden');
+  $('tetrisEyebrow').textContent = 'Consuelo';
+
+  if(ably){
+    try { ably.close(); } catch(e){ /* conexión ya cerrada */ }
+  }
+}
+
 function escucharEventosJuego(){
   channel.subscribe('alistate', (msg) => {
     clearInterval(temporizador);
@@ -368,6 +451,7 @@ function escucharEventosJuego(){
   channel.subscribe('fin', (msg) => {
     clearInterval(temporizador);
     clearInterval(temporizadorAlistate);
+    partidaFinalizada = true;
     const ranking = msg.data.puntajes;
     $('finEyebrow').textContent = msg.data.detenida
       ? 'El host detuvo la partida'

@@ -229,7 +229,7 @@ let categoriaFiltro = 'todas';
 let concursoActivo = null;
 let preguntas = [];
 let indicePregunta = -1;
-let jugadores = new Map();          // clientId -> { nombre, avatar, genero, puntaje }
+let jugadores = new Map();          // clientId -> { nombre, avatar, puntaje }
 let respuestasPregunta = new Map(); // clientId -> { opcion, ms }
 let tiempoInicioPregunta = 0;
 let temporizador = null;
@@ -509,6 +509,8 @@ $('btnPresentar').addEventListener('click', async () => {
 
   ably.connection.on('connected', () => {
     jugadores.clear();
+    // el host entra a la presencia para que su salida avise a los jugadores
+    channel.presence.enter({ rol: 'host' });
     $('detalleEstado').textContent = '';
     $('detalleEstado').className = 'estado';
     $('btnPresentar').disabled = false;
@@ -533,8 +535,13 @@ function cerrarConexion(){
   clearInterval(cuentaRevelacion);
   clearTimeout(pausaLectura);
   clearTimeout(pausaSalto);
-  if(ably){
-    try { ably.close(); } catch(e){ /* conexión ya cerrada */ }
+  avisarSalaCerrada();
+  const conexion = ably;
+  if(conexion){
+    // se cierra con un respiro para que el aviso alcance a salir del navegador
+    setTimeout(() => {
+      try { conexion.close(); } catch(e){ /* conexión ya cerrada */ }
+    }, 300);
   }
   ably = null;
   channel = null;
@@ -574,8 +581,7 @@ async function refrescarJugadores(){
     if(!m.clientId.startsWith('host-')){
       jugadores.set(m.clientId, {
         nombre: m.data?.nombre || m.clientId,
-        avatar: m.data?.avatar || '(▰)',
-        genero: m.data?.genero || 'otro',
+        avatar: m.data?.avatar || '🙂',
         puntaje: puntajesPrevios.get(m.clientId) || 0
       });
     }
@@ -742,7 +748,7 @@ function filaRanking(jugador, posicion, puntajePrevio){
   return `<li class="leaderboard-row${ganados > 0 ? ' sumando' : ''}" data-jugador="${escapar(jugador.clientId || '')}">
       <span class="leaderboard-main">
         <span class="leaderboard-rank">${posicion}</span>
-        <span class="leaderboard-avatar">${escapar(jugador.avatar || '(▰)')}</span>
+        <span class="leaderboard-avatar">${escapar(jugador.avatar || '🙂')}</span>
         <span class="leaderboard-name">${escapar(jugador.nombre)}</span>
         ${ganados > 0 ? `<span class="leaderboard-delta">+${ganados}</span>` : ''}
       </span>
@@ -933,7 +939,7 @@ function renderPodio(ranking){
     }
     return `<article class="podio-slot podio-${puesto}">
       <span class="podio-label">Puesto ${puesto}</span>
-      <span class="podio-avatar">${escapar(jugador.avatar || '(▰)')}</span>
+      <span class="podio-avatar">${escapar(jugador.avatar || '🙂')}</span>
       <span class="podio-name">${escapar(jugador.nombre)}</span>
       <span class="mono podio-score" data-desde="0" data-hasta="${jugador.puntaje}">0</span>
     </article>`;
@@ -984,12 +990,22 @@ document.addEventListener('keydown', (evento) => {
   }
 });
 
-/* Cerrar la pestaña con la sala abierta también deja a todos colgados. */
+/* Cerrar la pestaña con la sala abierta corta la partida: primero se pide
+   confirmación y, si igual se cierra, se avisa a los teléfonos. */
 window.addEventListener('beforeunload', (evento) => {
   if(!channel) return;
   evento.preventDefault();
   evento.returnValue = '';
 });
+
+window.addEventListener('pagehide', avisarSalaCerrada);
+
+/* Un solo mensaje para toda la sala: los jugadores cierran su partida sin
+   quedar esperando una pregunta que nunca llega. */
+function avisarSalaCerrada(){
+  if(!channel) return;
+  try { channel.publish('sala-cerrada', { motivo: 'host' }); } catch(e){ /* canal ya cerrado */ }
+}
 
 function mostrarResultadosFinales(){
   clearTimeout(pausaRevelacion);

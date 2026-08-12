@@ -29,7 +29,7 @@ La interfaz busca ser elegante, legible y rápida, con foco en una experiencia d
 - La clave de Ably no debe dejarse en el código fuente ni en archivos públicos.
 - En Vercel se debe configurar la variable `ABLY_API_KEY`.
 - El cliente solo puede obtener esa clave a través de un endpoint seguro y limitado.
-- No se usan imágenes ni avatares externos. Los identificadores visuales se materializan como avatar ASCII generado por código del navegador.
+- No se usan imágenes ni avatares externos. Los identificadores visuales son emojis elegidos por el jugador en el navegador.
 - La selección de perfil se entiende como una clasificación no sensible para soporte visual: mujer, hombre y otro, si se desea.
 
 ## Flujo pensado para nightlife económica
@@ -37,7 +37,7 @@ La interfaz busca ser elegante, legible y rápida, con foco en una experiencia d
 1. El host crea la sala desde la pantalla inicial.
 2. El proyecto recupera la key de Ably desde un entorno seguro.
 3. Los jugadores abren la app, ingresan código, nombre y perfil.
-4. El perfil desencadena una asignación aleatoria de avatar ASCII.
+4. El jugador elige su emoji de avatar; si ya está tomado en la sala, se le asigna uno libre.
 5. El host observa el lobby con un leaderboard inicial, antes de iniciar.
 6. La pregunta se lanza en vivo, con respuesta compacta por pregunta y cálculo de ranking.
 7. El leaderboard se refleja en la pantalla del host y el podio final se presenta al terminar.
@@ -45,7 +45,7 @@ La interfaz busca ser elegante, legible y rápida, con foco en una experiencia d
 ## Diseño visual
 
 La referencia visual del usuario sugiere un leaderboard con una estructura de ranking y un cierre con podio al final.
-La idea es usar una composición clara, con barras de clasificación, badges de posición, avatar ASCII y una estética digital premium.
+La idea es usar una composición clara, con barras de clasificación, badges de posición, avatar emoji y una estética digital premium.
 
 ## Desplegar
 

@@ -24,8 +24,8 @@ Esta versión prioriza:
 
 ## Modelo de identidad
 - Cada jugador declara su nombre antes de entrar a la sala.
-- El jugador también declara una clasificación de perfil: mujer, hombre u otro/genero libre.
-- El avatar visual se genera en el navegador con un catálogo ASCII aleatorio, sin imágenes ni URLs.
+- El jugador elige su avatar de un catálogo largo de emojis, sin imágenes ni URLs externas.
+- Al entrar, si el emoji elegido ya está tomado en la sala, el navegador lo corre a uno libre para que nadie se confunda en el marcador.
 - El avatar se entrega al host por presencia y se renderiza en el leaderboard y en el podio.
 
 ## Contención de tráfico en Ably
