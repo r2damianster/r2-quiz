@@ -52,8 +52,10 @@
       Esperando a que el host inicie la partida…
     </p>
     <p class="subtitulo hidden" id="esperaCerrada">
-      El host cerró la sala, así que la partida terminó acá. Podés quedarte con el Tetris.
+      El host cerró la sala, así que la partida terminó acá. Podés quedarte con el Tetris
+      o entrar a una sala nueva si el docente abre otra.
     </p>
+    <button class="btn hidden" id="btnOtraSala" type="button" style="margin-top:6px;">Entrar a otra sala</button>
     <p class="estado" id="esperaAvatarNota"></p>
 
     <div class="tetris-caja">
@@ -114,6 +116,9 @@
     <h1 class="centrado">Resultados finales</h1>
     <ol class="ranking" id="rankingFinal"></ol>
     <p class="ranking-nota" id="notaRankingFinal"></p>
+    <div class="centrado" style="margin-top:18px;">
+      <button class="btn secondary" id="btnOtraSalaFinal" type="button">Entrar a otra sala</button>
+    </div>
   </section>
 
   <footer class="creditos">
@@ -372,12 +377,53 @@ function cerrarSalaPorHost(){
   $('esperaLinea').classList.add('hidden');
   $('esperaAvatarNota').textContent = '';
   $('esperaCerrada').classList.remove('hidden');
+  $('btnOtraSala').classList.remove('hidden');
   $('tetrisEyebrow').textContent = 'Consuelo';
 
   if(ably){
     try { ably.close(); } catch(e){ /* conexión ya cerrada */ }
   }
 }
+
+/* La pantalla de espera se reusa para el aviso de sala cerrada: antes de una
+   partida nueva hay que devolverle sus textos originales. */
+function restaurarPantallaEspera(){
+  $('esperaEyebrow').textContent = 'Conectado';
+  $('esperaTitulo').innerHTML = 'Estás dentro, <span id="saludoNombre"></span> 👋';
+  $('esperaLinea').classList.remove('hidden');
+  $('esperaCerrada').classList.add('hidden');
+  $('btnOtraSala').classList.add('hidden');
+  $('esperaAvatarNota').textContent = '';
+  $('tetrisEyebrow').textContent = 'Mientras tanto';
+}
+
+/* Sala cerrada o partida terminada: el jugador vuelve al formulario con el
+   código en blanco y puede entrar a la sala nueva que abra el docente. */
+function volverAUnirse(){
+  clearInterval(temporizador);
+  clearInterval(temporizadorAlistate);
+  clearTimeout(pausaLectura);
+  if(ably){
+    try { ably.close(); } catch(e){ /* conexión ya cerrada */ }
+  }
+  ably = null;
+  channel = null;
+  salaCerrada = false;
+  partidaFinalizada = false;
+  yaRespondi = false;
+  miOpcion = null;
+
+  restaurarPantallaEspera();
+  $('codigoSala').value = '';
+  $('unirseEstado').textContent = '';
+  $('unirseEstado').className = 'estado';
+  $('btnUnirse').disabled = false;
+  mostrarPantalla('pantalla-unirse');
+  $('codigoSala').focus();
+}
+
+$('btnOtraSala').addEventListener('click', volverAUnirse);
+$('btnOtraSalaFinal').addEventListener('click', volverAUnirse);
 
 function escucharEventosJuego(){
   channel.subscribe('alistate', (msg) => {

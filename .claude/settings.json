@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/User/.claude/hooks/auto-commit.js\"",
+            "timeout": 45,
+            "statusMessage": "Auto-committing R2 Quiz..."
+          }
+        ]
+      }
+    ]
+  }
+}

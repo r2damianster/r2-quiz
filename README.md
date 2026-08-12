@@ -30,17 +30,27 @@ La interfaz busca ser elegante, legible y rápida, con foco en una experiencia d
 - En Vercel se debe configurar la variable `ABLY_API_KEY`.
 - El cliente solo puede obtener esa clave a través de un endpoint seguro y limitado.
 - No se usan imágenes ni avatares externos. Los identificadores visuales son emojis elegidos por el jugador en el navegador.
-- La selección de perfil se entiende como una clasificación no sensible para soporte visual: mujer, hombre y otro, si se desea.
+- No se pide ningún dato personal más allá del nombre visible en el marcador.
 
 ## Flujo pensado para nightlife económica
 
 1. El host crea la sala desde la pantalla inicial.
 2. El proyecto recupera la key de Ably desde un entorno seguro.
-3. Los jugadores abren la app, ingresan código, nombre y perfil.
-4. El jugador elige su emoji de avatar; si ya está tomado en la sala, se le asigna uno libre.
+3. Los jugadores abren la app e ingresan código de sala y nombre.
+4. El jugador elige su emoji de avatar de un catálogo de 68; si ya está tomado en la sala, se le asigna uno libre.
 5. El host observa el lobby con un leaderboard inicial, antes de iniciar.
 6. La pregunta se lanza en vivo, con respuesta compacta por pregunta y cálculo de ranking.
 7. El leaderboard se refleja en la pantalla del host y el podio final se presenta al terminar.
+
+## Cierre de sala
+
+Si el host cancela la sala, arranca una ronda nueva o cierra la pestaña, la partida termina para todos:
+
+- El host entra a la presencia del canal como `host-<código>` y publica un único mensaje `sala-cerrada`.
+- El jugador reacciona a cualquiera de las dos señales: el mensaje `sala-cerrada` o la salida del host de la presencia (Ably la emite al cerrar la pestaña).
+- El teléfono vuelve a la pantalla de espera con el aviso de cierre, sin desmontar el Tetris que estuviera en curso.
+- Desde ahí, y también desde la pantalla de resultados, el jugador puede entrar a otra sala con un código nuevo sin recargar la página.
+- Si el host ya había mostrado los resultados finales, cerrar la sala no saca al jugador del podio.
 
 ## Diseño visual
 
@@ -53,6 +63,12 @@ La idea es usar una composición clara, con barras de clasificación, badges de 
 2. Conectar el proyecto con Vercel.
 3. Añadir la variable de entorno `ABLY_API_KEY` en Vercel.
 4. Usar `/host.html` y `/player.html` como rutas de acceso.
+
+## Automatización local
+
+- El repositorio activa auto-commit en `.claude/settings.json`: al final de cada turno de Claude Code se ejecuta `~/.claude/hooks/auto-commit.js`, que hace `git add -A`, commitea con un mensaje `chore: auto-commit — <archivos>` y hace `git push` al remoto de GitHub.
+- El hook nunca bloquea la sesión: si algo falla, sale en silencio.
+- Los secretos siguen fuera del repo: `.env` está en `.gitignore` y `ABLY_API_KEY` vive solo en Vercel.
 
 ## Mantenimiento
 
