@@ -70,6 +70,60 @@ La idea es usar una composición clara, con barras de clasificación, badges de 
 - El hook nunca bloquea la sesión: si algo falla, sale en silencio.
 - Los secretos siguen fuera del repo: `.env` está en `.gitignore` y `ABLY_API_KEY` vive solo en Vercel.
 
+## Cómo agregar un cuestionario nuevo
+
+El host no lee `preguntas.json` directamente: primero carga el catálogo `concursos.json`, y cada entrada del catálogo apunta a su propio archivo de preguntas. Para publicar un cuestionario nuevo:
+
+1. **Crear el archivo de preguntas** (por ejemplo `preguntas-mi-tema.json`) en la raíz del repo, con esta forma:
+
+   ```json
+   {
+     "titulo": "Nombre del cuestionario",
+     "preguntas": [
+       {
+         "pregunta": "¿Texto de la pregunta?",
+         "opciones": ["Opción A", "Opción B", "Opción C", "Opción D"],
+         "correcta": 0,
+         "tiempo": 15,
+         "explicacion": "Texto que se muestra al revelar la respuesta correcta."
+       }
+     ]
+   }
+   ```
+
+   - `correcta`: índice de la opción correcta en el arreglo `opciones`, empieza en `0`.
+   - `opciones`: no hay límite fijo de cantidad; lo habitual son 4.
+   - `tiempo`: segundos para responder. Si se omite, el host usa `15` por defecto.
+   - `explicacion`: opcional. Si falta o va vacía, el host genera un texto de respaldo automático con la opción correcta.
+
+2. **Registrar el cuestionario en `concursos.json`**, agregando un objeto al arreglo `concursos`:
+
+   ```json
+   {
+     "id": "mi-tema",
+     "titulo": "Nombre visible en el catálogo",
+     "categoriaId": "pruebas",
+     "descripcion": "Descripción corta que ve el host antes de abrir la sala.",
+     "recomendado": "Cuándo conviene usar este cuestionario (opcional).",
+     "archivo": "preguntas-mi-tema.json"
+   }
+   ```
+
+   - `id`: identificador único del concurso dentro del catálogo.
+   - `categoriaId`: debe coincidir con un `id` de `concursos.categorias`. Si no coincide con ninguno, el concurso aparece igual, agrupado bajo "Sin categoría".
+   - `archivo`: ruta relativa al JSON de preguntas creado en el paso 1.
+   - `recomendado`: opcional; si se omite, esa línea no se muestra en la ficha del concurso.
+
+3. **(Opcional) Declarar una categoría nueva** agregando un objeto a `concursos.categorias`:
+
+   ```json
+   { "id": "mi-categoria", "nombre": "Nombre del filtro", "descripcion": "Texto de apoyo del grupo." }
+   ```
+
+4. **Verificar en `host.html`**: recargar la pantalla de catálogo (login de host) y confirmar que la tarjeta nueva aparece, abre su ficha con el conteo correcto de preguntas y permite presentar la sala.
+
+No hace falta tocar `host.html`, `player.html` ni `estilos.css` para sumar un cuestionario: todo pasa por los dos archivos JSON de arriba.
+
 ## Mantenimiento
 
 - Si se quiere bajar el número de mensajes en Ably se recomienda:
