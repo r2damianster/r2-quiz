@@ -225,6 +225,21 @@ const HOST_CLAVE = 'ElprofedeInves';
 let ably, channel;
 let catalogo = [];
 let categorias = [];
+
+// --- Login persistence (24h) ---
+function persistLogin(){ localStorage.setItem('hostLogin', Date.now().toString()); }
+function clearLogin(){ localStorage.removeItem('hostLogin'); }
+function isLoginValid(){
+  const ts = parseInt(localStorage.getItem('hostLogin')||'0',10);
+  return ts && (Date.now() - ts) < 24*60*60*1000;
+}
+// Auto-login on page load
+if(isLoginValid()){
+  // bypass login screen
+  $('loginEstado').textContent = '';
+  mostrarPantalla('pantalla-catalogo');
+  cargarCatalogo();
+}
 let categoriaFiltro = 'todas';
 let concursoActivo = null;
 let preguntas = [];
@@ -298,10 +313,11 @@ function intentarLogin(){
     return;
   }
 
-  $('loginEstado').textContent = '';
-  $('claveHost').value = '';
-  mostrarPantalla('pantalla-catalogo');
-  cargarCatalogo();
+    $('loginEstado').textContent = '';
+    $('claveHost').value = '';
+    mostrarPantalla('pantalla-catalogo');
+    cargarCatalogo();
+    persistLogin();
 }
 
 $('btnEntrarHost').addEventListener('click', intentarLogin);
