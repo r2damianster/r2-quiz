@@ -9,6 +9,11 @@
       "id": "pruebas",
       "nombre": "Pruebas",
       "descripcion": "Bancos de ensayo para calibrar la mecánica del juego, el ritmo del grupo y el formato de las preguntas."
+    },
+    {
+      "id": "el-mundo-de-sofia",
+      "nombre": "El mundo de Sofía",
+      "descripcion": "Quizzes basados en el libro “El mundo de Sofía” de Jostein Gaarder."
     }
   ],
   "concursos": [
@@ -39,7 +44,7 @@
     {
       "id": "filosofia-cap1",
       "titulo": "El mundo de Sofía – Capítulo 1",
-      "categoriaId": "pruebas",
+      "categoriaId": "el-mundo-de-sofia",
       "descripcion": "Quiz de lectura básica con enfoque filosófico basado en el capítulo 1 de El mundo de Sofía.",
       "recomendado": "Uso en clase para introducir conceptos de identidad y existencia.",
       "archivo": "preguntas-filosofia.json"
