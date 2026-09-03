@@ -1195,6 +1195,41 @@ label.field-label:first-child{ margin-top: 0; }
 
 .hidden{ display:none !important; }
 
+.solo-impresion{ display:none; }
+
+@media print{
+  body{ background:#fff !important; }
+  .wrap{ max-width:100%; padding:0; }
+  .no-imprimir, .creditos{ display:none !important; }
+  .panel{
+    background:#fff !important;
+    box-shadow:none !important;
+    border:none !important;
+    color:#111 !important;
+    padding:0;
+  }
+  .solo-impresion{
+    display:block;
+  }
+  .resumen-impresion{
+    text-align:center;
+    margin:4px 0 20px;
+    color:#444 !important;
+    font-size:14px;
+  }
+  .eyebrow, h1, .ranking-nota, .leaderboard-name, .podio-name, .leaderboard-score,
+  .podio-score, .leaderboard-rank, .podio-label{
+    color:#111 !important;
+  }
+  .podio-slot, .leaderboard-row{
+    background:#f4f4f4 !important;
+    box-shadow:none !important;
+    border:1px solid #ccc !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
 .centrado{ text-align:center; }
 
 .subtitulo{ color: var(--text-dim); margin-top: 6px; }

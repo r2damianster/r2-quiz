@@ -182,10 +182,12 @@
   <section id="pantalla-final" class="panel hidden">
     <span class="eyebrow" id="finEyebrow">Fin de la partida</span>
     <h1 class="centrado">Resultados finales</h1>
+    <p class="solo-impresion resumen-impresion" id="resumenImpresion"></p>
     <div class="podio" id="podioFinal"></div>
     <ol class="ranking" id="rankingFinal"></ol>
     <p class="ranking-nota" id="notaRankingFinal"></p>
-    <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+    <div class="no-imprimir" style="margin-top:20px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+      <button class="btn secondary" id="btnImprimirResultados" type="button">Imprimir / Guardar PDF</button>
       <button class="btn secondary" id="btnNuevaRonda">Volver al catálogo</button>
     </div>
   </section>
@@ -242,6 +244,7 @@ if(isLoginValid()){
 }
 let categoriaFiltro = 'todas';
 let concursoActivo = null;
+let codigoSalaActual = '';
 let preguntas = [];
 let indicePregunta = -1;
 let jugadores = new Map();          // clientId -> { nombre, avatar, puntaje }
@@ -520,6 +523,7 @@ $('btnPresentar').addEventListener('click', async () => {
   if(!key){ $('btnPresentar').disabled = false; return; }
 
   const codigo = generarCodigoSala();
+  codigoSalaActual = codigo;
   ably = new Ably.Realtime({ key, clientId: 'host-' + codigo });
   channel = ably.channels.get('r2quiz-' + codigo);
 
@@ -1037,10 +1041,15 @@ function mostrarResultadosFinales(){
   $('finEyebrow').textContent = partidaDetenida
     ? 'Partida detenida por el host'
     : 'Fin de la partida';
+  const fecha = new Date().toLocaleDateString('es-EC', { day: 'numeric', month: 'long', year: 'numeric' });
+  $('resumenImpresion').textContent =
+    `${concursoActivo ? concursoActivo.titulo : 'Concurso'} · Sala ${codigoSalaActual} · ${fecha}`;
   channel.publish('fin', { puntajes: ranking, detenida: partidaDetenida });
   mostrarPantalla('pantalla-final');
   animarPuntajes('podioFinal'); // el podio cuenta desde cero
 }
+
+$('btnImprimirResultados').addEventListener('click', () => window.print());
 </script>
 </body>
 </html>
