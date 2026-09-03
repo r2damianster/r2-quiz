@@ -1,0 +1,62 @@
+[
+  {
+    "type": "multiple",
+    "question": "¿Cómo describe Sofía el cerebro humano al compararlo con una máquina?",
+    "options": ["A) Igual que un sofisticado ordenador", "B) Más simple que una máquina", "C) No lo menciona", "D) Igual que una piedra"],
+    "answer": "A"
+  },
+  {
+    "type": "multiple",
+    "question": "¿Qué nombre le había dado el padre de Sofía a su hija antes de decidir llamarla Sofía?",
+    "options": ["A) Anne Knutsen", "B) Synnove", "C) Hilde", "D) Maria"],
+    "answer": "B"
+  },
+  {
+    "type": "multiple",
+    "question": "¿Cuál es el nombre del gato de Sofía?",
+    "options": ["A) Misi", "B) Sherekan", "C) Felix", "D) Tigre"],
+    "answer": "B"
+  },
+  {
+    "type": "multiple",
+    "question": "¿Qué tipo de carta recibe Sofía al comienzo de la historia?",
+    "options": ["A) Una carta de su padre", "B) Una carta sin remitente ni sello", "C) Un paquete", "D) Un correo electrónico"],
+    "answer": "B"
+  },
+  {
+    "type": "multiple",
+    "question": "¿Cuál es la primera pregunta escrita en la nota que Sofía encuentra?",
+    "options": ["A) ¿De dónde vienes?", "B) ¿Quién eres?", "C) ¿Qué haces aquí?", "D) ¿Cuál es tu nombre?"],
+    "answer": "B"
+  },
+  {
+    "type": "multiple",
+    "question": "¿Qué actividad hace Sofía antes de leer la carta?",
+    "options": ["A) Se pone la mochila", "B) Prepara comida para el gato", "C) Se sienta a hacer los deberes", "D) Se baña"],
+    "answer": "C"
+  },
+  {
+    "type": "multiple",
+    "question": "¿Qué animal es mencionado como parte de la “colección de animales” de la familia?",
+    "options": ["A) Un perro", "B) Un pez dorado llamado Flequillo de Oro", "C) Un hámster", "D) Un loro"],
+    "answer": "B"
+  },
+  {
+    "type": "multiple",
+    "question": "¿Qué pregunta escribe la segunda carta que Sofía recibe?",
+    "options": ["A) ¿De dónde viene el mundo?", "B) ¿Cómo te llamas?", "C) ¿Qué haces?", "D) ¿Cuál es tu color favorito?"],
+    "answer": "A"
+  },
+  {
+    "type": "truefalse",
+    "question": "Sofía recibe una carta de su padre con sello y remitente.",
+    "options": ["Verdadero", "Falso"],
+    "answer": "F"
+  },
+  {
+    "type": "truefalse",
+    "question": "El Callejón se encuentra dentro del jardín y es un espacio secreto que Sofía usa cuando está triste o feliz.",
+    "options": ["Verdadero", "Falso"],
+    "answer": "V"
+  }
+]

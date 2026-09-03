@@ -35,6 +35,14 @@
       "descripcion": "Repaso rápido de diseño de investigación, tipos de variable, validez y muestreo. Sirve como diagnóstico de entrada o cierre de unidad.",
       "recomendado": "Cierre de la unidad de diseño metodológico.",
       "archivo": "preguntas-metodologia.json"
+    },
+    {
+      "id": "filosofia-cap1",
+      "titulo": "El mundo de Sofía – Capítulo 1",
+      "categoriaId": "pruebas",
+      "descripcion": "Quiz de lectura básica con enfoque filosófico basado en el capítulo 1 de El mundo de Sofía.",
+      "recomendado": "Uso en clase para introducir conceptos de identidad y existencia.",
+      "archivo": "preguntas-filosofia.json"
     }
   ]
 }

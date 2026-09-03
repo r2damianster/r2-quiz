@@ -1,0 +1,75 @@
+{
+  "titulo": "El mundo de Sofía – Capítulo 1 (Filosofía)",
+  "preguntas": [
+    {
+      "pregunta": "¿Cómo describe Sofía el cerebro humano al compararlo con una máquina?",
+      "opciones": ["Igual que un sofisticado ordenador", "Más simple que una máquina", "No lo menciona", "Igual que una piedra"],
+      "correcta": 0,
+      "tiempo": 15,
+      "explicacion": "Sofía escucha a Jorunn y duda que el cerebro sea solo una máquina."
+    },
+    {
+      "pregunta": "¿Qué nombre le había dado el padre de Sofía a su hija antes de decidir llamarla Sofía?",
+      "opciones": ["Anne Knutsen", "Synnove", "Hilde", "Maria"],
+      "correcta": 1,
+      "tiempo": 15,
+      "explicacion": "El padre originalmente quiso llamarla Synnove."
+    },
+    {
+      "pregunta": "¿Cuál es el nombre del gato de Sofía?",
+      "opciones": ["Misi", "Sherekan", "Felix", "Tigre"],
+      "correcta": 1,
+      "tiempo": 15,
+      "explicacion": "El gato se llama Sherekan, como se menciona varias veces."
+    },
+    {
+      "pregunta": "¿Qué tipo de carta recibe Sofía al comienzo de la historia?",
+      "opciones": ["Una carta de su padre", "Una carta sin remitente ni sello", "Un paquete", "Un correo electrónico"],
+      "correcta": 1,
+      "tiempo": 15,
+      "explicacion": "La carta no tiene remitente ni sello, solo la frase ‘¿Quién eres?’"
+    },
+    {
+      "pregunta": "¿Cuál es la primera pregunta escrita en la nota que Sofía encuentra?",
+      "opciones": ["¿De dónde vienes?", "¿Quién eres?", "¿Qué haces aquí?", "¿Cuál es tu nombre?"],
+      "correcta": 1,
+      "tiempo": 15,
+      "explicacion": "En la notita está escrita la pregunta ‘¿Quién eres?’"
+    },
+    {
+      "pregunta": "¿Qué actividad hace Sofía antes de leer la carta?",
+      "opciones": ["Se pone la mochila", "Prepara comida para el gato", "Se sienta a hacer los deberes", "Se baña"],
+      "correcta": 2,
+      "tiempo": 15,
+      "explicacion": "Sofía se sienta a hacer los deberes antes de abrir la carta."
+    },
+    {
+      "pregunta": "¿Qué animal es mencionado como parte de la “colección de animales” de la familia?",
+      "opciones": ["Un perro", "Un pez dorado llamado Flequillo de Oro", "Un hámster", "Un loro"],
+      "correcta": 1,
+      "tiempo": 15,
+      "explicacion": "La madre le regaló un pez dorado llamado Flequillo de Oro."
+    },
+    {
+      "pregunta": "¿Qué pregunta escribe la segunda carta que Sofía recibe?",
+      "opciones": ["¿De dónde viene el mundo?", "¿Cómo te llamas?", "¿Qué haces?", "¿Cuál es tu color favorito?"],
+      "correcta": 0,
+      "tiempo": 15,
+      "explicacion": "En la segunda nota está la pregunta ‘¿De dónde viene el mundo?’"
+    },
+    {
+      "pregunta": "Sofía recibe una carta de su padre con sello y remitente.",
+      "opciones": ["Verdadero", "Falso"],
+      "correcta": 1,
+      "tiempo": 10,
+      "explicacion": "La carta no tiene sello ni remitente, por lo que la respuesta es falsa."
+    },
+    {
+      "pregunta": "El Callejón se encuentra dentro del jardín y es un espacio secreto que Sofía usa cuando está triste o feliz.",
+      "opciones": ["Verdadero", "Falso"],
+      "correcta": 0,
+      "tiempo": 10,
+      "explicacion": "El Callejón es descrito como un refugio secreto dentro del jardín."
+    }
+  ]
+}

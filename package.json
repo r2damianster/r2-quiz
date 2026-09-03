@@ -1,0 +1,16 @@
+{
+  "name": "r2-quiz",
+  "version": "1.0.0",
+  "description": "Quiz platform for reading comprehension",
+  "main": "host.html",
+  "scripts": {
+    "lint": "eslint . --ext .js,.json",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0"
+  }
+}

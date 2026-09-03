@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Quiz – El mundo de Sofía (Capítulo 1)</title>
+    <style>
+        body {font-family: Arial, sans-serif; margin: 2rem; line-height: 1.5;}
+        .question {margin-bottom: 1.5rem;}
+        .options label {display: block; margin-left: 1.5rem;}
+        .result {font-weight: bold; margin-top: 2rem;}
+        button {padding: 0.5rem 1rem; font-size: 1rem;}
+    </style>
+</head>
+<body>
+    <h1>Quiz de lectura – El mundo de Sofía (Capítulo 1)</h1>
+    <div id="quiz"></div>
+    <button id="checkBtn">Comprobar respuestas</button>
+    <div class="result" id="result"></div>
+
+    <script>
+        // Load the JSON file with the questions
+        fetch('quiz_chapter1.json')
+            .then(r => r.json())
+            .then(data => renderQuiz(data))
+            .catch(err => {
+                document.getElementById('quiz').innerText = 'Error al cargar el quiz: ' + err;
+            });
+
+        function renderQuiz(questions) {
+            const quizDiv = document.getElementById('quiz');
+            questions.forEach((q, idx) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'question';
+                const qTitle = document.createElement('p');
+                qTitle.innerHTML = `<strong>${idx + 1}. ${q.question}</strong>`;
+                qDiv.appendChild(qTitle);
+
+                const optsDiv = document.createElement('div');
+                optsDiv.className = 'options';
+
+                if (q.type === 'multiple') {
+                    q.options.forEach((opt, i) => {
+                        const id = `q${idx}_opt${i}`;
+                        const label = document.createElement('label');
+                        label.htmlFor = id;
+                        const radio = document.createElement('input');
+                        radio.type = 'radio';
+                        radio.name = `q${idx}`;
+                        radio.id = id;
+                        radio.value = String.fromCharCode(65 + i); // A, B, C, D
+                        label.appendChild(radio);
+                        label.append(' ' + opt);
+                        optsDiv.appendChild(label);
+                    });
+                } else if (q.type === 'truefalse') {
+                    ['V', 'F'].forEach(v => {
+                        const id = `q${idx}_tf_${v}`;
+                        const label = document.createElement('label');
+                        label.htmlFor = id;
+                        const radio = document.createElement('input');
+                        radio.type = 'radio';
+                        radio.name = `q${idx}`;
+                        radio.id = id;
+                        radio.value = v;
+                        const text = v === 'V' ? 'Verdadero' : 'Falso';
+                        label.appendChild(radio);
+                        label.append(' ' + text);
+                        optsDiv.appendChild(label);
+                    });
+                }
+                qDiv.appendChild(optsDiv);
+                quizDiv.appendChild(qDiv);
+            });
+        }
+
+        document.getElementById('checkBtn').addEventListener('click', () => {
+            fetch('quiz_chapter1.json')
+                .then(r => r.json())
+                .then(questions => {
+                    let score = 0;
+                    questions.forEach((q, idx) => {
+                        const selected = document.querySelector(`input[name="q${idx}"]:checked`);
+                        if (selected && selected.value === q.answer) {
+                            score++;
+                        }
+                    });
+                    const total = questions.length;
+                    document.getElementById('result').innerText = `Puntuación: ${score} / ${total}`;
+                })
+                .catch(err => {
+                    document.getElementById('result').innerText = 'Error al calcular la puntuación: ' + err;
+                });
+        });
+    </script>
+</body>
+</html>
