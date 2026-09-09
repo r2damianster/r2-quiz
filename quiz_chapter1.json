@@ -1,116 +1,126 @@
-[
-  {
-    "type": "multiple",
-    "question": "Según el texto, ¿qué es un move en la escritura académica?",
-    "options": ["Un paso retórico que cumple una función reconocible dentro de un texto.", "Una regla de estilo obligatoria.", "Un tipo de conectivo gramatical.", "Una sección dedicada a la conclusión.", "Una técnica de revisión.", "Una estructura de párrafo fija."],
-    "answer": "A"
-  },
-  {
-    "type": "multiple",
-    "question": "¿A qué se debe que los patrones de escritura se repitan en los textos académicos?",
-    "options": ["Porque el lenguaje académico es predecible y reutiliza estructuras funcionales.", "Porque los autores copian textualmente entre sí.", "Por requisitos editorialiales obligatorios.", "Por la falta de creatividad de los autores.", "Por la presión de los editores.", "Por la necesidad de cumplir con normas de citación."],
-    "answer": "A"
-  },
-  {
-    "type": "multiple",
-    "question": "¿Cuáles son las tres funciones que cumplen los patrones para quien escribe en una lengua extranjera?",
-    "options": ["Instrumento de diagnóstico, andamio de aprendizaje y andamiaje de producción.", "Formato de citación, guía de estilo y lista de vocabulario.", "Modelo de resumen, esquema de argumentos y plantilla de referencias.", "Guía de ortografía, lista de conectores y tabla de tiempos verbales.", "Ejercicio de traducción, práctica de lectura y examen de gramática.", "Estrategia de memorización, lista de sinónimos y tabla de collocations."],
-    "answer": "A"
-  },
-  {
-    "type": "multiple",
-    "question": "Según el autor, ¿cómo se comportan los buenos párrafos académicos en relación con el nivel de abstracción?",
-    "options": ["Suben y bajan entre lo abstracto y lo concreto como una onda.", "Mantienen un nivel constante de abstracción.", "Empiezan siempre con datos concretos y terminan con teoría.", "Son siempre totalmente abstractos.", "Alternan entre citas y explicaciones sin patrón.", "Siguen una estructura lineal de introducción‑desarrollo‑conclusión."],
-    "answer": "A"
-  },
-  {
-    "type": "multiple",
-    "question": "Cuando un párrafo académico no funciona, ¿cuál suele ser la causa principal señalada en el texto?",
-    "options": ["Se queda atascado en el nivel más alto (demasiado abstracto) o más bajo (demasiado concreto) de la onda.", "Falta de citas bibliográficas.", "Uso incorrecto de conectores lógicos.", "Demasiadas ideas sin orden.", "Error gramatical.", "No sigue el modelo de introducción‑cuerpo‑conclusión."],
-    "answer": "A"
-  },
-  {
-    "type": "multiple",
-    "question": "¿Qué condición previa menciona el texto que se necesita para poder «romper un patrón con eficacia»?",
-    "options": ["Interiorizar el patrón antes de romperlo.", "Conocer todas las reglas de estilo.", "Tener un nivel avanzado de inglés.", "Recibir retroalimentación del tutor.", "Utilizar un software de análisis.", "Escribir sin referencias académicas."],
-    "answer": "A"
-  },
-  {
-    "type": "multiple",
-    "question": "¿Cuál es el criterio principal con el que se seleccionan los textos para la sección The model?",
-    "options": ["Que ejemplifiquen el patrón que se quiere enseñar.", "Que sean los más recientes publicados.", "Que tengan mayor número de citas.", "Que provengan de revistas de alto factor de impacto.", "Que el autor los prefiera personalmente.", "Que estén disponibles en acceso libre."],
-    "answer": "A"
-  },
-  {
-    "type": "short",
-    "question": "¿Cómo define el autor un «patrón de escritura» frente a la idea de que sea una «receta» o «camisa de fuerza»?",
-    "options": [],
-    "answer": ""
-  },
-  {
-    "type": "short",
-    "question": "¿Quién acuñó el término move y qué significado tiene dentro de la estructura textual?",
-    "options": [],
-    "answer": ""
-  },
-  {
-    "type": "short",
-    "question": "Explica la metáfora de la «onda» que utiliza el autor para describir la dinámica de un buen párrafo académico.",
-    "options": [],
-    "answer": ""
-  },
-  {
-    "type": "short",
-    "question": "¿En qué sentido un patrón de escritura puede servir como «instrumento de diagnóstico»?",
-    "options": [],
-    "answer": ""
-  },
-  {
-    "type": "short",
-    "question": "¿Cómo está organizada la progresión de las seis partes que componen el libro?",
-    "options": [],
-    "answer": ""
-  },
-  {
-    "type": "short",
-    "question": "¿Cuáles son las siete secciones fijas que componen cada capítulo a partir del segundo?",
-    "options": [],
-    "answer": ""
-  },
-  {
-    "type": "short",
-    "question": "¿Qué recomendación final da el autor respecto al uso del Phrase bank y los cuadernos personales?",
-    "options": [],
-    "answer": ""
-  },
-  {
-    "type": "truefalse",
-    "question": "V / F: La escritura académica en inglés se caracteriza por una variedad casi infinita de estructuras impredecibles.",
-    "options": ["Verdadero", "Falso"],
-    "answer": "F"
-  },
-  {
-    "type": "truefalse",
-    "question": "V / F: Los patrones de escritura solo se aplican a párrafos enteros y nunca a oraciones o secciones completas.",
-    "options": ["Verdadero", "Falso"],
-    "answer": "F"
-  },
-  {
-    "type": "truefalse",
-    "question": "V / F: El uso de patrones reduce la carga cognitiva al permitir que el escritor enfoque su atención en las ideas y en la lengua.",
-    "options": ["Verdadero", "Falso"],
-    "answer": "V"
-  },
-  {
-    "type": "truefalse",
-    "question": "V / F: En los capítulos del libro se utilizan ejemplos inventados por el autor para simplificar la explicación de las estructuras.",
-    "options": ["Verdadero", "Falso"],
-    "answer": "F"
-  },
-  {
-    "type": "truefalse",
-    "question": "V / F: Las soluciones comentadas de los ejercicios se encuentran en el Apéndice A del libro.",
-    "options": ["Verdadero", "Falso"],
-    "answer": "F"
-  }
-]
+{
+  "titulo": "Patterns in Academic Writing – Chapter 1",
+  "preguntas": [
+    {
+      "pregunta": "True or False: Academic writing in English has an unlimited and unpredictable repertoire of structures that are rarely repeated.",
+      "opciones": ["True", "False"],
+      "correcta": 1,
+      "tiempo": 15,
+      "explicacion": "❌ False — The text states that academic writing is predictable and relies on a limited repertoire of structures that are repeated over and over again."
+    },
+    {
+      "pregunta": "What is a 'move', according to the concept coined by John Swales?",
+      "opciones": [
+        "A type of grammatical connector used to link complex sentences.",
+        "Each rhetorical step that fulfills a recognizable function within a text.",
+        "A mandatory stylistic rule to avoid errors in a foreign language.",
+        "A fixed section dedicated to the final revision of a manuscript."
+      ],
+      "correcta": 1,
+      "tiempo": 20,
+      "explicacion": "🎯 A move is each rhetorical step that fulfills a recognizable function within a text — a concept coined by John Swales to describe the functional building blocks of academic genres."
+    },
+    {
+      "pregunta": "True or False: Writing patterns are rigid, mechanical recipes that force the author to write in only one way.",
+      "opciones": ["True", "False"],
+      "correcta": 1,
+      "tiempo": 15,
+      "explicacion": "❌ False — The author clarifies that patterns are not straitjackets or mechanical recipes, but rather functional skeletons and learning scaffolds."
+    },
+    {
+      "pregunta": "According to the text, at what scales can writing patterns operate?",
+      "opciones": [
+        "Exclusively at the level of full paragraphs, such as the PEEL model.",
+        "Only within the sentence through information progression.",
+        "Only at the global level to shape entire sections of an article.",
+        "At different levels: within the sentence, in the full paragraph, and in entire sections."
+      ],
+      "correcta": 3,
+      "tiempo": 20,
+      "explicacion": "📐 Patterns operate at multiple scales: within the sentence (information flow), at the paragraph level (e.g., PEEL), and across entire sections of a paper."
+    },
+    {
+      "pregunta": "True or False: Good academic paragraphs are characterized by going up and down between the abstract and the concrete, like a wave.",
+      "opciones": ["True", "False"],
+      "correcta": 0,
+      "tiempo": 15,
+      "explicacion": "✅ True — The author uses the wave metaphor to describe how effective paragraphs move between general/abstract claims and specific/concrete evidence."
+    },
+    {
+      "pregunta": "According to the author, what is usually the reason an academic paragraph does not work?",
+      "opciones": [
+        "It got stuck at the top (pure abstraction) or at the bottom (pure data without interpretation).",
+        "It does not include literal quotations from secondary sources.",
+        "It lacks logical connectors between subordinate clauses.",
+        "It presents too many general ideas without ever defining the main topic."
+      ],
+      "correcta": 0,
+      "tiempo": 20,
+      "explicacion": "🔍 A paragraph fails when it stays stuck at one level — either too abstract (no evidence) or too concrete (no interpretation) — instead of moving like a wave."
+    },
+    {
+      "pregunta": "True or False: Using patterns increases the cognitive load for someone writing in a foreign language because it requires memorizing too many rules.",
+      "opciones": ["True", "False"],
+      "correcta": 1,
+      "tiempo": 15,
+      "explicacion": "❌ False — Patterns actually reduce cognitive load because the structure is already decided, freeing attention for ideas and language."
+    },
+    {
+      "pregunta": "What function does a pattern fulfill when it acts as a 'diagnostic tool'?",
+      "opciones": [
+        "It automatically corrects the spelling and punctuation of a text.",
+        "It evaluates whether the vocabulary used is at a native level.",
+        "It reveals which move is missing or out of place by comparing one's own paragraph with the pattern.",
+        "It calculates the exact number of words a paragraph should have."
+      ],
+      "correcta": 2,
+      "tiempo": 20,
+      "explicacion": "🩺 As a diagnostic tool, a pattern lets you compare your own paragraph against it to discover which move is missing or out of place — like an X-ray for your writing."
+    },
+    {
+      "pregunta": "True or False: In order to break a writing pattern deliberately and effectively, it is first necessary to have internalized it.",
+      "opciones": ["True", "False"],
+      "correcta": 0,
+      "tiempo": 15,
+      "explicacion": "✅ True — You must master a pattern before you can break it on purpose. Breaking rules only works when you understand what you're breaking and why."
+    },
+    {
+      "pregunta": "How is the progression of the six parts that make up the book organized?",
+      "opciones": [
+        "From the most complex topics to the most basic concepts.",
+        "From the smallest unit to the largest.",
+        "In chronological order according to the publication date of the model articles.",
+        "From the breaking of formulas toward traditional structures."
+      ],
+      "correcta": 1,
+      "tiempo": 20,
+      "explicacion": "📚 The book is organized from the smallest unit to the largest — starting with sentence-level patterns and building up to full-section structures."
+    },
+    {
+      "pregunta": "True or False: In the 'The model' section of each chapter, examples invented by the author are used to illustrate the pattern more clearly.",
+      "opciones": ["True", "False"],
+      "correcta": 1,
+      "tiempo": 15,
+      "explicacion": "❌ False — The model section uses real published fragments with full references, never invented examples."
+    },
+    {
+      "pregunta": "In which of the seven fixed sections of each chapter are template phrases extracted from the models presented for reuse in one's own texts?",
+      "opciones": [
+        "Taking it apart",
+        "Spot the pattern",
+        "Rebuild it",
+        "Phrase bank"
+      ],
+      "correcta": 3,
+      "tiempo": 20,
+      "explicacion": "🗃️ The Phrase bank section collects template phrases extracted from the model texts so students can reuse and adapt them in their own academic writing."
+    },
+    {
+      "pregunta": "True or False: The commented solutions to the book's exercises are found in Appendix A.",
+      "opciones": ["True", "False"],
+      "correcta": 1,
+      "tiempo": 15,
+      "explicacion": "❌ False — The commented solutions are in Appendix C. Appendix A gathers the template phrases (Phrase bank)."
+    }
+  ]
+}
