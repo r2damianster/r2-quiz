@@ -1,62 +1,116 @@
 [
   {
     "type": "multiple",
-    "question": "¿Cómo describe Sofía el cerebro humano al compararlo con una máquina?",
-    "options": ["A) Igual que un sofisticado ordenador", "B) Más simple que una máquina", "C) No lo menciona", "D) Igual que una piedra"],
+    "question": "Según el texto, ¿qué es un move en la escritura académica?",
+    "options": ["Un paso retórico que cumple una función reconocible dentro de un texto.", "Una regla de estilo obligatoria.", "Un tipo de conectivo gramatical.", "Una sección dedicada a la conclusión.", "Una técnica de revisión.", "Una estructura de párrafo fija."],
     "answer": "A"
   },
   {
     "type": "multiple",
-    "question": "¿Qué nombre le había dado el padre de Sofía a su hija antes de decidir llamarla Sofía?",
-    "options": ["A) Anne Knutsen", "B) Synnove", "C) Hilde", "D) Maria"],
-    "answer": "B"
-  },
-  {
-    "type": "multiple",
-    "question": "¿Cuál es el nombre del gato de Sofía?",
-    "options": ["A) Misi", "B) Sherekan", "C) Felix", "D) Tigre"],
-    "answer": "B"
-  },
-  {
-    "type": "multiple",
-    "question": "¿Qué tipo de carta recibe Sofía al comienzo de la historia?",
-    "options": ["A) Una carta de su padre", "B) Una carta sin remitente ni sello", "C) Un paquete", "D) Un correo electrónico"],
-    "answer": "B"
-  },
-  {
-    "type": "multiple",
-    "question": "¿Cuál es la primera pregunta escrita en la nota que Sofía encuentra?",
-    "options": ["A) ¿De dónde vienes?", "B) ¿Quién eres?", "C) ¿Qué haces aquí?", "D) ¿Cuál es tu nombre?"],
-    "answer": "B"
-  },
-  {
-    "type": "multiple",
-    "question": "¿Qué actividad hace Sofía antes de leer la carta?",
-    "options": ["A) Se pone la mochila", "B) Prepara comida para el gato", "C) Se sienta a hacer los deberes", "D) Se baña"],
-    "answer": "C"
-  },
-  {
-    "type": "multiple",
-    "question": "¿Qué animal es mencionado como parte de la “colección de animales” de la familia?",
-    "options": ["A) Un perro", "B) Un pez dorado llamado Flequillo de Oro", "C) Un hámster", "D) Un loro"],
-    "answer": "B"
-  },
-  {
-    "type": "multiple",
-    "question": "¿Qué pregunta escribe la segunda carta que Sofía recibe?",
-    "options": ["A) ¿De dónde viene el mundo?", "B) ¿Cómo te llamas?", "C) ¿Qué haces?", "D) ¿Cuál es tu color favorito?"],
+    "question": "¿A qué se debe que los patrones de escritura se repitan en los textos académicos?",
+    "options": ["Porque el lenguaje académico es predecible y reutiliza estructuras funcionales.", "Porque los autores copian textualmente entre sí.", "Por requisitos editorialiales obligatorios.", "Por la falta de creatividad de los autores.", "Por la presión de los editores.", "Por la necesidad de cumplir con normas de citación."],
     "answer": "A"
+  },
+  {
+    "type": "multiple",
+    "question": "¿Cuáles son las tres funciones que cumplen los patrones para quien escribe en una lengua extranjera?",
+    "options": ["Instrumento de diagnóstico, andamio de aprendizaje y andamiaje de producción.", "Formato de citación, guía de estilo y lista de vocabulario.", "Modelo de resumen, esquema de argumentos y plantilla de referencias.", "Guía de ortografía, lista de conectores y tabla de tiempos verbales.", "Ejercicio de traducción, práctica de lectura y examen de gramática.", "Estrategia de memorización, lista de sinónimos y tabla de collocations."],
+    "answer": "A"
+  },
+  {
+    "type": "multiple",
+    "question": "Según el autor, ¿cómo se comportan los buenos párrafos académicos en relación con el nivel de abstracción?",
+    "options": ["Suben y bajan entre lo abstracto y lo concreto como una onda.", "Mantienen un nivel constante de abstracción.", "Empiezan siempre con datos concretos y terminan con teoría.", "Son siempre totalmente abstractos.", "Alternan entre citas y explicaciones sin patrón.", "Siguen una estructura lineal de introducción‑desarrollo‑conclusión."],
+    "answer": "A"
+  },
+  {
+    "type": "multiple",
+    "question": "Cuando un párrafo académico no funciona, ¿cuál suele ser la causa principal señalada en el texto?",
+    "options": ["Se queda atascado en el nivel más alto (demasiado abstracto) o más bajo (demasiado concreto) de la onda.", "Falta de citas bibliográficas.", "Uso incorrecto de conectores lógicos.", "Demasiadas ideas sin orden.", "Error gramatical.", "No sigue el modelo de introducción‑cuerpo‑conclusión."],
+    "answer": "A"
+  },
+  {
+    "type": "multiple",
+    "question": "¿Qué condición previa menciona el texto que se necesita para poder «romper un patrón con eficacia»?",
+    "options": ["Interiorizar el patrón antes de romperlo.", "Conocer todas las reglas de estilo.", "Tener un nivel avanzado de inglés.", "Recibir retroalimentación del tutor.", "Utilizar un software de análisis.", "Escribir sin referencias académicas."],
+    "answer": "A"
+  },
+  {
+    "type": "multiple",
+    "question": "¿Cuál es el criterio principal con el que se seleccionan los textos para la sección The model?",
+    "options": ["Que ejemplifiquen el patrón que se quiere enseñar.", "Que sean los más recientes publicados.", "Que tengan mayor número de citas.", "Que provengan de revistas de alto factor de impacto.", "Que el autor los prefiera personalmente.", "Que estén disponibles en acceso libre."],
+    "answer": "A"
+  },
+  {
+    "type": "short",
+    "question": "¿Cómo define el autor un «patrón de escritura» frente a la idea de que sea una «receta» o «camisa de fuerza»?",
+    "options": [],
+    "answer": ""
+  },
+  {
+    "type": "short",
+    "question": "¿Quién acuñó el término move y qué significado tiene dentro de la estructura textual?",
+    "options": [],
+    "answer": ""
+  },
+  {
+    "type": "short",
+    "question": "Explica la metáfora de la «onda» que utiliza el autor para describir la dinámica de un buen párrafo académico.",
+    "options": [],
+    "answer": ""
+  },
+  {
+    "type": "short",
+    "question": "¿En qué sentido un patrón de escritura puede servir como «instrumento de diagnóstico»?",
+    "options": [],
+    "answer": ""
+  },
+  {
+    "type": "short",
+    "question": "¿Cómo está organizada la progresión de las seis partes que componen el libro?",
+    "options": [],
+    "answer": ""
+  },
+  {
+    "type": "short",
+    "question": "¿Cuáles son las siete secciones fijas que componen cada capítulo a partir del segundo?",
+    "options": [],
+    "answer": ""
+  },
+  {
+    "type": "short",
+    "question": "¿Qué recomendación final da el autor respecto al uso del Phrase bank y los cuadernos personales?",
+    "options": [],
+    "answer": ""
   },
   {
     "type": "truefalse",
-    "question": "Sofía recibe una carta de su padre con sello y remitente.",
+    "question": "V / F: La escritura académica en inglés se caracteriza por una variedad casi infinita de estructuras impredecibles.",
     "options": ["Verdadero", "Falso"],
     "answer": "F"
   },
   {
     "type": "truefalse",
-    "question": "El Callejón se encuentra dentro del jardín y es un espacio secreto que Sofía usa cuando está triste o feliz.",
+    "question": "V / F: Los patrones de escritura solo se aplican a párrafos enteros y nunca a oraciones o secciones completas.",
+    "options": ["Verdadero", "Falso"],
+    "answer": "F"
+  },
+  {
+    "type": "truefalse",
+    "question": "V / F: El uso de patrones reduce la carga cognitiva al permitir que el escritor enfoque su atención en las ideas y en la lengua.",
     "options": ["Verdadero", "Falso"],
     "answer": "V"
+  },
+  {
+    "type": "truefalse",
+    "question": "V / F: En los capítulos del libro se utilizan ejemplos inventados por el autor para simplificar la explicación de las estructuras.",
+    "options": ["Verdadero", "Falso"],
+    "answer": "F"
+  },
+  {
+    "type": "truefalse",
+    "question": "V / F: Las soluciones comentadas de los ejercicios se encuentran en el Apéndice A del libro.",
+    "options": ["Verdadero", "Falso"],
+    "answer": "F"
   }
 ]

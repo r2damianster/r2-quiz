@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <title>Quiz – El mundo de Sofía (Capítulo 1)</title>
+    <title>Patterns in Academic Writing – Chapter 1</title>
     <style>
         body {font-family: Arial, sans-serif; margin: 2rem; line-height: 1.5;}
         .question {margin-bottom: 1.5rem;}
@@ -67,6 +67,12 @@
                         label.append(' ' + text);
                         optsDiv.appendChild(label);
                     });
+                } else if (q.type === 'short') {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.name = `q${idx}`;
+                    input.style.width = '100%';
+                    optsDiv.appendChild(input);
                 }
                 qDiv.appendChild(optsDiv);
                 quizDiv.appendChild(qDiv);

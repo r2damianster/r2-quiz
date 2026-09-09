@@ -227,6 +227,7 @@ const HOST_CLAVE = 'ElprofedeInves';
 let ably, channel;
 let catalogo = [];
 let categorias = [];
+const $ = (id) => document.getElementById(id);
 
 // --- Login persistence (24h) ---
 function persistLogin(){ localStorage.setItem('hostLogin', Date.now().toString()); }
@@ -289,7 +290,7 @@ const PANTALLAS = [
   'pantalla-final'
 ];
 
-const $ = (id) => document.getElementById(id);
+
 
 function mostrarPantalla(id){
   PANTALLAS.forEach(p => $(p).classList.toggle('hidden', p !== id));

@@ -14,6 +14,11 @@
       "id": "el-mundo-de-sofia",
       "nombre": "El mundo de Sofía",
       "descripcion": "Quizzes basados en el libro “El mundo de Sofía” de Jostein Gaarder."
+    },
+    {
+      "id": "patrones-academicos",
+      "nombre": "Patrones académicos",
+      "descripcion": "Quizzes sobre patrones de escritura académica y moves."
     }
   ],
   "concursos": [
@@ -48,6 +53,14 @@
       "descripcion": "Quiz de lectura básica con enfoque filosófico basado en el capítulo 1 de El mundo de Sofía.",
       "recomendado": "Uso en clase para introducir conceptos de identidad y existencia.",
       "archivo": "preguntas-filosofia.json"
+    ,
+    {
+      "id": "patterns-academic-writing-ch1",
+      "titulo": "Patterns in Academic Writing – Chapter 1",
+      "categoriaId": "patrones-academicos",
+      "descripcion": "Quiz de control de lectura basado en el Capítulo 1 de Academic Reading and Writing, con preguntas de opción múltiple, verdadero/falso y respuestas cortas.",
+      "recomendado": "Ideal para practicar identificación de moves y patrones en escritura académica.",
+      "archivo": "quiz_chapter1.json"
     }
   ]
 }
