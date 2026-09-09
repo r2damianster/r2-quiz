@@ -229,6 +229,16 @@ let catalogo = [];
 let categorias = [];
 const $ = (id) => document.getElementById(id);
 
+const PANTALLAS = [
+  'pantalla-login','pantalla-catalogo','pantalla-detalle','pantalla-lobby',
+  'pantalla-alistate','pantalla-pregunta','pantalla-revelacion','pantalla-marcador',
+  'pantalla-final'
+];
+
+function mostrarPantalla(id){
+  PANTALLAS.forEach(p => $(p).classList.toggle('hidden', p !== id));
+}
+
 // --- Login persistence (24h) ---
 function persistLogin(){ localStorage.setItem('hostLogin', Date.now().toString()); }
 function clearLogin(){ localStorage.removeItem('hostLogin'); }
@@ -284,17 +294,6 @@ function notaRanking(mostrados, total){
 
 let pausaLectura = null;
 
-const PANTALLAS = [
-  'pantalla-login','pantalla-catalogo','pantalla-detalle','pantalla-lobby',
-  'pantalla-alistate','pantalla-pregunta','pantalla-revelacion','pantalla-marcador',
-  'pantalla-final'
-];
-
-
-
-function mostrarPantalla(id){
-  PANTALLAS.forEach(p => $(p).classList.toggle('hidden', p !== id));
-}
 
 function escapar(texto){
   return String(texto ?? '').replace(/[&<>"']/g, c => ({
