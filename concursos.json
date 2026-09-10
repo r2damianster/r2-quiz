@@ -19,6 +19,11 @@
       "id": "patrones-academicos",
       "nombre": "Patrones académicos",
       "descripcion": "Quizzes sobre patrones de escritura académica y moves."
+    },
+    {
+      "id": "lectura-inferencial",
+      "nombre": "Lectura inferencial",
+      "descripcion": "Actividades asincrónicas de lectura por fragmentos: cada estudiante avanza a su ritmo con tiempo límite y descarga su propio PDF al terminar."
     }
   ],
   "concursos": [
@@ -61,6 +66,15 @@
       "descripcion": "Quiz de control de lectura basado en el Capítulo 1 de Academic Reading and Writing, con preguntas de opción múltiple, verdadero/falso y respuestas cortas.",
       "recomendado": "Ideal para practicar identificación de moves y patrones en escritura académica.",
       "archivo": "quiz_chapter1.json"
+    },
+    {
+      "id": "lectura-plantilla-ejemplo",
+      "titulo": "Plantilla — Lectura inferencial",
+      "categoriaId": "lectura-inferencial",
+      "tipo": "lectura",
+      "descripcion": "Plantilla de ejemplo para armar una actividad de lectura por fragmentos. Reemplazá el texto y las preguntas en lectura-datos/plantilla-ejemplo.json antes de usarla con estudiantes.",
+      "recomendado": "Punto de partida para crear nuevas actividades de lectura inferencial.",
+      "archivo": "lectura-datos/plantilla-ejemplo.json"
     }
   ]
 }

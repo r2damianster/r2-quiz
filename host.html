@@ -65,11 +65,31 @@
 
     <p class="subtitulo" id="detalleRecomendado"></p>
 
-    <p class="nota-privacidad">
+    <p class="nota-privacidad" id="detalleNotaSala">
       Las preguntas y respuestas permanecen ocultas hasta que la partida empiece, incluso para vos.
     </p>
 
     <div class="estado" id="detalleEstado"></div>
+
+    <div id="bloqueLectura" class="hidden" style="margin-top:22px;">
+      <p class="subtitulo">
+        Es una actividad asincrónica: cada estudiante entra por su cuenta con el enlace, avanza a su ritmo dentro del tiempo límite y descarga su propio PDF al terminar. No requiere abrir sala.
+      </p>
+      <div class="lobby-grid">
+        <div>
+          <p class="subtitulo" style="margin-bottom:6px;">Enlace para compartir</p>
+          <p class="mono" id="enlaceLectura" style="word-break:break-all;"></p>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+            <button class="btn" id="btnCopiarEnlaceLectura">Copiar enlace</button>
+            <button class="btn secondary" id="btnAbrirLectura">Abrir actividad</button>
+          </div>
+        </div>
+        <figure class="qr-box">
+          <div id="qrLectura" class="qr-lienzo"></div>
+          <figcaption>Escaneá para abrir la actividad</figcaption>
+        </figure>
+      </div>
+    </div>
 
     <div style="margin-top:22px; display:flex; gap:10px; flex-wrap:wrap;">
       <button class="btn" id="btnPresentar">Presentar en línea</button>
@@ -428,12 +448,22 @@ function renderCatalogo(){
 }
 
 /* ---------- 2. Ficha del concurso ---------- */
+function idActividadDeArchivo(archivo){
+  return archivo.split('/').pop().replace(/\.json$/, '');
+}
+
+function urlDeLectura(archivo){
+  return new URL('lectura.html?actividad=' + idActividadDeArchivo(archivo), window.location.href).href;
+}
+
 async function abrirDetalle(id){
   const concurso = catalogo.find(c => c.id === id);
   if(!concurso) return;
 
   concursoActivo = concurso;
   preguntas = [];
+
+  const esLectura = concurso.tipo === 'lectura';
 
   $('detalleCategoria').textContent = nombreCategoriaDe(concurso);
   $('detalleTitulo').textContent = concurso.titulo;
@@ -442,8 +472,53 @@ async function abrirDetalle(id){
   $('detalleStats').innerHTML = '';
   $('detalleEstado').textContent = 'Cargando ficha…';
   $('detalleEstado').className = 'estado';
+  $('btnPresentar').classList.toggle('hidden', esLectura);
+  $('bloqueLectura').classList.toggle('hidden', !esLectura);
+  $('detalleNotaSala').classList.toggle('hidden', esLectura);
   $('btnPresentar').disabled = true;
   mostrarPantalla('pantalla-detalle');
+
+  if(esLectura){
+    try {
+      const resp = await fetch(concurso.archivo, { cache: 'no-store' });
+      if(!resp.ok) throw new Error('No se pudo leer ' + concurso.archivo);
+      const data = await resp.json();
+      const fragmentos = data.fragmentos || [];
+      if(fragmentos.length === 0) throw new Error('El archivo no tiene fragmentos.');
+      const totalPreguntas = fragmentos.reduce((total, f) => total + (f.preguntas || []).length, 0);
+
+      $('detalleStats').innerHTML = `
+        <div class="ficha-stat"><span class="ficha-stat-valor mono">${fragmentos.length}</span><span class="ficha-stat-label">Fragmentos</span></div>
+        <div class="ficha-stat"><span class="ficha-stat-valor mono">${totalPreguntas}</span><span class="ficha-stat-label">Preguntas</span></div>
+        <div class="ficha-stat"><span class="ficha-stat-valor mono">${data.tiempoLimiteMinutos || '—'}</span><span class="ficha-stat-label">Minutos límite</span></div>`;
+
+      const url = urlDeLectura(concurso.archivo);
+      $('enlaceLectura').textContent = url;
+      $('qrLectura').innerHTML = '';
+      const qr = qrcode(0, 'M');
+      qr.addData(url);
+      qr.make();
+      $('qrLectura').innerHTML = qr.createSvgTag({ cellSize: 5, margin: 2, scalable: true });
+
+      $('btnCopiarEnlaceLectura').onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(url);
+          $('detalleEstado').textContent = 'Enlace copiado.';
+          $('detalleEstado').className = 'estado';
+        } catch {
+          $('detalleEstado').textContent = 'No se pudo copiar automáticamente: copiá el enlace manualmente.';
+          $('detalleEstado').className = 'estado error';
+        }
+      };
+      $('btnAbrirLectura').onclick = () => window.open(url, '_blank', 'noopener');
+
+      $('detalleEstado').textContent = '';
+    } catch(err){
+      $('detalleEstado').textContent = 'Error cargando la actividad: ' + err.message;
+      $('detalleEstado').className = 'estado error';
+    }
+    return;
+  }
 
   try {
     const resp = await fetch(concurso.archivo, { cache: 'no-store' });
