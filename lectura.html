@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lectura inferencial — R2 Quiz</title>
+<link rel="stylesheet" href="estilos.css" />
+<script src="vendor/jspdf.umd.min.js"></script>
+<style>
+  .lectura-timer{
+    position: sticky; top: 0; z-index: 20;
+    display:flex; align-items:center; justify-content:space-between;
+    background: var(--bg-panel-2); border:1px solid var(--line);
+    border-radius: var(--radius); padding: 12px 18px; margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .lectura-timer.alerta{ border-color: var(--coral); }
+  .lectura-timer .tiempo{ font-size: 20px; }
+  .lectura-nav{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+  .lectura-nav button{
+    background: var(--bg-panel-2); color: var(--text-dim);
+    border:1px solid var(--line); border-radius: 999px;
+    padding: 6px 14px; font-size:13px; cursor:pointer;
+  }
+  .lectura-nav button.activo{ border-color: var(--gold); color: var(--gold); }
+  .lectura-nav button.respondido::after{ content:" ✓"; color: var(--teal); }
+  .lectura-texto{
+    line-height:1.7; font-size:16px; white-space:pre-wrap;
+    background: var(--bg-panel-2); border:1px solid var(--line);
+    border-radius: var(--radius); padding:20px; margin-bottom:20px;
+  }
+  .lectura-pregunta{ margin-bottom:18px; }
+  .lectura-pregunta .opciones label{
+    display:block; padding:8px 12px; margin:4px 0;
+    border:1px solid var(--line); border-radius:10px; cursor:pointer;
+  }
+  .lectura-pregunta textarea{
+    width:100%; min-height:90px; background: var(--bg-panel);
+    color: var(--text); border:1px solid var(--line); border-radius:10px;
+    padding:10px; font-family:inherit; font-size:14px;
+  }
+  .lectura-acciones{ display:flex; gap:10px; justify-content:space-between; margin-top:24px; flex-wrap:wrap; }
+  .btn{
+    background: var(--gold); color:#1b1b3f; border:none; border-radius:10px;
+    padding:10px 18px; font-weight:600; cursor:pointer; font-size:14px;
+  }
+  .btn.secundario{ background: transparent; color: var(--text-dim); border:1px solid var(--line); }
+  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
+  .resumen-item{
+    border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:10px;
+  }
+  .resumen-item.correcta{ border-color: var(--teal); }
+  .resumen-item.incorrecta{ border-color: var(--coral); }
+  .marca{ font-weight:700; }
+  .marca.ok{ color: var(--teal); }
+  .marca.no{ color: var(--coral); }
+  .bloqueo{ text-align:center; padding: 40px 20px; }
+</style>
+</head>
+<body>
+<div class="wrap" style="max-width:760px;">
+  <div class="eyebrow">Lectura inferencial</div>
+  <h1 id="tituloActividad" style="margin-bottom:20px;">Cargando…</h1>
+  <div id="app"></div>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const actividadId = params.get('actividad') || 'plantilla-ejemplo';
+const rutaJson = `lectura-datos/${actividadId}.json`;
+const claveCompletado = `lectura-completado-${actividadId}`;
+const claveProgreso = `lectura-progreso-${actividadId}`;
+
+const app = document.getElementById('app');
+let actividad = null;
+let estado = null; // { nombre, horaInicio, fragmentoActual, respuestas: {fragId: {qIdx: valor}} }
+let timerInterval = null;
+
+fetch(rutaJson)
+  .then(r => { if (!r.ok) throw new Error('No se encontró la actividad'); return r.json(); })
+  .then(data => { actividad = data; iniciarFlujo(); })
+  .catch(err => {
+    document.getElementById('tituloActividad').textContent = 'Error';
+    app.innerHTML = `<div class="panel bloqueo">No se pudo cargar la actividad: ${err.message}</div>`;
+  });
+
+function iniciarFlujo(){
+  document.getElementById('tituloActividad').textContent = actividad.titulo;
+
+  const yaCompletado = localStorage.getItem(claveCompletado);
+  if (yaCompletado) {
+    const info = JSON.parse(yaCompletado);
+    app.innerHTML = `<div class="panel bloqueo">
+      <h3>Actividad ya completada en este dispositivo</h3>
+      <p style="color:var(--text-dim)">Registrada por <strong>${escapeHtml(info.nombre)}</strong> el ${new Date(info.fecha).toLocaleString()}.</p>
+      <p style="color:var(--text-dim)">Si crees que esto es un error, contacta a tu docente.</p>
+    </div>`;
+    return;
+  }
+
+  const ahora = new Date();
+  if (actividad.disponibleDesde && ahora < new Date(actividad.disponibleDesde)) {
+    app.innerHTML = `<div class="panel bloqueo"><h3>Actividad aún no disponible</h3>
+      <p style="color:var(--text-dim)">Se habilita el ${new Date(actividad.disponibleDesde).toLocaleString()}.</p></div>`;
+    return;
+  }
+  if (actividad.disponibleHasta && ahora > new Date(actividad.disponibleHasta)) {
+    app.innerHTML = `<div class="panel bloqueo"><h3>Actividad cerrada</h3>
+      <p style="color:var(--text-dim)">El plazo venció el ${new Date(actividad.disponibleHasta).toLocaleString()}.</p></div>`;
+    return;
+  }
+
+  const progresoGuardado = sessionStorage.getItem(claveProgreso);
+  if (progresoGuardado) {
+    estado = JSON.parse(progresoGuardado);
+    renderActividad();
+  } else {
+    renderPantallaNombre();
+  }
+}
+
+function renderPantallaNombre(){
+  app.innerHTML = `
+    <div class="panel">
+      <p style="color:var(--text-dim)">Tienes <strong>${actividad.tiempoLimiteMinutos} minutos</strong> desde que inicies. Puedes navegar libremente entre fragmentos, pero el tiempo no se detiene.</p>
+      <label style="display:block;margin:16px 0 6px;">Tu nombre completo</label>
+      <input id="nombreInput" type="text" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg-panel-2);color:var(--text);font-size:15px;" />
+      <div class="lectura-acciones">
+        <span></span>
+        <button class="btn" id="btnEmpezar">Empezar actividad</button>
+      </div>
+    </div>`;
+  document.getElementById('btnEmpezar').addEventListener('click', () => {
+    const nombre = document.getElementById('nombreInput').value.trim();
+    if (!nombre) { alert('Escribe tu nombre para continuar.'); return; }
+    estado = {
+      nombre,
+      horaInicio: new Date().toISOString(),
+      fragmentoActual: 0,
+      respuestas: {}
+    };
+    guardarProgreso();
+    renderActividad();
+  });
+}
+
+function guardarProgreso(){
+  sessionStorage.setItem(claveProgreso, JSON.stringify(estado));
+}
+
+function segundosRestantes(){
+  const limite = actividad.tiempoLimiteMinutos * 60;
+  const transcurrido = Math.floor((Date.now() - new Date(estado.horaInicio).getTime()) / 1000);
+  return Math.max(0, limite - transcurrido);
+}
+
+function formatoTiempo(segundos){
+  const m = Math.floor(segundos / 60).toString().padStart(2, '0');
+  const s = (segundos % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+function renderActividad(){
+  if (timerInterval) clearInterval(timerInterval);
+
+  const nav = actividad.fragmentos.map((f, i) => {
+    const respondidas = f.preguntas.length > 0 && f.preguntas.every((_, qi) => tieneRespuesta(f.id, qi));
+    return `<button data-frag="${i}" class="${i === estado.fragmentoActual ? 'activo' : ''} ${respondidas ? 'respondido' : ''}">F${i + 1}</button>`;
+  }).join('');
+
+  const frag = actividad.fragmentos[estado.fragmentoActual];
+  const preguntasHtml = frag.preguntas.map((p, qi) => renderPregunta(frag.id, qi, p)).join('');
+
+  app.innerHTML = `
+    <div class="lectura-timer" id="timerBox">
+      <span>${estado.nombre}</span>
+      <span class="tiempo mono" id="tiempoRestante"></span>
+    </div>
+    <div class="lectura-nav">${nav}</div>
+    <div class="lectura-texto">${escapeHtml(frag.texto)}</div>
+    <div>${preguntasHtml || '<p style="color:var(--text-dim)">Este fragmento no tiene preguntas.</p>'}</div>
+    <div class="lectura-acciones">
+      <div>
+        <button class="btn secundario" id="btnAnterior" ${estado.fragmentoActual === 0 ? 'disabled' : ''}>Anterior</button>
+        <button class="btn secundario" id="btnSiguiente" ${estado.fragmentoActual === actividad.fragmentos.length - 1 ? 'disabled' : ''}>Siguiente</button>
+      </div>
+      <button class="btn" id="btnFinalizar">Finalizar y enviar</button>
+    </div>
+  `;
+
+  document.querySelectorAll('.lectura-nav button').forEach(btn => {
+    btn.addEventListener('click', () => { estado.fragmentoActual = Number(btn.dataset.frag); guardarProgreso(); renderActividad(); });
+  });
+  document.getElementById('btnAnterior').addEventListener('click', () => { estado.fragmentoActual--; guardarProgreso(); renderActividad(); });
+  document.getElementById('btnSiguiente').addEventListener('click', () => { estado.fragmentoActual++; guardarProgreso(); renderActividad(); });
+  document.getElementById('btnFinalizar').addEventListener('click', () => {
+    if (confirm('¿Enviar la actividad ahora? No podrás seguir editando tus respuestas.')) finalizar();
+  });
+
+  document.querySelectorAll('[data-respuesta]').forEach(el => {
+    el.addEventListener('input', (e) => {
+      const fragId = e.target.dataset.fragId;
+      const qIdx = e.target.dataset.qIdx;
+      estado.respuestas[fragId] = estado.respuestas[fragId] || {};
+      estado.respuestas[fragId][qIdx] = e.target.value;
+      guardarProgreso();
+    });
+  });
+
+  actualizarTimer();
+  timerInterval = setInterval(actualizarTimer, 1000);
+}
+
+function renderPregunta(fragId, qIdx, p){
+  const valorGuardado = (estado.respuestas[fragId] && estado.respuestas[fragId][qIdx]) || '';
+  if (p.tipo === 'multiple') {
+    const opciones = p.opciones.map((opt, i) => {
+      const letra = String.fromCharCode(65 + i);
+      const chequeado = valorGuardado === letra ? 'checked' : '';
+      return `<label><input type="radio" name="preg-${fragId}-${qIdx}" value="${letra}" data-respuesta data-frag-id="${fragId}" data-q-idx="${qIdx}" ${chequeado}> ${letra}. ${escapeHtml(opt)}</label>`;
+    }).join('');
+    return `<div class="lectura-pregunta"><p><strong>${escapeHtml(p.pregunta)}</strong></p><div class="opciones">${opciones}</div></div>`;
+  }
+  return `<div class="lectura-pregunta"><p><strong>${escapeHtml(p.pregunta)}</strong></p>
+    <textarea data-respuesta data-frag-id="${fragId}" data-q-idx="${qIdx}" placeholder="Escribe tu respuesta...">${escapeHtml(valorGuardado)}</textarea></div>`;
+}
+
+function tieneRespuesta(fragId, qIdx){
+  return !!(estado.respuestas[fragId] && estado.respuestas[fragId][qIdx]);
+}
+
+function actualizarTimer(){
+  const restantes = segundosRestantes();
+  const box = document.getElementById('timerBox');
+  const span = document.getElementById('tiempoRestante');
+  if (!box || !span) return;
+  span.textContent = formatoTiempo(restantes);
+  box.classList.toggle('alerta', restantes <= 60);
+  if (restantes <= 0) {
+    clearInterval(timerInterval);
+    finalizar();
+  }
+}
+
+function finalizar(){
+  if (timerInterval) clearInterval(timerInterval);
+  estado.horaFin = new Date().toISOString();
+  guardarProgreso();
+  renderResumen();
+}
+
+function renderResumen(){
+  let correctas = 0, incorrectas = 0, abiertas = 0;
+  const bloques = actividad.fragmentos.map(frag => {
+    const items = frag.preguntas.map((p, qi) => {
+      const respuesta = (estado.respuestas[frag.id] && estado.respuestas[frag.id][qi]) || '';
+      if (p.tipo === 'multiple') {
+        const esCorrecta = respuesta === p.respuesta;
+        if (respuesta) esCorrecta ? correctas++ : incorrectas++;
+        return `<div class="resumen-item ${respuesta ? (esCorrecta ? 'correcta' : 'incorrecta') : ''}">
+          <p>${escapeHtml(p.pregunta)}</p>
+          <p>Tu respuesta: <strong>${respuesta || '(sin responder)'}</strong>
+          ${respuesta ? `<span class="marca ${esCorrecta ? 'ok' : 'no'}">${esCorrecta ? '✓ correcta' : '✗ incorrecta'}</span>` : ''}</p>
+        </div>`;
+      }
+      abiertas++;
+      return `<div class="resumen-item">
+        <p>${escapeHtml(p.pregunta)}</p>
+        <p>Tu respuesta: <em>${respuesta ? escapeHtml(respuesta) : '(sin responder)'}</em></p>
+      </div>`;
+    }).join('');
+    return `<h3 style="margin-top:24px;">Fragmento ${frag.id}</h3>${items}`;
+  }).join('');
+
+  const tiempoUsadoSeg = Math.round((new Date(estado.horaFin) - new Date(estado.horaInicio)) / 1000);
+
+  app.innerHTML = `
+    <div class="panel">
+      <p style="color:var(--text-dim)">Tiempo utilizado: <strong class="mono">${formatoTiempo(tiempoUsadoSeg)}</strong></p>
+      <p style="color:var(--text-dim)">Cerradas: <span class="marca ok">${correctas} correctas</span> · <span class="marca no">${incorrectas} incorrectas</span> · Abiertas registradas: ${abiertas}</p>
+      ${bloques}
+      <div style="margin-top:24px;">
+        <label style="display:block;margin-bottom:6px;">¿Ocurrió algún inconveniente durante la actividad? (opcional)</label>
+        <textarea id="incidenciaInput" placeholder="Ej: se cerró la pestaña, hubo un corte de conexión, una pregunta no cargó bien..." style="width:100%;min-height:80px;background:var(--bg-panel-2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;font-family:inherit;"></textarea>
+      </div>
+      <div class="lectura-acciones">
+        <span></span>
+        <button class="btn" id="btnDescargarPdf">Descargar PDF y finalizar</button>
+      </div>
+    </div>`;
+
+  document.getElementById('btnDescargarPdf').addEventListener('click', () => {
+    const incidencia = document.getElementById('incidenciaInput').value.trim();
+    generarPdf(tiempoUsadoSeg, correctas, incorrectas, abiertas, incidencia);
+    localStorage.setItem(claveCompletado, JSON.stringify({ nombre: estado.nombre, fecha: estado.horaFin, tiempoUsadoSeg }));
+    sessionStorage.removeItem(claveProgreso);
+  });
+}
+
+function generarPdf(tiempoUsadoSeg, correctas, incorrectas, abiertas, incidencia){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const margen = 48;
+  const anchoUtil = 595 - margen * 2;
+  let y = margen;
+
+  function linea(texto, opciones = {}){
+    const tam = opciones.tam || 11;
+    const negrita = opciones.negrita || false;
+    doc.setFontSize(tam);
+    doc.setFont('helvetica', negrita ? 'bold' : 'normal');
+    const partes = doc.splitTextToSize(texto, anchoUtil);
+    partes.forEach(parte => {
+      if (y > 780) { doc.addPage(); y = margen; }
+      doc.text(parte, margen, y);
+      y += tam * 1.4;
+    });
+  }
+
+  linea(actividad.titulo, { tam: 16, negrita: true });
+  y += 6;
+  linea(`Estudiante: ${estado.nombre}`);
+  linea(`Fecha: ${new Date(estado.horaFin).toLocaleString()}`);
+  linea(`Tiempo utilizado: ${formatoTiempo(tiempoUsadoSeg)} de ${actividad.tiempoLimiteMinutos} min disponibles`);
+  linea(`Resultado cerradas: ${correctas} correctas / ${incorrectas} incorrectas — Abiertas registradas: ${abiertas}`);
+  y += 10;
+
+  actividad.fragmentos.forEach(frag => {
+    linea(`Fragmento ${frag.id}`, { tam: 13, negrita: true });
+    frag.preguntas.forEach((p, qi) => {
+      const respuesta = (estado.respuestas[frag.id] && estado.respuestas[frag.id][qi]) || '(sin responder)';
+      linea(p.pregunta, { negrita: true });
+      if (p.tipo === 'multiple') {
+        const esCorrecta = respuesta === p.respuesta;
+        linea(`Respuesta: ${respuesta} ${respuesta !== '(sin responder)' ? (esCorrecta ? '(correcta)' : '(incorrecta)') : ''}`);
+      } else {
+        linea(`Respuesta: ${respuesta}`);
+      }
+      y += 4;
+    });
+    y += 6;
+  });
+
+  if (incidencia) {
+    y += 6;
+    linea('Incidencia reportada por el estudiante', { tam: 13, negrita: true });
+    linea(incidencia);
+  }
+
+  const nombreArchivo = `lectura-${actividadId}-${estado.nombre.replace(/\s+/g, '_')}.pdf`;
+  doc.save(nombreArchivo);
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+</script>
+</body>
+</html>

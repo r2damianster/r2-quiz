@@ -1,0 +1,40 @@
+{
+  "titulo": "Plantilla — Lectura inferencial",
+  "tiempoLimiteMinutos": 30,
+  "disponibleDesde": "2026-01-01T00:00:00",
+  "disponibleHasta": "2099-12-31T23:59:00",
+  "fragmentos": [
+    {
+      "id": 1,
+      "texto": "Reemplaza este texto con el primer fragmento de la lectura. Puede ser un párrafo o varios; entre más largo el texto completo, más fragmentos conviene crear para no saturar al estudiante.",
+      "preguntas": [
+        {
+          "tipo": "multiple",
+          "pregunta": "Pregunta de ejemplo sobre el fragmento 1.",
+          "opciones": ["Opción A", "Opción B", "Opción C", "Opción D"],
+          "respuesta": "A"
+        },
+        {
+          "tipo": "abierta",
+          "pregunta": "Pregunta inferencial abierta sobre el fragmento 1."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "texto": "Reemplaza este texto con el segundo fragmento de la lectura.",
+      "preguntas": [
+        {
+          "tipo": "multiple",
+          "pregunta": "Pregunta de ejemplo sobre el fragmento 2.",
+          "opciones": ["Opción A", "Opción B", "Opción C", "Opción D"],
+          "respuesta": "B"
+        },
+        {
+          "tipo": "abierta",
+          "pregunta": "Pregunta inferencial abierta sobre el fragmento 2."
+        }
+      ]
+    }
+  ]
+}
