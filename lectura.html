@@ -6,6 +6,7 @@
 <title>Lectura inferencial — R2 Quiz</title>
 <link rel="stylesheet" href="estilos.css" />
 <script src="vendor/jspdf.umd.min.js"></script>
+<script src="vendor/avatar-marca-agua.js"></script>
 <style>
   .lectura-timer{
     position: sticky; top: 0; z-index: 20;
@@ -347,8 +348,38 @@ function generarPdf(tiempoUsadoSeg, correctas, incorrectas, abiertas, incidencia
     linea(incidencia);
   }
 
+  agregarMarcaDeAgua(doc, margen);
+
   const nombreArchivo = `lectura-${actividadId}-${estado.nombre.replace(/\s+/g, '_')}.pdf`;
   doc.save(nombreArchivo);
+}
+
+const ORCID_AUTOR = 'PENDIENTE';
+
+function agregarMarcaDeAgua(doc, margen){
+  const totalPaginas = doc.internal.getNumberOfPages();
+  const anchoAvatar = 16;
+  const altoAvatar = 24;
+  const yPie = 815;
+  const textoPie = ORCID_AUTOR === 'PENDIENTE'
+    ? 'R2 Quiz — plataforma de aprendizaje creada por Arturo Rodríguez, PhD'
+    : `R2 Quiz — plataforma de aprendizaje creada por Arturo Rodríguez, PhD · ORCID: ${ORCID_AUTOR}`;
+
+  for (let i = 1; i <= totalPaginas; i++) {
+    doc.setPage(i);
+    let xTexto = margen;
+    if (window.R2_AVATAR_DATAURL) {
+      try {
+        doc.addImage(window.R2_AVATAR_DATAURL, 'JPEG', margen, yPie - altoAvatar + 6, anchoAvatar, altoAvatar);
+        xTexto = margen + anchoAvatar + 8;
+      } catch { /* si la imagen no carga, se omite y queda solo el texto */ }
+    }
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(140);
+    doc.text(textoPie, xTexto, yPie);
+    doc.setTextColor(0);
+  }
 }
 
 function escapeHtml(str){
