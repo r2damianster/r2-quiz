@@ -130,6 +130,7 @@
 
 <script>
 let ably, channel, clientId, miNombre;
+let conectadoAntes = false; // distingue la primera conexión de una reconexión
 
 const $ = (id) => document.getElementById(id);
 
@@ -252,6 +253,17 @@ $('btnUnirse').addEventListener('click', async () => {
   channel = ably.channels.get('r2quiz-' + codigo);
 
   ably.connection.on('connected', async () => {
+    if(conectadoAntes){
+      // Reconexión (celular que se durmió, red que cayó): las suscripciones ya
+      // existen, pero Ably no reenvía lo publicado mientras estuvo caído. Se
+      // reafirma la presencia por si la conexión no se pudo resumir y se pide
+      // el último estado de la partida al historial.
+      try { await channel.presence.enter({ nombre, avatar: avatarElegido }); } catch (err) { /* se reintenta en la próxima reconexión */ }
+      ponerseAlDia();
+      return;
+    }
+    conectadoAntes = true;
+
     let avatar = avatarElegido;
     try {
       avatar = resolverAvatarLibre(await channel.presence.get());
@@ -284,6 +296,7 @@ let temporizadorAlistate = null;
 let pausaLectura = null;
 let yaRespondi = false;
 let miOpcion = null;
+let ultimoEventoAplicado = null; // evita reaplicar el mismo evento si la reconexión se repite
 
 /* Durante la lectura el teléfono muestra la pregunta sin opciones ni reloj. */
 function mostrarLectura(enLectura){
@@ -410,6 +423,8 @@ function volverAUnirse(){
   channel = null;
   salaCerrada = false;
   partidaFinalizada = false;
+  conectadoAntes = false;
+  ultimoEventoAplicado = null;
   yaRespondi = false;
   miOpcion = null;
 
@@ -425,101 +440,153 @@ function volverAUnirse(){
 $('btnOtraSala').addEventListener('click', volverAUnirse);
 $('btnOtraSalaFinal').addEventListener('click', volverAUnirse);
 
-function escucharEventosJuego(){
-  channel.subscribe('alistate', (msg) => {
-    clearInterval(temporizador);
-    clearTimeout(pausaLectura);
-    $('alistateContador').textContent = `Pregunta ${msg.data.index + 1}`;
-    mostrarPantalla('pantalla-alistate');
-    cuentaRegresivaPrevia(msg.data.segundos || 3);
+function idDeMensaje(mensaje){
+  return mensaje.id || (mensaje.timestamp + ':' + mensaje.name);
+}
+
+function aplicarAlistate(mensaje){
+  ultimoEventoAplicado = idDeMensaje(mensaje);
+  clearInterval(temporizador);
+  clearTimeout(pausaLectura);
+  $('alistateContador').textContent = `Pregunta ${mensaje.data.index + 1}`;
+  mostrarPantalla('pantalla-alistate');
+  cuentaRegresivaPrevia(mensaje.data.segundos || 3);
+}
+
+function aplicarPregunta(mensaje){
+  ultimoEventoAplicado = idDeMensaje(mensaje);
+  clearInterval(temporizadorAlistate);
+  const { pregunta, opciones, tiempo, index } = mensaje.data;
+  const duracionLectura = mensaje.data.lectura || 3200;
+  yaRespondi = false;
+  miOpcion = null;
+  $('preguntaContador').textContent = `Pregunta ${index+1}`;
+  $('textoPregunta').textContent = pregunta;
+  $('estadoRespuesta').textContent = '';
+  $('opcionesJugador').innerHTML = opciones.map((op,i) =>
+    `<button class="opcion-btn" data-i="${i}">${op}</button>`).join('');
+
+  document.querySelectorAll('#opcionesJugador .opcion-btn').forEach(btn => {
+    btn.addEventListener('click', () => responder(Number(btn.dataset.i)));
   });
 
-  channel.subscribe('pregunta', (msg) => {
-    clearInterval(temporizadorAlistate);
-    const { pregunta, opciones, tiempo, index } = msg.data;
-    yaRespondi = false;
-    miOpcion = null;
-    $('preguntaContador').textContent = `Pregunta ${index+1}`;
-    $('textoPregunta').textContent = pregunta;
-    $('estadoRespuesta').textContent = '';
-    $('opcionesJugador').innerHTML = opciones.map((op,i) =>
-      `<button class="opcion-btn" data-i="${i}">${op}</button>`).join('');
+  mostrarPantalla('pantalla-pregunta');
 
-    document.querySelectorAll('#opcionesJugador .opcion-btn').forEach(btn => {
-      btn.addEventListener('click', () => responder(Number(btn.dataset.i)));
-    });
+  // Si el mensaje llegó tarde (reconexión), se descuenta lo que ya pasó en vez
+  // de regalarle al jugador la lectura y el reloj completos. En vivo, este
+  // retraso es de milisegundos y no cambia nada.
+  const milisegundosTranscurridos = Math.max(0, Date.now() - mensaje.timestamp);
+  const lecturaRestante = duracionLectura - milisegundosTranscurridos;
 
+  clearTimeout(pausaLectura);
+  if(lecturaRestante > 0){
     // la pregunta se lee sola primero; las opciones y el reloj llegan después
     mostrarLectura(true);
-    mostrarPantalla('pantalla-pregunta');
-
-    clearTimeout(pausaLectura);
     pausaLectura = setTimeout(() => {
       mostrarLectura(false);
       tiempoInicioPregunta = Date.now();
       iniciarCuentaAtras(tiempo);
-    }, msg.data.lectura || 3200);
-  });
+    }, lecturaRestante);
+  } else {
+    const segundosDeRelojGastados = Math.floor(-lecturaRestante / 1000);
+    mostrarLectura(false);
+    tiempoInicioPregunta = Date.now();
+    iniciarCuentaAtras(Math.max(tiempo - segundosDeRelojGastados, 1));
+  }
+}
 
-  channel.subscribe('reveal', (msg) => {
-    clearInterval(temporizador);
-    clearInterval(temporizadorAlistate);
-    clearTimeout(pausaLectura);
-    const { correcta, opcionesTexto, explicacion } = msg.data;
-    const veredicto = $('veredicto');
+function aplicarReveal(mensaje){
+  ultimoEventoAplicado = idDeMensaje(mensaje);
+  clearInterval(temporizador);
+  clearInterval(temporizadorAlistate);
+  clearTimeout(pausaLectura);
+  const { correcta, opcionesTexto, explicacion } = mensaje.data;
+  const veredicto = $('veredicto');
 
-    if(!yaRespondi){
-      veredicto.textContent = 'Sin respuesta ⏱';
-      veredicto.className = 'veredicto sin-respuesta';
-    } else if(miOpcion === correcta){
-      veredicto.textContent = '¡RESPUESTA CORRECTA! ✅';
-      veredicto.className = 'veredicto acierto';
-    } else {
-      veredicto.textContent = 'RESPUESTA INCORRECTA ❌';
-      veredicto.className = 'veredicto fallo';
-    }
+  if(!yaRespondi){
+    veredicto.textContent = 'Sin respuesta ⏱';
+    veredicto.className = 'veredicto sin-respuesta';
+  } else if(miOpcion === correcta){
+    veredicto.textContent = '¡RESPUESTA CORRECTA! ✅';
+    veredicto.className = 'veredicto acierto';
+  } else {
+    veredicto.textContent = 'RESPUESTA INCORRECTA ❌';
+    veredicto.className = 'veredicto fallo';
+  }
 
-    $('resultadoDetalle').textContent = 'La correcta era: ' + (opcionesTexto || '');
-    $('explicacionTexto').textContent = explicacion || '';
-    $('explicacionBloque').classList.toggle('hidden', !explicacion);
-    mostrarPantalla('pantalla-revelacion');
-  });
+  $('resultadoDetalle').textContent = 'La correcta era: ' + (opcionesTexto || '');
+  $('explicacionTexto').textContent = explicacion || '';
+  $('explicacionBloque').classList.toggle('hidden', !explicacion);
+  mostrarPantalla('pantalla-revelacion');
+}
 
-  // el host descartó la pregunta: nadie gana ni pierde, se avisa y se sigue
-  channel.subscribe('saltada', () => {
-    clearInterval(temporizador);
-    clearInterval(temporizadorAlistate);
-    clearTimeout(pausaLectura);
-    yaRespondi = true;
-    mostrarPantalla('pantalla-saltada');
-  });
+// el host descartó la pregunta: nadie gana ni pierde, se avisa y se sigue
+function aplicarSaltada(mensaje){
+  ultimoEventoAplicado = idDeMensaje(mensaje);
+  clearInterval(temporizador);
+  clearInterval(temporizadorAlistate);
+  clearTimeout(pausaLectura);
+  yaRespondi = true;
+  mostrarPantalla('pantalla-saltada');
+}
 
-  channel.subscribe('fin', (msg) => {
-    clearInterval(temporizador);
-    clearInterval(temporizadorAlistate);
-    partidaFinalizada = true;
-    const ranking = msg.data.puntajes;
-    $('finEyebrow').textContent = msg.data.detenida
-      ? 'El host detuvo la partida'
-      : 'Fin de la partida';
+function aplicarFin(mensaje){
+  ultimoEventoAplicado = idDeMensaje(mensaje);
+  clearInterval(temporizador);
+  clearInterval(temporizadorAlistate);
+  partidaFinalizada = true;
+  const ranking = mensaje.data.puntajes;
+  $('finEyebrow').textContent = mensaje.data.detenida
+    ? 'El host detuvo la partida'
+    : 'Fin de la partida';
 
-    // lista recortada como en la pantalla del host, pero siempre con la fila propia
-    const visibles = ranking.slice(0, cupoRanking(ranking.length));
-    const miPuesto = ranking.findIndex(j => j.clientId === clientId);
-    const filas = visibles.map((j,i) => filaFinal(j, i+1, j.clientId === clientId));
-    if(miPuesto >= visibles.length){
-      filas.push(filaFinal(ranking[miPuesto], miPuesto + 1, true));
-    }
+  // lista recortada como en la pantalla del host, pero siempre con la fila propia
+  const visibles = ranking.slice(0, cupoRanking(ranking.length));
+  const miPuesto = ranking.findIndex(j => j.clientId === clientId);
+  const filas = visibles.map((j,i) => filaFinal(j, i+1, j.clientId === clientId));
+  if(miPuesto >= visibles.length){
+    filas.push(filaFinal(ranking[miPuesto], miPuesto + 1, true));
+  }
 
-    $('rankingFinal').innerHTML = filas.join('');
-    $('notaRankingFinal').textContent = visibles.length < ranking.length
-      ? `Se muestran los ${visibles.length} primeros de ${ranking.length} jugadores.`
-      : '';
-    mostrarPantalla('pantalla-final');
-    // el puntaje se guardó en secreto toda la partida: acá sube desde cero
-    $('rankingFinal').querySelectorAll('.puntaje-final').forEach(marcador =>
-      animarNumero(marcador, 0, Number(marcador.dataset.hasta)));
-  });
+  $('rankingFinal').innerHTML = filas.join('');
+  $('notaRankingFinal').textContent = visibles.length < ranking.length
+    ? `Se muestran los ${visibles.length} primeros de ${ranking.length} jugadores.`
+    : '';
+  mostrarPantalla('pantalla-final');
+  // el puntaje se guardó en secreto toda la partida: acá sube desde cero
+  $('rankingFinal').querySelectorAll('.puntaje-final').forEach(marcador =>
+    animarNumero(marcador, 0, Number(marcador.dataset.hasta)));
+}
+
+function escucharEventosJuego(){
+  channel.subscribe('alistate', aplicarAlistate);
+  channel.subscribe('pregunta', aplicarPregunta);
+  channel.subscribe('reveal', aplicarReveal);
+  channel.subscribe('saltada', aplicarSaltada);
+  channel.subscribe('fin', aplicarFin);
+}
+
+const EVENTOS_DE_ESTADO = ['sala-cerrada', 'fin', 'saltada', 'reveal', 'pregunta', 'alistate'];
+
+/* Cada evento del host es una foto completa de la pantalla que le toca al
+   jugador, así que basta con reaplicar el más reciente que se perdió: no hace
+   falta reproducir todo el historial. Si Ably ya no lo retiene, el jugador
+   sigue con lo que llegue en vivo. */
+async function ponerseAlDia(){
+  try {
+    const pagina = await channel.history({ direction: 'backwards', limit: 50 });
+    const mensaje = pagina.items.find(item => EVENTOS_DE_ESTADO.includes(item.name));
+    if(!mensaje) return;
+    if(idDeMensaje(mensaje) === ultimoEventoAplicado) return;
+
+    ultimoEventoAplicado = idDeMensaje(mensaje);
+    if(mensaje.name === 'sala-cerrada') cerrarSalaPorHost();
+    else if(mensaje.name === 'fin') aplicarFin(mensaje);
+    else if(mensaje.name === 'reveal') aplicarReveal(mensaje);
+    else if(mensaje.name === 'saltada') aplicarSaltada(mensaje);
+    else if(mensaje.name === 'pregunta') aplicarPregunta(mensaje);
+    else if(mensaje.name === 'alistate') aplicarAlistate(mensaje);
+  } catch (err) { /* historial no disponible: se sigue con lo próximo que llegue en vivo */ }
 }
 
 function responder(opcion){

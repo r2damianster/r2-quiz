@@ -36,6 +36,14 @@ Esta versión prioriza:
 - Desde el cierre y desde los resultados, el jugador puede entrar a otra sala con código nuevo sin recargar la página.
 - Si el host ya publicó los resultados finales, un cierre posterior no debe sacar al jugador del podio.
 
+## Reconexión del jugador
+- Celular que se duerme o red que cae: Ably reconecta sin reenviar lo publicado durante la caída, y el jugador quedaría atascado en una pantalla vieja sin aviso.
+- Al reconectar (no en la primera conexión), `player.html` vuelve a entrar en presencia y pide `channel.history()` para reaplicar el último evento de estado (`alistate`, `pregunta`, `reveal`, `saltada`, `fin`, `sala-cerrada`).
+- Cada evento del host es una foto completa de la pantalla del jugador, por eso basta reaplicar el más reciente: no se reproduce el historial ni se guarda nada en el navegador.
+- Si la pregunta llega tarde, la lectura y el reloj se descuentan por el tiempo transcurrido desde `msg.timestamp`.
+- El historial por defecto de Ably cubre ~2 minutos. Para caídas más largas, activar "Persist all messages" en Ably → Settings → Channel rules para el namespace `r2quiz` (opcional, no cambia código).
+- El host no se blinda: su estado vive solo en memoria y su salida mata la sala por diseño; solo tiene el diálogo de confirmación de `beforeunload`.
+
 ## Automatización del repositorio
 - `.claude/settings.json` activa auto-commit: hook `Stop` → `~/.claude/hooks/auto-commit.js` (`git add -A`, commit `chore: auto-commit — <archivos>` y `git push`).
 - Antes de que corra el auto-commit hay que dejar la documentación al día: el commit se dispara solo al cerrar el turno.
