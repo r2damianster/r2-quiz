@@ -1,0 +1,173 @@
+{
+  "titulo": "Quiz integrador — Academic Reading and Writing (Parcial 1)",
+  "preguntas": [
+    {
+      "pregunta": "¿Qué define un «move» según el término acuñado por John Swales?",
+      "opciones": [
+        "La cita textual que un autor usa para introducir su propia investigación.",
+        "Un párrafo completo que combina evidencia, interpretación y conexión argumental.",
+        "Un paso retórico que cumple una función reconocible dentro de un texto.",
+        "El título que resume el contenido central de una sección del artículo."
+      ],
+      "correcta": 2,
+      "tiempo": 20,
+      "explicacion": "🧩 Un move es un paso retórico con una función reconocible dentro del texto. 🔎 Swales los identificó al analizar introducciones de artículos. 🚫 No es un párrafo entero, un título ni una cita: es la función que cumple cada fragmento."
+    },
+    {
+      "pregunta": "¿Qué describe mejor el «contrato dado/nuevo» presentado en el capítulo 2?",
+      "opciones": [
+        "El acuerdo por el cual una oración retoma como tema algo ya conocido y agrega información nueva.",
+        "La regla que prohíbe comenzar dos oraciones consecutivas con el mismo sujeto.",
+        "El procedimiento para traducir términos técnicos de una lengua a otra dentro de un párrafo.",
+        "La norma que obliga a citar la fuente en la misma oración donde aparece el dato."
+      ],
+      "correcta": 0,
+      "tiempo": 20,
+      "explicacion": "🤝 Cada oración arranca con información ya conocida (dado) y cierra con algo nuevo. 🔗 Así el texto fluye y el lector no se pierde. 🚫 No trata de citas, de sujetos repetidos ni de traducción."
+    },
+    {
+      "pregunta": "En el patrón general a específico, ¿qué función cumple la primera oración de un párrafo o introducción?",
+      "opciones": [
+        "Describe el método empleado para recolectar los datos del estudio.",
+        "Presenta la pregunta de investigación exacta que el estudio busca responder.",
+        "Resume los hallazgos principales que se desarrollarán en la sección de resultados.",
+        "Sitúa al lector en un campo amplio, sin mencionar todavía el tema particular."
+      ],
+      "correcta": 3,
+      "tiempo": 20,
+      "explicacion": "🌍 Se abre con un campo amplio para ubicar al lector. 🔍 Luego el foco se estrecha hacia el tema y, al final, hacia el estudio concreto. 🚫 La pregunta exacta, el método y los hallazgos vienen más adelante."
+    },
+    {
+      "pregunta": "¿Qué significan las cuatro letras del acrónimo PEEL?",
+      "opciones": [
+        "Premise, Evidence, Example, Link.",
+        "Point, Evidence, Explanation, Link.",
+        "Problem, Evidence, Explanation, Limitation.",
+        "Point, Evaluation, Evidence, Limitation."
+      ],
+      "correcta": 1,
+      "tiempo": 15,
+      "explicacion": "🧱 PEEL = Point, Evidence, Explanation, Link. 📌 Afirmas una idea, la respaldas con evidencia, explicas por qué importa y la conectas con el argumento general. 🚫 Las otras opciones mezclan términos que no forman la sigla."
+    },
+    {
+      "pregunta": "Según el capítulo 5, ¿por qué coexisten tantas siglas distintas (PEEL, MEAL, TEEL, PIE, TRI, WEED) para describir estructuras de párrafo similares?",
+      "opciones": [
+        "Porque cada sigla corresponde a una disciplina académica distinta con reglas propias.",
+        "Porque cada sigla describe en realidad una onda semántica distinta e incompatible con las demás.",
+        "Porque solo una de ellas es correcta y las demás son versiones simplificadas para principiantes.",
+        "Porque la proliferación de etiquetas es de origen histórico, no conceptual; distintas comunidades reinventaron la misma estructura."
+      ],
+      "correcta": 3,
+      "tiempo": 25,
+      "explicacion": "📚 Las siglas son etiquetas distintas para una misma estructura de fondo. 🕰️ Su multiplicación es histórica: cada comunidad reinventó el patrón con su propio nombre. 🚫 No son incompatibles ni exclusivas de una disciplina."
+    },
+    {
+      "pregunta": "Según el capítulo 6, ¿por qué el patrón CER no incluye un move de Link?",
+      "opciones": [
+        "Porque CER se usa exclusivamente en resúmenes y no en secciones completas de un artículo.",
+        "Porque los autores de artículos científicos consideran innecesaria cualquier conexión argumental.",
+        "Porque en un artículo empírico el vínculo con el argumento general se desarrolla en la discusión, no en los resultados.",
+        "Porque el Link solo es necesario cuando el estudio no reporta valores de significancia estadística."
+      ],
+      "correcta": 2,
+      "tiempo": 25,
+      "explicacion": "📊 CER (Claim, Evidence, Reasoning) vive en la sección de resultados. 🔗 La conexión con el argumento mayor se hace después, en la discusión. 🚫 No depende de la significancia estadística ni de que CER sea solo para resúmenes."
+    },
+    {
+      "pregunta": "¿Qué significan las letras del acrónimo SPRE y quién lo propuso?",
+      "opciones": [
+        "Situation, Point, Reasoning, Evidence; propuesto por John Swales.",
+        "Structure, Purpose, Response, Evidence; propuesto por James Watson.",
+        "Summary, Problem, Result, Explanation; propuesto por Stanley Milgram.",
+        "Situation, Problem, Response, Evaluation; propuesto por Michael Hoey."
+      ],
+      "correcta": 3,
+      "tiempo": 20,
+      "explicacion": "🧭 SPRE = Situation, Problem, Response, Evaluation, patrón de Michael Hoey. 🛠️ Plantea una situación, un problema, la respuesta a él y la evaluación de esa respuesta. 🚫 Swales es el autor de los moves, no de SPRE."
+    },
+    {
+      "pregunta": "Ordena estas tres oraciones de lo general a lo específico: (1) «Plastic pollution in oceans is a growing global concern.» (2) «This study analyzes microplastic concentration in sediment samples from three beaches in Manabí.» (3) «Along the Ecuadorian coast, tourism-dependent communities face mounting pressure to manage waste responsibly.» ¿Cuál es el orden correcto?",
+      "opciones": [
+        "1, 2, 3",
+        "1, 3, 2",
+        "3, 1, 2",
+        "2, 1, 3"
+      ],
+      "correcta": 1,
+      "tiempo": 25,
+      "explicacion": "🌊 La 1 es global (océanos del mundo). 🏖️ La 3 baja a la costa ecuatoriana. 🔬 La 2 es el estudio concreto en tres playas de Manabí. 🔽 Orden: 1 → 3 → 2, de lo amplio a lo particular."
+    },
+    {
+      "pregunta": "Un párrafo de resultados nuevo dice: «Participants in the mindfulness condition reported lower anxiety scores than those in the control condition (M = 12.3 vs. M = 18.7, p = .01).» No hay ninguna oración adicional. ¿Cómo se clasifica este párrafo según el capítulo 6?",
+      "opciones": [
+        "Es un patrón CER completo, porque incluye Claim y Evidence suficientes.",
+        "Es un ejemplo de patrón SPRE, porque presenta una situación y un problema.",
+        "Es un patrón CE incompleto, porque falta el move de Reasoning.",
+        "Es un ejemplo de patrón PIE, porque omite el Link de manera intencional."
+      ],
+      "correcta": 2,
+      "tiempo": 25,
+      "explicacion": "🧪 Hay Claim (menor ansiedad) y Evidence (medias y p), pero nada interpreta los datos. 🧠 Sin Reasoning, el patrón queda en CE incompleto. 🚫 No es SPRE ni PIE: no hay situación-problema ni Link omitido."
+    },
+    {
+      "pregunta": "Para escribir las primeras oraciones de la introducción de un artículo empírico, moviéndose desde el campo amplio hasta el vacío específico que el estudio llenará, ¿qué relación existe entre el patrón general a específico (Capítulo 3) y SPRE (Capítulo 7)?",
+      "opciones": [
+        "El movimiento general a específico puede coincidir con la secuencia Situation-Problem de SPRE, ya que ambos estrechan el foco antes de justificar una acción.",
+        "El patrón general a específico solo se aplica a las conclusiones, nunca a las introducciones.",
+        "SPRE sustituye por completo al patrón general a específico a partir del capítulo 7.",
+        "Son patrones incompatibles; un texto no puede usar ambos en la misma introducción."
+      ],
+      "correcta": 0,
+      "tiempo": 30,
+      "explicacion": "🤝 Los patrones se combinan: ir de lo amplio a lo específico encaja con Situation → Problem. 🎯 Ambos estrechan el foco antes de justificar lo que hará el estudio. 🚫 No son incompatibles, no se sustituyen y el patrón sí se usa en introducciones."
+    },
+    {
+      "pregunta": "¿Qué regla de puntuación rige el uso de «however» cuando conecta dos oraciones completas?",
+      "opciones": [
+        "No requiere ningún signo de puntuación porque es una preposición.",
+        "Va precedido de una coma simple porque funciona como conjunción coordinante.",
+        "Va precedido de punto seguido o punto y coma, nunca de una coma simple, porque es un adverbio conjuntivo inter-oracional.",
+        "Va siempre al final de la segunda oración, nunca al inicio."
+      ],
+      "correcta": 2,
+      "tiempo": 25,
+      "explicacion": "⚖️ «However» es un adverbio conjuntivo, no una conjunción. ✅ Correcto: «…; however, …» o «…. However, …». ❌ «…, however, …» entre dos oraciones completas es un comma splice."
+    },
+    {
+      "pregunta": "¿Por qué es incorrecta la oración «Albeit the sample was small, the findings were significant»?",
+      "opciones": [
+        "Porque «albeit» exige una coma antes y otra después en cualquier posición.",
+        "Porque «albeit» suele acompañar una palabra o frase corta, no una oración completa con sujeto y verbo propios.",
+        "Porque «albeit» solo se usa con sustantivos, nunca con adjetivos.",
+        "Porque «albeit» nunca puede ir al inicio de una oración."
+      ],
+      "correcta": 1,
+      "tiempo": 25,
+      "explicacion": "🪶 «Albeit» pide una palabra o frase breve: «a small, albeit significant, sample». 🔁 Con sujeto y verbo propios conviene «although» o «even though». 🚫 Sí admite adjetivos y no exige comas en cualquier posición."
+    },
+    {
+      "pregunta": "¿Qué función cumplen «furthermore», «moreover», «in addition» y «additionally»?",
+      "opciones": [
+        "Introducen el reverso de la idea anterior.",
+        "Presentan una causa que explica un efecto posterior.",
+        "Deducen una consecuencia lógica de la oración anterior.",
+        "Agregan un argumento o dato a la misma línea de razonamiento, sin introducir una consecuencia ni un contraste."
+      ],
+      "correcta": 3,
+      "tiempo": 20,
+      "explicacion": "➕ Suman un argumento más en la misma dirección. 🚫 No deducen una consecuencia (therefore), no explican una causa (because) ni contrastan (however)."
+    },
+    {
+      "pregunta": "¿Qué error ilustra la oración «The correlation was significant, therefore the hypothesis gained support»?",
+      "opciones": [
+        "Un uso incorrecto de «because» en lugar de «if».",
+        "La falta de un sustantivo después de «unlike».",
+        "Un comma splice, porque «therefore» debería ir precedido de punto seguido o punto y coma, no de una coma simple.",
+        "La confusión entre «furthermore» y «moreover»."
+      ],
+      "correcta": 2,
+      "tiempo": 25,
+      "explicacion": "✂️ «Therefore» es un adverbio conjuntivo: une oraciones con punto o punto y coma. ✅ «The correlation was significant; therefore, the hypothesis gained support.» ❌ Con coma simple se produce un comma splice."
+    }
+  ]
+}

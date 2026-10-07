@@ -68,6 +68,14 @@
       "archivo": "quiz_chapter1.json"
     },
     {
+      "id": "arw-parcial1-integrador",
+      "titulo": "Quiz integrador — Academic Reading and Writing, Parcial 1",
+      "categoriaId": "patrones-academicos",
+      "descripcion": "Repaso integrador de 14 preguntas: moves (Swales), contrato dado/nuevo, general a específico, PEEL y siglas afines, CER, SPRE y conectores de relación y progresión (however, albeit, furthermore, therefore).",
+      "recomendado": "Práctica previa al primer parcial de Academic Reading and Writing (capítulos 1-7 y talleres 1-2).",
+      "archivo": "preguntas-arw-parcial1.json"
+    },
+    {
       "id": "lectura-plantilla-ejemplo",
       "titulo": "Plantilla — Lectura inferencial",
       "categoriaId": "lectura-inferencial",
