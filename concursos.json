@@ -44,6 +44,14 @@
       "archivo": "preguntas.json"
     },
     {
+      "id": "intro-investigacion",
+      "titulo": "Diagnóstico: ¿qué sabemos de investigación?",
+      "categoriaId": "pruebas",
+      "descripcion": "Diez preguntas básicas para abrir una clase de investigación y medir qué tanto saben los estudiantes. No evalúa: sirve para detectar ideas previas y errores comunes.",
+      "recomendado": "Primera sesión de introducción a la investigación.",
+      "archivo": "preguntas-intro-investigacion.json"
+    },
+    {
       "id": "metodologia-investigacion",
       "titulo": "Fundamentos de metodología de investigación",
       "categoriaId": "pruebas",
