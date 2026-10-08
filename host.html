@@ -69,6 +69,18 @@
       Las preguntas y respuestas permanecen ocultas hasta que la partida empiece, incluso para vos.
     </p>
 
+    <div id="bloqueTiempo" style="margin-top:18px;">
+      <label class="subtitulo" for="tiempoPregunta" style="display:block; margin-bottom:6px;">Tiempo por pregunta (segundos)</label>
+      <input id="tiempoPregunta" class="field mono" type="number" inputmode="numeric" min="5" max="300" step="1"
+             list="opcionesTiempo" placeholder="Según cada pregunta" style="max-width:220px;">
+      <datalist id="opcionesTiempo">
+        <option value="10"></option><option value="15"></option><option value="20"></option>
+        <option value="30"></option><option value="45"></option><option value="60"></option>
+        <option value="90"></option><option value="120"></option>
+      </datalist>
+      <p class="subtitulo" style="margin-top:6px;">Escribí un valor (5–300) o elegí uno de la lista. Vacío = cada pregunta usa su propio tiempo.</p>
+    </div>
+
     <div class="estado" id="detalleEstado"></div>
 
     <div id="bloqueLectura" class="hidden" style="margin-top:22px;">
@@ -293,7 +305,16 @@ let irAlMarcador = null;            // salto manual al marcador desde la revelac
 let pausaSalto = null;              // margen tras descartar una pregunta
 
 const SEGUNDOS_ALISTATE = 3;
-const SEGUNDOS_REVELACION = 15;     // tiempo para leer la explicación antes del marcador
+const SEGUNDOS_POR_DEFECTO = 15;
+const SEGUNDOS_MINIMO = 5;
+const SEGUNDOS_MAXIMO = 300;
+/* Tiempo elegido por el host en la ficha; vacío o inválido = el de cada pregunta. */
+function segundosDePregunta(pregunta){
+  const elegido = Math.round(Number($('tiempoPregunta').value));
+  if(elegido >= SEGUNDOS_MINIMO) return Math.min(elegido, SEGUNDOS_MAXIMO);
+  return pregunta.tiempo || SEGUNDOS_POR_DEFECTO;
+}
+const SEGUNDOS_REVELACION = 15;    // tiempo para leer la explicación antes del marcador
 const MS_LECTURA = 3200;            // la pregunta sola, sin opciones, antes de abrir el juego
 
 /* Cuántos jugadores se listan en el marcador: con grupos chicos entran todos,
@@ -475,6 +496,8 @@ async function abrirDetalle(id){
   $('btnPresentar').classList.toggle('hidden', esLectura);
   $('bloqueLectura').classList.toggle('hidden', !esLectura);
   $('detalleNotaSala').classList.toggle('hidden', esLectura);
+  $('bloqueTiempo').classList.toggle('hidden', esLectura);
+  $('tiempoPregunta').value = '';
   $('btnPresentar').disabled = true;
   mostrarPantalla('pantalla-detalle');
 
@@ -533,18 +556,25 @@ async function abrirDetalle(id){
   }
 
   // Solo métricas agregadas: nunca se muestra el enunciado ni la respuesta correcta.
-  const segundos = preguntas.reduce((total, p) => total + (p.tiempo || 15), 0);
-  const minutos = Math.max(1, Math.round(segundos / 60));
   const puntajeMaximo = preguntas.length * 1000;
 
   $('detalleStats').innerHTML = `
     <div class="ficha-stat"><span class="ficha-stat-valor mono">${preguntas.length}</span><span class="ficha-stat-label">Preguntas</span></div>
-    <div class="ficha-stat"><span class="ficha-stat-valor mono">~${minutos}</span><span class="ficha-stat-label">Minutos</span></div>
+    <div class="ficha-stat"><span class="ficha-stat-valor mono" id="minutosEstimados"></span><span class="ficha-stat-label">Minutos</span></div>
     <div class="ficha-stat"><span class="ficha-stat-valor mono">${puntajeMaximo}</span><span class="ficha-stat-label">Puntaje máximo</span></div>`;
 
+  actualizarMinutosEstimados();
   $('detalleEstado').textContent = '';
   $('btnPresentar').disabled = false;
 }
+
+function actualizarMinutosEstimados(){
+  const celdaMinutos = $('minutosEstimados');
+  if(!celdaMinutos) return;
+  const segundos = preguntas.reduce((total, p) => total + segundosDePregunta(p), 0);
+  celdaMinutos.textContent = '~' + Math.max(1, Math.round(segundos / 60));
+}
+$('tiempoPregunta').addEventListener('input', actualizarMinutosEstimados);
 
 $('btnVolverCatalogo').addEventListener('click', () => {
   concursoActivo = null;
@@ -759,7 +789,7 @@ function lanzarPregunta(){
   const p = preguntas[indicePregunta];
   respuestasPregunta.clear();
   yaRevele = false;
-  segundosTotales = p.tiempo || 15;
+  segundosTotales = segundosDePregunta(p);
 
   $('preguntaContador').textContent = `Pregunta ${indicePregunta+1} de ${preguntas.length}`;
   $('textoPregunta').textContent = p.pregunta;
@@ -926,7 +956,7 @@ function revelarRespuesta(){
     if(!jugador) return;
     if(r.opcion === p.correcta){
       aciertos++;
-      const bonoVelocidad = Math.max(0, 1 - r.ms / ((p.tiempo||15)*1000));
+      const bonoVelocidad = Math.max(0, 1 - r.ms / (segundosDePregunta(p)*1000));
       jugador.puntaje += Math.round(500 + 500 * bonoVelocidad);
     }
   });

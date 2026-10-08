@@ -36,6 +36,11 @@ Esta versión prioriza:
 - Desde el cierre y desde los resultados, el jugador puede entrar a otra sala con código nuevo sin recargar la página.
 - Si el host ya publicó los resultados finales, un cierre posterior no debe sacar al jugador del podio.
 
+## Tiempo por pregunta
+- En la ficha previa del concurso (antes de "Presentar en línea") el host puede escribir o elegir de una lista los segundos por pregunta (5–300).
+- Vacío = cada pregunta usa su `tiempo` en `preguntas.json`, o 15 s si no lo trae. Con valor, aplica a todas las preguntas de la partida.
+- El valor define también el bono de velocidad; no se guarda en el navegador. No aplica a la lectura asincrónica.
+
 ## Reconexión del jugador
 - Celular que se duerme o red que cae: Ably reconecta sin reenviar lo publicado durante la caída, y el jugador quedaría atascado en una pantalla vieja sin aviso.
 - Al reconectar (no en la primera conexión), `player.html` vuelve a entrar en presencia y pide `channel.history()` para reaplicar el último evento de estado (`alistate`, `pregunta`, `reveal`, `saltada`, `fin`, `sala-cerrada`).
