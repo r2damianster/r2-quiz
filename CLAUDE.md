@@ -49,6 +49,12 @@ Esta versión prioriza:
 - El historial por defecto de Ably cubre ~2 minutos. Para caídas más largas, activar "Persist all messages" en Ably → Settings → Channel rules para el namespace `r2quiz` (opcional, no cambia código).
 - El host no se blinda: su estado vive solo en memoria y su salida mata la sala por diseño; solo tiene el diálogo de confirmación de `beforeunload`.
 
+## Exportación de resultados
+- En la pantalla final, `host.html` ofrece "Descargar PDF" (jsPDF local en `vendor/`) y "Descargar JSON".
+- El resumen es agregado: estadísticas globales, ranking final y, por pregunta, opciones, correcta, explicación, conteo por opción y % de acierto. No guarda qué respondió cada jugador.
+- El historial vive solo en memoria (`historialPreguntas`) y se reinicia al iniciar cada partida. Las preguntas saltadas quedan marcadas como `saltada`.
+- El PDF omite emojis (la fuente base no los dibuja); el JSON conserva los avatares.
+
 ## Automatización del repositorio
 - `.claude/settings.json` activa auto-commit: hook `Stop` → `~/.claude/hooks/auto-commit.js` (`git add -A`, commit `chore: auto-commit — <archivos>` y `git push`).
 - Antes de que corra el auto-commit hay que dejar la documentación al día: el commit se dispara solo al cerrar el turno.
