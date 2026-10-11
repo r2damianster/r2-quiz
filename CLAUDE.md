@@ -20,7 +20,7 @@ Esta versión prioriza:
 - La clave de Ably se configura en Vercel como `ABLY_API_KEY` mediante variables de entorno.
 - El frontend solo consume un endpoint seguro o una API de lectura limitada.
 - No se publican imágenes externas ni URLs de terceros para identificar avatares.
-- No se usa almacenamiento del navegador para guardar datos de partida.
+- Las partidas en vivo no guardan datos en el navegador. Excepciones: el host guarda una marca de login de 24 h (`hostLogin`) y la lectura asincrónica guarda progreso y completado del lector (`lectura.html`).
 
 ## Modelo de identidad
 - Cada jugador declara su nombre antes de entrar a la sala.
@@ -61,10 +61,9 @@ Esta versión prioriza:
 - El hook falla en silencio y nunca bloquea la sesión.
 
 ## Contención de tráfico en Ably
-- La aplicación no debe publicar respuestas por pregunta como una secuencia ilimitada de mensajes.
-- La intención es enviar mensajes de inicio, selección y resultados finales de forma compacta.
-- El host debe agrupar y resumir cada respuesta cuando llegue a la vista del ranking.
-- Si la sala crece, se recomienda limitar eventos por jugador y consolidar respuestas de una sola pregunta.
+- Cada jugador publica un único mensaje `respuesta` por pregunta; el host lo agrega en memoria.
+- El host publica un solo `reveal` por pregunta con el resultado consolidado y un solo `fin` con el ranking.
+- Eventos de estado (`alistate`, `pregunta`, `reveal`, `saltada`, `fin`, `sala-cerrada`) son una foto completa de pantalla: no se añaden mensajes por jugador ni por tecla.
 
 ## Dirección visual
 - La interfaz debe sentirse premium, legible y cálida.
