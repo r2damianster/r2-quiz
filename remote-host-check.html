@@ -82,7 +82,7 @@
     <h1 class="centrado">Resultados finales</h1>
     <div class="podio" id="podioFinal"></div>
     <ol class="ranking" id="rankingFinal"></ol>
-    <p class="subtitulo centrado" style="margin-top:14px;">Cerrá esta pestaña o creá una sala nueva para otra ronda.</p>
+    <p class="subtitulo centrado" style="margin-top:14px;">Cierra esta pestaña o crea una sala nueva para otra ronda.</p>
   </section>
 
 </div>
@@ -157,7 +157,7 @@ $('btnCrearSala').addEventListener('click', async () => {
     escucharRespuestas();
   });
   ably.connection.on('failed', (e) => {
-    $('setupEstado').textContent = 'No se pudo conectar a Ably: revisá la API key.';
+    $('setupEstado').textContent = 'No se pudo conectar a Ably: revisa la API key.';
     $('setupEstado').className = 'estado error';
   });
 });

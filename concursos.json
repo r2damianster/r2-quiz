@@ -93,7 +93,7 @@
       "titulo": "Plantilla — Lectura inferencial",
       "categoriaId": "lectura-inferencial",
       "tipo": "lectura",
-      "descripcion": "Plantilla de ejemplo para armar una actividad de lectura por fragmentos. Reemplazá el texto y las preguntas en lectura-datos/plantilla-ejemplo.json antes de usarla con estudiantes.",
+      "descripcion": "Plantilla de ejemplo para armar una actividad de lectura por fragmentos. Reemplaza el texto y las preguntas en lectura-datos/plantilla-ejemplo.json antes de usarla con estudiantes.",
       "recomendado": "Punto de partida para crear nuevas actividades de lectura inferencial.",
       "archivo": "lectura-datos/plantilla-ejemplo.json"
     },

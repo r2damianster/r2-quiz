@@ -45,7 +45,7 @@
       <div>
         <span class="eyebrow">Biblioteca de concursos</span>
         <h1>¿Qué concurso vas a presentar?</h1>
-        <p class="subtitulo">Elegí un cuestionario para revisar su ficha antes de abrir la sala.</p>
+        <p class="subtitulo">Elige un cuestionario para revisar su ficha antes de abrir la sala.</p>
       </div>
       <button class="btn secondary" id="btnCerrarSesion">Cerrar sesión</button>
     </div>
@@ -67,7 +67,7 @@
     <p class="subtitulo" id="detalleRecomendado"></p>
 
     <p class="nota-privacidad" id="detalleNotaSala">
-      Las preguntas y respuestas permanecen ocultas hasta que la partida empiece, incluso para vos.
+      Las preguntas y respuestas permanecen ocultas hasta que la partida empiece, incluso para ti.
     </p>
 
     <div id="bloqueTiempo" style="margin-top:18px;">
@@ -79,7 +79,7 @@
         <option value="30"></option><option value="45"></option><option value="60"></option>
         <option value="90"></option><option value="120"></option>
       </datalist>
-      <p class="subtitulo" style="margin-top:6px;">Escribí un valor (5–300) o elegí uno de la lista. Vacío = cada pregunta usa su propio tiempo.</p>
+      <p class="subtitulo" style="margin-top:6px;">Escribe un valor (5–300) o elige uno de la lista. Vacío = cada pregunta usa su propio tiempo.</p>
     </div>
 
     <div class="estado" id="detalleEstado"></div>
@@ -99,7 +99,7 @@
         </div>
         <figure class="qr-box">
           <div id="qrLectura" class="qr-lienzo"></div>
-          <figcaption>Escaneá para abrir la actividad</figcaption>
+          <figcaption>Escanea para abrir la actividad</figcaption>
         </figure>
       </div>
     </div>
@@ -126,7 +126,7 @@
       <figure class="qr-box">
         <div id="qrSala" class="qr-lienzo"></div>
         <figcaption>
-          Escaneá para abrir la sala
+          Escanea para abrir la sala
           <a class="qr-url mono" id="qrTexto" href="#" target="_blank" rel="noopener noreferrer"></a>
         </figcaption>
       </figure>
@@ -169,7 +169,7 @@
       <span class="value mono" id="segundosRestantes">--</span>
     </div>
     <h2 id="textoPregunta" class="centrado pregunta-sola"></h2>
-    <p class="lectura-pista centrado" id="lecturaPista">Leé la pregunta…</p>
+    <p class="lectura-pista centrado" id="lecturaPista">Lee la pregunta…</p>
     <div class="opciones" id="opcionesHost"></div>
     <p class="subtitulo centrado linea-cargando" id="conteoBloque" style="margin-top:18px;">
       <img class="loader loader-barras" src="iconos/audio.svg" alt="" aria-hidden="true">
@@ -533,7 +533,7 @@ async function abrirDetalle(id){
           $('detalleEstado').textContent = 'Enlace copiado.';
           $('detalleEstado').className = 'estado';
         } catch {
-          $('detalleEstado').textContent = 'No se pudo copiar automáticamente: copiá el enlace manualmente.';
+          $('detalleEstado').textContent = 'No se pudo copiar automáticamente: copia el enlace manualmente.';
           $('detalleEstado').className = 'estado error';
         }
       };
@@ -651,7 +651,7 @@ $('btnPresentar').addEventListener('click', async () => {
     escucharRespuestas();
   });
   ably.connection.on('failed', () => {
-    $('detalleEstado').textContent = 'No se pudo conectar a Ably: revisá la API key.';
+    $('detalleEstado').textContent = 'No se pudo conectar a Ably: revisa la API key.';
     $('detalleEstado').className = 'estado error';
     $('btnPresentar').disabled = false;
   });
@@ -1016,7 +1016,7 @@ function revelarRespuesta(){
 function textoExplicacion(pregunta){
   const propia = (pregunta.explicacion || '').trim();
   if(propia) return propia;
-  return `✅ La opción correcta es «${pregunta.opciones[pregunta.correcta]}». 🧠 Anotá el porqué en tu cuaderno: es el punto que más se pregunta en el examen.`;
+  return `✅ La opción correcta es «${pregunta.opciones[pregunta.correcta]}». 🧠 Anota el porqué en tu cuaderno: es el punto que más se pregunta en el examen.`;
 }
 
 /* Cuenta atrás visible entre la revelación y el marcador; el botón la corta antes. */

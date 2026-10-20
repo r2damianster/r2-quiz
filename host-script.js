@@ -68,7 +68,7 @@ $('btnCrearSala').addEventListener('click', async () => {
     escucharRespuestas();
   });
   ably.connection.on('failed', (e) => {
-    $('setupEstado').textContent = 'No se pudo conectar a Ably: revisá la API key.';
+    $('setupEstado').textContent = 'No se pudo conectar a Ably: revisa la API key.';
     $('setupEstado').className = 'estado error';
   });
 });

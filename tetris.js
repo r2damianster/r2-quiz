@@ -57,7 +57,7 @@ const TetrisEspera = (function(){
           <div class="tetris-tablero" id="tetrisTablero"></div>
           <button class="tetris-velo" id="tetrisVelo" type="button">
             <span class="tetris-velo-icono">▶</span>
-            <span class="tetris-velo-titulo" id="tetrisVeloTitulo">Tocá para jugar</span>
+            <span class="tetris-velo-titulo" id="tetrisVeloTitulo">Toca para jugar</span>
             <span class="tetris-velo-pista" id="tetrisVeloPista">Tetris para matar la espera</span>
           </button>
         </div>
@@ -277,7 +277,7 @@ const TetrisEspera = (function(){
     terminado = true;
     jugando = false;
     clearInterval(reloj);
-    mostrarVelo('▲', 'Fin del juego', `Hiciste ${puntaje} puntos · Tocá para otra`);
+    mostrarVelo('▲', 'Fin del juego', `Hiciste ${puntaje} puntos · Toca para otra`);
   }
 
   function mostrarVelo(icono, titulo, pista){
