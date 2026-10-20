@@ -1,0 +1,77 @@
+{
+  "titulo": "Fundamentos y evolución de la Tecnología Educativa",
+  "preguntas": [
+    {
+      "pregunta": "Según la parábola de Seymour Papert (Mindstorms, 1980), ¿qué revela el contraste entre un cirujano y un docente que viajan 100 años en el tiempo?",
+      "opciones": [
+        "Que la medicina y la educación cambiaron al mismo ritmo",
+        "Que la educación avanzó más rápido que la medicina",
+        "Que la medicina transformó su práctica mientras el aula mantuvo casi la misma estructura",
+        "Que ambos campos se resisten igual a la tecnología"
+      ],
+      "correcta": 2,
+      "tiempo": 25,
+      "explicacion": "🩺 El cirujano no reconocería su quirófano, pero el docente sí reconocería su aula. 🏫 Papert usa el contraste para mostrar la lentitud del cambio en la escuela."
+    },
+    {
+      "pregunta": "Un docente usa un sistema de insignias y puntos con retroalimentación inmediata para que los estudiantes memoricen vocabulario. ¿Qué pedagogía refleja esta actividad?",
+      "opciones": [
+        "Cognitiva",
+        "Constructivista y social",
+        "Conductista",
+        "Sociocultural"
+      ],
+      "correcta": 2,
+      "tiempo": 20,
+      "explicacion": "🏅 Estímulo, refuerzo inmediato y repetición para fijar una conducta: es el sello conductista."
+    },
+    {
+      "pregunta": "De acuerdo con Mujica (2020), la Tecnología Educativa (TE) se define principalmente como:",
+      "opciones": [
+        "El uso exclusivo de la computadora en el aula",
+        "Todo lo que incorpora tecnología para mejorar el proceso de enseñanza-aprendizaje, no solo el uso del computador",
+        "Un conjunto de dispositivos electrónicos para la enseñanza",
+        "Una rama exclusiva de la informática educativa"
+      ],
+      "correcta": 1,
+      "tiempo": 25,
+      "explicacion": "🧭 La TE es más amplia que el computador o los dispositivos: abarca todo recurso tecnológico que mejore enseñar y aprender."
+    },
+    {
+      "pregunta": "Según De Pablos Pons (2009), la palabra \"tecnología\" se acuña en:",
+      "opciones": [
+        "El siglo XIX, con la Revolución Industrial",
+        "El siglo XX, con la invención de la computadora",
+        "El siglo XVII, como \"el conjunto de teorías y técnicas que permiten el aprovechamiento práctico del conocimiento científico\"",
+        "La antigua Grecia, junto con el término \"pedagogía\""
+      ],
+      "correcta": 2,
+      "tiempo": 25,
+      "explicacion": "📜 El término es anterior a la computadora y a la Revolución Industrial: nace en el siglo XVII."
+    },
+    {
+      "pregunta": "La Tecnología Educativa se origina en los años 50 en Estados Unidos principalmente por:",
+      "opciones": [
+        "La necesidad de digitalizar bibliotecas universitarias",
+        "El contexto de la Guerra Fría y la necesidad de mejorar la educación e investigación frente a la URSS",
+        "Una demanda del sector privado por software educativo",
+        "La popularización de la televisión por cable"
+      ],
+      "correcta": 1,
+      "tiempo": 25,
+      "explicacion": "🚀 La carrera con la URSS empujó a mejorar la educación y la investigación científica."
+    },
+    {
+      "pregunta": "Según la tabla de evolución histórica de la TE, el período \"Años 80-90\" se asocia principalmente con:",
+      "opciones": [
+        "Medios de comunicación de masas (radio, televisión)",
+        "Psicología del aprendizaje y enseñanza programada",
+        "Vídeo y EAO (Enseñanza Asistida por Ordenador)",
+        "Nuevas tecnologías de la información y comunicación (internet)"
+      ],
+      "correcta": 2,
+      "tiempo": 20,
+      "explicacion": "📼 Los 80-90 son la era del vídeo y la Enseñanza Asistida por Ordenador; internet y las TIC llegan después."
+    }
+  ]
+}

@@ -24,6 +24,11 @@
       "id": "lectura-inferencial",
       "nombre": "Lectura inferencial",
       "descripcion": "Actividades asincrónicas de lectura por fragmentos: cada estudiante avanza a su ritmo con tiempo límite y descarga su propio PDF al terminar."
+    },
+    {
+      "id": "uteg-ntic",
+      "nombre": "UTEG_NTIC",
+      "descripcion": "Quizzes de la asignatura NTIC (Nuevas Tecnologías de la Información y Comunicación) de UTEG."
     }
   ],
   "concursos": [
@@ -91,6 +96,14 @@
       "descripcion": "Plantilla de ejemplo para armar una actividad de lectura por fragmentos. Reemplazá el texto y las preguntas en lectura-datos/plantilla-ejemplo.json antes de usarla con estudiantes.",
       "recomendado": "Punto de partida para crear nuevas actividades de lectura inferencial.",
       "archivo": "lectura-datos/plantilla-ejemplo.json"
+    },
+    {
+      "id": "uteg-ntic-fundamentos-te",
+      "titulo": "Fundamentos y evolución de la Tecnología Educativa",
+      "categoriaId": "uteg-ntic",
+      "descripcion": "Seis preguntas sobre la parábola de Papert, definición de Tecnología Educativa (Mujica), origen del término tecnología (De Pablos Pons), contexto de los años 50 y evolución histórica de la TE.",
+      "recomendado": "Cierre de la unidad de fundamentos de Tecnología Educativa.",
+      "archivo": "preguntas-uteg-ntic-fundamentos.json"
     }
   ]
 }
