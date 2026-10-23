@@ -1,0 +1,75 @@
+{
+  "titulo": "AI-assisted development of custom learning environments",
+  "preguntas": [
+    {
+      "pregunta": "¿Qué es \"vibe coding\"? / What is \"vibe coding\"?",
+      "opciones": [
+        "Programar escuchando música / Coding while listening to music",
+        "Programar solo con bloques visuales / Coding only with visual blocks",
+        "Construir software describiendo la intención en lenguaje natural a una IA y refinando el resultado / Building software by describing intent in natural language to an AI and refining the result",
+        "Copiar código de foros / Copying code from forums"
+      ],
+      "correcta": 2,
+      "tiempo": 25,
+      "explicacion": "💬 Describes qué quieres en lenguaje natural, la IA genera el código y tú refinas el resultado. / You describe what you want, the AI writes the code, and you refine it."
+    },
+    {
+      "pregunta": "¿Qué es una \"alucinación\" de un modelo de lenguaje? / What is an LLM \"hallucination\"?",
+      "opciones": [
+        "Un error de conexión / A connection error",
+        "Texto plausible pero falso o sin respaldo, presentado con seguridad / Plausible but false or unsupported text, stated confidently",
+        "Una respuesta demasiado corta / An answer that is too short",
+        "Un bloqueo por contenido sensible / A block for sensitive content"
+      ],
+      "correcta": 1,
+      "tiempo": 25,
+      "explicacion": "🌀 Suena convincente pero puede ser falso: por eso hay que verificar. / It sounds convincing but may be false, so always verify."
+    },
+    {
+      "pregunta": "¿Qué es la \"ventana de contexto\"? / What is the \"context window\"?",
+      "opciones": [
+        "La interfaz del chat / The chat interface",
+        "El tiempo que tarda en responder / How long it takes to answer",
+        "El historial del navegador / Browser history",
+        "La cantidad de texto (tokens) que el modelo puede considerar a la vez / The amount of text (tokens) the model can consider at once"
+      ],
+      "correcta": 3,
+      "tiempo": 25,
+      "explicacion": "🪟 Es la memoria de trabajo del modelo: lo que cabe en ella lo \"ve\"; lo demás no. / It is the model's working memory: what fits, it sees; the rest it does not."
+    },
+    {
+      "pregunta": "¿Qué distingue a un agente de IA de un chat simple? / What distinguishes an AI agent from a simple chat?",
+      "opciones": [
+        "Planifica y ejecuta acciones con herramientas, en bucle, hacia un objetivo / It plans and takes actions with tools, in a loop, toward a goal",
+        "Responde más rápido / It answers faster",
+        "Solo funciona sin internet / It only works offline",
+        "No usa lenguaje natural / It does not use natural language"
+      ],
+      "correcta": 0,
+      "tiempo": 25,
+      "explicacion": "🤖 Un chat responde; un agente actúa: planifica, usa herramientas, observa el resultado y repite. / A chat answers; an agent acts: plans, uses tools, observes, repeats."
+    },
+    {
+      "pregunta": "En TPACK, ¿qué conocimiento deja de ser un \"techo\" cuando la IA ayuda a construir herramientas? / In TPACK, which knowledge stops being a \"ceiling\" when AI helps build tools?",
+      "opciones": [
+        "Conocimiento pedagógico / Pedagogical knowledge",
+        "Conocimiento del contenido / Content knowledge",
+        "Conocimiento tecnológico / Technological knowledge",
+        "Conocimiento del contexto escolar / Knowledge of the school context"
+      ],
+      "correcta": 2,
+      "tiempo": 25,
+      "explicacion": "🛠️ Con IA, el docente ya no necesita dominar la programación para construir su propia herramienta. / With AI, teachers no longer need to master programming to build their own tool."
+    },
+    {
+      "pregunta": "Verdadero o falso: \"Si la IA escribió el código, funciona.\" / True or false: \"If the AI wrote the code, it works.\"",
+      "opciones": [
+        "Verdadero / True",
+        "Falso: hay que probarlo y verificarlo / False: it must be tested and verified"
+      ],
+      "correcta": 1,
+      "tiempo": 20,
+      "explicacion": "🧪 El código de la IA puede fallar o alucinar: siempre se prueba y se verifica. / AI code can fail or hallucinate: always test and verify."
+    }
+  ]
+}

@@ -26,6 +26,11 @@
       "descripcion": "Actividades asincrónicas de lectura por fragmentos: cada estudiante avanza a su ritmo con tiempo límite y descarga su propio PDF al terminar."
     },
     {
+      "id": "conferencias",
+      "nombre": "Conferencias",
+      "descripcion": "Quizzes de cierre para conferencias y charlas en vivo."
+    },
+    {
       "id": "uteg-ntic",
       "nombre": "UTEG_NTIC",
       "descripcion": "Quizzes de la asignatura NTIC (Nuevas Tecnologías de la Información y Comunicación) de UTEG."
@@ -104,6 +109,14 @@
       "descripcion": "Seis preguntas sobre la parábola de Papert, definición de Tecnología Educativa (Mujica), origen del término tecnología (De Pablos Pons), contexto de los años 50 y evolución histórica de la TE.",
       "recomendado": "Cierre de la unidad de fundamentos de Tecnología Educativa.",
       "archivo": "preguntas-uteg-ntic-fundamentos.json"
+    },
+    {
+      "id": "conferencia-ai-entornos-aprendizaje",
+      "titulo": "AI-assisted development of custom learning environments",
+      "categoriaId": "conferencias",
+      "descripcion": "Seis preguntas bilingües (ES/EN) sobre vibe coding, alucinaciones, ventana de contexto, agentes de IA, TPACK y verificación del código generado por IA.",
+      "recomendado": "Cierre interactivo de la conferencia.",
+      "archivo": "preguntas-ai-entornos-aprendizaje.json"
     }
   ]
 }
