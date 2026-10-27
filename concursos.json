@@ -111,6 +111,14 @@
       "archivo": "preguntas-uteg-ntic-fundamentos.json"
     },
     {
+      "id": "uteg-ntic-unidad2-transformacion",
+      "titulo": "Unidad II · Transformación pedagógica mediante las TIC",
+      "categoriaId": "uteg-ntic",
+      "descripcion": "Diez preguntas sobre transformación pedagógica (Garcés y Santoya), factores y dimensiones del modelo pedagógico, modelos históricos de uso de las TIC, condiciones de transformación, estudio de Area et al. (2020), retos de Moreno, etapas de Hooper y Rieber y vías de integración de Fogarty.",
+      "recomendado": "Evaluación de cierre de la Unidad II de NTIC.",
+      "archivo": "preguntas-uteg-ntic-unidad2.json"
+    },
+    {
       "id": "conferencia-ai-entornos-aprendizaje",
       "titulo": "AI-assisted development of custom learning environments",
       "categoriaId": "conferencias",

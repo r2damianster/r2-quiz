@@ -1,0 +1,125 @@
+{
+  "titulo": "Unidad II · Transformación pedagógica mediante las TIC",
+  "preguntas": [
+    {
+      "pregunta": "¿Qué distingue a la transformación pedagógica de un cambio cotidiano en el aula, según Garcés y Santoya (2011)?",
+      "opciones": [
+        "Consiste en aumentar la cantidad de recursos audiovisuales disponibles para el docente",
+        "Implica actualizar el software utilizado en clase sin modificar la metodología docente",
+        "Se limita a cambiar el horario de las clases para incorporar actividades en línea",
+        "Supone pasar de la transmisión de información a la construcción social del conocimiento"
+      ],
+      "correcta": 3,
+      "tiempo": 25,
+      "explicacion": "🔄 Transformar no es sumar recursos ni cambiar horarios: es mover el centro de la clase de transmitir información a construir conocimiento entre todos."
+    },
+    {
+      "pregunta": "¿Cuáles son los tres factores que, según Garcés, Ruiz y Martínez (2014), condicionan el proceso de aprendizaje?",
+      "opciones": [
+        "Tecnológico, económico y social",
+        "Administrativo, financiero y logístico",
+        "Institucional, cultural y pedagógico",
+        "Curricular, evaluativo y metodológico"
+      ],
+      "correcta": 2,
+      "tiempo": 20,
+      "explicacion": "🏛️ Institución, cultura y pedagogía condicionan el aprendizaje; la tecnología por sí sola no aparece entre ellos."
+    },
+    {
+      "pregunta": "¿Cuál de las siguientes NO es una de las seis dimensiones del modelo pedagógico que se moviliza al innovar?",
+      "opciones": [
+        "Metas de formación",
+        "Infraestructura tecnológica",
+        "Relaciones en el aula",
+        "Ritmos de aprendizaje"
+      ],
+      "correcta": 1,
+      "tiempo": 20,
+      "explicacion": "🏗️ La infraestructura es una condición del contexto, no una dimensión del modelo pedagógico. Metas, relaciones y ritmos sí lo son."
+    },
+    {
+      "pregunta": "Según la evolución histórica de los modelos de uso de las TIC, ¿qué caracteriza al modelo del siglo XXI?",
+      "opciones": [
+        "El aprendizaje es individual mediante televisión y radio educativa",
+        "Se prioriza el aprendizaje por descubrimiento usando software como Logo",
+        "El modelo es cooperativo gracias al correo electrónico y los foros",
+        "El estudiante produce, comparte y accede a saberes mediante construcción social"
+      ],
+      "correcta": 3,
+      "tiempo": 25,
+      "explicacion": "🌐 Radio y TV (individual), Logo (descubrimiento) y foros (cooperativo) son etapas previas. En el siglo XXI el estudiante produce y comparte saberes."
+    },
+    {
+      "pregunta": "¿Cuáles son los cuatro bloques en que se agrupan las condiciones para que las TIC transformen la educación?",
+      "opciones": [
+        "Currículo, evaluación, comunicación y metodología",
+        "Liderazgo y política, infraestructura, docentes y enseñanza",
+        "Hardware, software, conectividad y soporte técnico",
+        "Dirección, finanzas, marketing y recursos humanos"
+      ],
+      "correcta": 1,
+      "tiempo": 25,
+      "explicacion": "🧱 Las condiciones combinan lo político, lo material, lo humano (docentes) y lo didáctico (enseñanza); no se reducen a equipos."
+    },
+    {
+      "pregunta": "Según el estudio de 40 centros educativos en España (Area et al., 2020), ¿cuál fue el resultado respecto al estadio de transformación digital?",
+      "opciones": [
+        "Ningún centro llegó a la fase de transformación; solo dos alcanzaron integración",
+        "La mayoría de los centros alcanzó la fase de transformación plena",
+        "Todos los centros permanecieron en la fase de iniciación sin ningún avance",
+        "La mitad de los centros logró superar la fase de aplicación hacia la integración"
+      ],
+      "correcta": 0,
+      "tiempo": 25,
+      "explicacion": "📉 Ninguno de los 40 centros llegó a la transformación y solo dos alcanzaron la integración: tener tecnología no equivale a transformar."
+    },
+    {
+      "pregunta": "¿Cuál de los siguientes es uno de los tres retos de la transformación digital según Moreno (2017)?",
+      "opciones": [
+        "El exceso de inversión económica en tecnología educativa",
+        "La falta de estudiantes interesados en usar dispositivos móviles",
+        "La resistencia cultural de organizaciones con modelos centenarios",
+        "El exceso de capacitación docente en herramientas digitales"
+      ],
+      "correcta": 2,
+      "tiempo": 20,
+      "explicacion": "🏰 Las instituciones con modelos centenarios oponen resistencia cultural al cambio. Los demás distractores son excesos que no plantea el autor."
+    },
+    {
+      "pregunta": "Según Hooper y Rieber (1995), ¿qué caracteriza la etapa de «reorientación» en el uso docente de las TIC?",
+      "opciones": [
+        "El docente aprende a usar el computador solo para labores personales",
+        "El docente usa las TIC en tareas administrativas sin propósito pedagógico",
+        "El docente apoya únicamente tareas ya definidas en los planes de curso",
+        "El docente facilita ambientes para que el estudiante construya sus propios saberes"
+      ],
+      "correcta": 3,
+      "tiempo": 25,
+      "explicacion": "🧭 En la reorientación el docente deja de ser el centro y diseña ambientes donde el estudiante construye sus propios saberes."
+    },
+    {
+      "pregunta": "Según el modelo de Fogarty, ¿qué caracteriza la vía «en red» de integración curricular de las TIC?",
+      "opciones": [
+        "El estudiante filtra su aprendizaje y se conecta con expertos de áreas afines",
+        "El estudiante examina conceptos de un tema que se teje con otras asignaturas",
+        "Una plataforma une asignaturas buscando superposiciones de ideas",
+        "El estudiante practica habilidades sociales aplicando un contenido concreto"
+      ],
+      "correcta": 0,
+      "tiempo": 25,
+      "explicacion": "🕸️ En la vía en red el propio estudiante dirige su aprendizaje y lo conecta con expertos y áreas afines."
+    },
+    {
+      "pregunta": "¿Cuál de las siguientes ideas resume mejor la síntesis de la sesión sobre las TIC y la transformación pedagógica?",
+      "opciones": [
+        "Las TIC siempre transforman la enseñanza en cuanto se instalan en la institución",
+        "Proyectar contenidos con tecnología es suficiente para cambiar el modelo pedagógico",
+        "Las TIC son medios y no fines; por sí solas no garantizan la eficiencia del aprendizaje",
+        "La capacitación docente en software es equivalente a saber integrarlo pedagógicamente"
+      ],
+      "correcta": 2,
+      "tiempo": 25,
+      "explicacion": "🎯 La tecnología es un medio: sin cambio pedagógico, instalarla, proyectar contenidos o saber usar software no transforma el aprendizaje."
+    }
+  ]
+}
