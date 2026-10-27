@@ -82,6 +82,27 @@
       <p class="subtitulo" style="margin-top:6px;">Escribe un valor (5–300) o elige uno de la lista. Vacío = cada pregunta usa su propio tiempo.</p>
     </div>
 
+    <div id="bloqueLongitud" style="margin-top:18px;">
+      <p class="subtitulo" style="margin-bottom:6px;">Longitud de la partida</p>
+      <div id="opcionesLongitud" style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn secondary activo" data-longitud="completo" aria-pressed="true">Completo</button>
+        <button type="button" class="btn secondary" data-longitud="medio" aria-pressed="false">Medio (50%)</button>
+        <button type="button" class="btn secondary" data-longitud="corto" aria-pressed="false">Corto (25%)</button>
+        <button type="button" class="btn secondary" data-longitud="personalizado" aria-pressed="false">Personalizado</button>
+      </div>
+      <div id="bloqueCantidad" class="hidden" style="margin-top:10px;">
+        <input id="cantidadPersonalizada" class="field mono" type="number" inputmode="numeric" min="1" step="1"
+               placeholder="¿Cuántas preguntas?" style="max-width:220px;">
+      </div>
+      <label class="subtitulo" for="metodoMuestreo" style="display:block; margin:12px 0 6px;">Cómo elegir las preguntas</label>
+      <select id="metodoMuestreo" class="field" style="max-width:320px;">
+        <option value="espaciado">Espaciadas (cubren todo el temario)</option>
+        <option value="aleatorio">Aleatorias (distintas cada vez)</option>
+        <option value="primeras">Las primeras</option>
+      </select>
+      <p class="subtitulo" id="resumenLongitud" style="margin-top:6px;"></p>
+    </div>
+
     <div class="estado" id="detalleEstado"></div>
 
     <div id="bloqueLectura" class="hidden" style="margin-top:22px;">
@@ -291,7 +312,9 @@ if(isLoginValid()){
 let categoriaFiltro = 'todas';
 let concursoActivo = null;
 let codigoSalaActual = '';
-let preguntas = [];
+let preguntas = [];                 // las que se juegan: muestra de bancoCompleto según la longitud elegida
+let bancoCompleto = [];             // todas las preguntas del archivo
+let longitudElegida = 'completo';   // completo | medio | corto | personalizado
 let indicePregunta = -1;
 let jugadores = new Map();          // clientId -> { nombre, avatar, puntaje }
 let respuestasPregunta = new Map(); // clientId -> { opcion, ms }
@@ -501,7 +524,13 @@ async function abrirDetalle(id){
   $('bloqueLectura').classList.toggle('hidden', !esLectura);
   $('detalleNotaSala').classList.toggle('hidden', esLectura);
   $('bloqueTiempo').classList.toggle('hidden', esLectura);
+  $('bloqueLongitud').classList.toggle('hidden', esLectura);
   $('tiempoPregunta').value = '';
+  bancoCompleto = [];
+  longitudElegida = 'completo';
+  $('cantidadPersonalizada').value = '';
+  $('metodoMuestreo').value = 'espaciado';
+  marcarLongitudActiva();
   $('btnPresentar').disabled = true;
   mostrarPantalla('pantalla-detalle');
 
@@ -551,26 +580,87 @@ async function abrirDetalle(id){
     const resp = await fetch(concurso.archivo, { cache: 'no-store' });
     if(!resp.ok) throw new Error('No se pudo leer ' + concurso.archivo);
     const data = await resp.json();
-    preguntas = data.preguntas || [];
-    if(preguntas.length === 0) throw new Error('El archivo no tiene preguntas.');
+    bancoCompleto = data.preguntas || [];
+    if(bancoCompleto.length === 0) throw new Error('El archivo no tiene preguntas.');
   } catch(err){
     $('detalleEstado').textContent = 'Error cargando el concurso: ' + err.message;
     $('detalleEstado').className = 'estado error';
     return;
   }
 
+  aplicarLongitud();
+  $('detalleEstado').textContent = '';
+  $('btnPresentar').disabled = false;
+}
+
+/* ---------- Longitud de la partida: usar solo una proporción del banco ---------- */
+const PROPORCION_POR_LONGITUD = { completo: 1, medio: 0.5, corto: 0.25 };
+
+function cantidadSegunLongitud(){
+  const total = bancoCompleto.length;
+  if(longitudElegida === 'personalizado'){
+    const pedida = Math.round(Number($('cantidadPersonalizada').value));
+    return pedida >= 1 ? Math.min(pedida, total) : total;
+  }
+  return Math.max(1, Math.ceil(total * PROPORCION_POR_LONGITUD[longitudElegida]));
+}
+
+/* Devuelve `cantidad` preguntas del banco, siempre en su orden original. */
+function elegirPreguntas(cantidad){
+  const total = bancoCompleto.length;
+  if(cantidad >= total) return bancoCompleto.slice();
+
+  const metodo = $('metodoMuestreo').value;
+  let posiciones;
+  if(metodo === 'primeras'){
+    posiciones = Array.from({ length: cantidad }, (_, posicion) => posicion);
+  } else if(metodo === 'aleatorio'){
+    const todasLasPosiciones = Array.from({ length: total }, (_, posicion) => posicion);
+    for(let actual = total - 1; actual > 0; actual--){
+      const sorteada = Math.floor(Math.random() * (actual + 1));
+      [todasLasPosiciones[actual], todasLasPosiciones[sorteada]] = [todasLasPosiciones[sorteada], todasLasPosiciones[actual]];
+    }
+    posiciones = todasLasPosiciones.slice(0, cantidad).sort((a, b) => a - b);
+  } else {
+    // espaciadas: una por cada tramo del banco, tomando la del centro
+    posiciones = Array.from({ length: cantidad }, (_, tramo) => Math.floor((tramo + 0.5) * total / cantidad));
+  }
+  return posiciones.map(posicion => bancoCompleto[posicion]);
+}
+
+function marcarLongitudActiva(){
+  document.querySelectorAll('#opcionesLongitud [data-longitud]').forEach(boton => {
+    const estaActivo = boton.dataset.longitud === longitudElegida;
+    boton.classList.toggle('activo', estaActivo);
+    boton.setAttribute('aria-pressed', String(estaActivo));
+  });
+  $('bloqueCantidad').classList.toggle('hidden', longitudElegida !== 'personalizado');
+}
+
+function aplicarLongitud(){
+  if(bancoCompleto.length === 0) return;
+  preguntas = elegirPreguntas(cantidadSegunLongitud());
+  marcarLongitudActiva();
+
   // Solo métricas agregadas: nunca se muestra el enunciado ni la respuesta correcta.
   const puntajeMaximo = preguntas.length * 1000;
-
   $('detalleStats').innerHTML = `
     <div class="ficha-stat"><span class="ficha-stat-valor mono">${preguntas.length}</span><span class="ficha-stat-label">Preguntas</span></div>
     <div class="ficha-stat"><span class="ficha-stat-valor mono" id="minutosEstimados"></span><span class="ficha-stat-label">Minutos</span></div>
     <div class="ficha-stat"><span class="ficha-stat-valor mono">${puntajeMaximo}</span><span class="ficha-stat-label">Puntaje máximo</span></div>`;
-
+  $('resumenLongitud').textContent = `Se jugarán ${preguntas.length} de ${bancoCompleto.length} preguntas.`;
   actualizarMinutosEstimados();
-  $('detalleEstado').textContent = '';
-  $('btnPresentar').disabled = false;
 }
+
+$('opcionesLongitud').addEventListener('click', evento => {
+  const boton = evento.target.closest('[data-longitud]');
+  if(!boton) return;
+  longitudElegida = boton.dataset.longitud;
+  aplicarLongitud();
+  if(longitudElegida === 'personalizado') $('cantidadPersonalizada').focus();
+});
+$('cantidadPersonalizada').addEventListener('input', aplicarLongitud);
+$('metodoMuestreo').addEventListener('change', aplicarLongitud);
 
 function actualizarMinutosEstimados(){
   const celdaMinutos = $('minutosEstimados');
@@ -583,6 +673,7 @@ $('tiempoPregunta').addEventListener('input', actualizarMinutosEstimados);
 $('btnVolverCatalogo').addEventListener('click', () => {
   concursoActivo = null;
   preguntas = [];
+  bancoCompleto = [];
   mostrarPantalla('pantalla-catalogo');
 });
 
@@ -621,7 +712,10 @@ function renderQR(url){
 }
 
 $('btnPresentar').addEventListener('click', async () => {
-  if(!concursoActivo || preguntas.length === 0) return;
+  if(!concursoActivo || bancoCompleto.length === 0) return;
+
+  // Con muestreo aleatorio se vuelve a sortear al abrir la sala.
+  preguntas = elegirPreguntas(cantidadSegunLongitud());
 
   $('btnPresentar').disabled = true;
   $('detalleEstado').innerHTML =

@@ -41,6 +41,11 @@ Esta versión prioriza:
 - Vacío = cada pregunta usa su `tiempo` en `preguntas.json`, o 15 s si no lo trae. Con valor, aplica a todas las preguntas de la partida.
 - El valor define también el bono de velocidad; no se guarda en el navegador. No aplica a la lectura asincrónica.
 
+## Longitud de la partida
+- En la ficha previa, el host elige `Completo · Medio (50%) · Corto (25%) · Personalizado` (N preguntas) para jugar solo una proporción del banco, p. ej. al final de una clase.
+- Método de selección: espaciadas (default, una por tramo del banco, cubre todo el temario), aleatorias (se re-sortean al abrir la sala) o las primeras N. Siempre se conserva el orden original.
+- `bancoCompleto` guarda todo el archivo; `preguntas` es la muestra que se juega. Puntaje máximo, minutos estimados, "Pregunta N de M", PDF y JSON usan la muestra. No cambia el tráfico de Ably ni se guarda en el navegador. No aplica a la lectura asincrónica.
+
 ## Reconexión del jugador
 - Celular que se duerme o red que cae: Ably reconecta sin reenviar lo publicado durante la caída, y el jugador quedaría atascado en una pantalla vieja sin aviso.
 - Al reconectar (no en la primera conexión), `player.html` vuelve a entrar en presencia y pide `channel.history()` para reaplicar el último evento de estado (`alistate`, `pregunta`, `reveal`, `saltada`, `fin`, `sala-cerrada`).

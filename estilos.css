@@ -85,6 +85,12 @@ h1,h2,h3, .display{
   border: 1px solid var(--line);
 }
 
+.btn.secondary.activo{
+  background: var(--gold);
+  color: #12122a;
+  border-color: var(--gold);
+}
+
 .btn.peligro{
   background: transparent;
   color: var(--coral);
