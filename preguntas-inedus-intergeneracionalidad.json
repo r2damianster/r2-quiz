@@ -1,0 +1,77 @@
+{
+  "titulo": "INEDUS · Intergeneracionalidad y aprendizaje",
+  "preguntas": [
+    {
+      "pregunta": "Según Kertzer (1983) y Duffy (2022), ¿cuál de los siguientes términos corresponde al concepto de \"huella de cohorte\"?",
+      "opciones": [
+        "Parentesco",
+        "Ciclo de vida",
+        "Efecto período",
+        "Contexto basal compartido (socialización primaria con smartphone e IA)"
+      ],
+      "correcta": 3,
+      "tiempo": 25,
+      "explicacion": "👣 La huella de cohorte es el contexto basal que comparte una cohorte desde su socialización primaria, por ejemplo con smartphone e IA. No es parentesco, ni etapa del ciclo de vida, ni un evento puntual."
+    },
+    {
+      "pregunta": "¿Qué autor(es) cuestionan si \"generación\" es un concepto científicamente útil?",
+      "opciones": [
+        "Mannheim",
+        "Strauss y Howe",
+        "Costanza et al. (2023)",
+        "McCrindle y Fell"
+      ],
+      "correcta": 2,
+      "tiempo": 20,
+      "explicacion": "🔎 Costanza et al. (2023) ponen en duda la utilidad científica del concepto de generación. Los demás autores lo usan o lo desarrollan."
+    },
+    {
+      "pregunta": "En el mapeo cienciométrico global (2018–2026), ¿cuáles son los tres ejes temáticos identificados?",
+      "opciones": [
+        "Identidad, Tecnología, Percepción",
+        "Ansiedad, Confort, Autonomía",
+        "Salud mental, IA, Infraestructura",
+        "Bienestar, Espacio, Bibliometría"
+      ],
+      "correcta": 0,
+      "tiempo": 25,
+      "explicacion": "🗺️ El mapeo agrupa la literatura en tres ejes: identidad, tecnología y percepción."
+    },
+    {
+      "pregunta": "Según la tipología de un término con cuatro sentidos, ¿cuál corresponde al \"Efecto Período\"?",
+      "opciones": [
+        "Línea de descendencia y árbol genealógico en demografía",
+        "Conductas propias de la juventud con tensión hacia la autoridad",
+        "Un impacto macro multisectorial, como la pandemia COVID-19, que puede afectar a todas las cohortes por igual",
+        "Socialización primaria compartida con smartphone e IA"
+      ],
+      "correcta": 2,
+      "tiempo": 25,
+      "explicacion": "🌍 El efecto período es un impacto macro que alcanza a todas las cohortes a la vez, como la COVID-19. La descendencia es parentesco, la tensión con la autoridad es ciclo de vida y la socialización con smartphone e IA es huella de cohorte."
+    },
+    {
+      "pregunta": "Según el análisis de regresión (R²=24.7%), ¿qué predice mejor el aprendizaje que la exposición temprana a la tecnología?",
+      "opciones": [
+        "La edad del estudiante",
+        "Rechazar la jerarquía y usar la tecnología como herramienta académica",
+        "El tamaño de la universidad",
+        "La claridad docente"
+      ],
+      "correcta": 1,
+      "tiempo": 25,
+      "explicacion": "📊 Pesa más la postura del estudiante, que cuestiona la jerarquía y usa la tecnología como herramienta académica, que haber crecido con ella."
+    },
+    {
+      "pregunta": "En el estudio cualitativo (18 entrevistas), ¿qué dos patrones fuertes aparecieron en las observaciones directas?",
+      "opciones": [
+        "Colapso cognitivo y desmotivación",
+        "Economía del esfuerzo y prótesis digital",
+        "Dependencia normativa y crianza",
+        "Agencia crítica y desplazamiento de lectura"
+      ],
+      "correcta": 1,
+      "tiempo": 25,
+      "explicacion": "🧠 Las observaciones directas mostraron economía del esfuerzo y uso del dispositivo como prótesis digital."
+    }
+  ]
+}
