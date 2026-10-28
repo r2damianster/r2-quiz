@@ -125,6 +125,14 @@
       "descripcion": "Seis preguntas bilingües (ES/EN) sobre vibe coding, alucinaciones, ventana de contexto, agentes de IA, TPACK y verificación del código generado por IA.",
       "recomendado": "Cierre interactivo de la conferencia.",
       "archivo": "preguntas-ai-entornos-aprendizaje.json"
+    },
+    {
+      "id": "conferencia-inedus-intergeneracionalidad",
+      "titulo": "INEDUS · Intergeneracionalidad y aprendizaje",
+      "categoriaId": "conferencias",
+      "descripcion": "Seis preguntas sobre huella de cohorte, efecto período, utilidad científica del concepto de generación, mapeo cienciométrico 2018–2026, regresión sobre aprendizaje y patrones del estudio cualitativo.",
+      "recomendado": "Cierre interactivo de la conferencia.",
+      "archivo": "preguntas-inedus-intergeneracionalidad.json"
     }
   ]
 }
